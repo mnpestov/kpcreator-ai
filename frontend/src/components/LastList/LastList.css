@@ -1,0 +1,39 @@
+.last-list__logo-container {
+    margin: 17px auto 92px;
+}
+
+.last-list__count-container {
+    display: flex;
+    flex-direction: column;
+    gap: 27px;
+}
+
+.list_last-list {
+    justify-content: start;
+    /* min-width: 864px; */
+}
+
+.last-list__title {
+    align-self: center;
+}
+
+.totalKp {
+    padding: 0;
+    margin: 0;
+}
+
+.last-list__row {
+    text-align: start;
+    list-style: none;
+    padding: 0;
+}
+
+@media (max-width: 960px) {
+    .last-list__logo-container-preview {
+        margin: 1.77vw auto 9.58vw;
+    }
+
+    .last-list__count-container-preview {
+        gap: 2.8vw;
+    }
+}

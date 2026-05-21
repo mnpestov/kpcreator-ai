@@ -1,0 +1,146 @@
+.list__container {
+    display: flex;
+    flex-direction: column;
+}
+
+.list__logo {
+    width: calc(0.6 * 275.328px);
+}
+
+.list__title {
+    margin: 0;
+    padding: 0;
+    font-family: 'arial';
+    font-size: 24.36px;
+    letter-spacing: 1px;
+}
+
+.list__table {
+    gap: 9.936px;
+    display: flex;
+    flex-direction: column;
+    border-spacing: 19.872px;
+}
+
+.list__subtitle-container {
+    font-family: arial;
+    font-weight: 400;
+    font-size: calc(0.0165 * 864px);
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin: 0;
+    justify-self: start;
+}
+
+.list__subtitle_time {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.list__subtitle_text {
+    font-weight: bold;
+}
+
+.table__titles {
+    vertical-align: bottom;
+    border-bottom: 1px solid black;
+    padding-bottom: 9px;
+    margin-bottom: 11px;
+    align-items: end;
+}
+
+/* .table__row {
+    display: grid;
+    grid-template-columns: 50% repeat(3, 1fr);
+    justify-items: end;
+    align-items: end;
+    transition: background-color 0.3s ease;
+} */
+
+.table__title {
+    font-family: arial;
+    font-weight: 400;
+    font-size: calc(0.0188 * 864px);
+}
+
+.table__line-container {
+    display: flex;
+    justify-self: start;
+}
+
+.table__line {
+    font-family: arial;
+    font-weight: 600;
+    font-size: calc(0.0165 * 864px);
+}
+
+.tabel__line_product {
+    font-size: calc(0.021 * 864px);
+}
+
+.tabel__line_composition-of-product {
+    font-weight: 400;
+}
+
+.listCompact {
+    background-color: white;
+    width: 864px;
+    height: calc(210/297*864px);
+    display: flex;
+    flex-direction: column;
+    padding: calc(0.03*864px) calc(0.038*864px);
+    justify-content: space-between;
+    box-sizing: border-box;
+    margin: 20.16px auto;
+}
+
+@media (max-width: 960px) {
+    .list__logo-preview {
+        width: 17.2vw;
+    }
+
+    .list__title-preview {
+        font-size: 2.54vw;
+    }
+
+    .list__table-preview {
+        gap: 1vw;
+        border-spacing: 2vw;
+    }
+
+    .table__titles-preview {
+        padding-bottom: 0.9vw;
+        margin-bottom: 1.1vw;
+        border-bottom: 0.104vw solid black;
+    }
+
+    .table__title-preview {
+        font-size: 1.69vw;
+
+    }
+
+    .table__subtitle-preview {
+        gap: 10.4vw;
+    }
+
+    .last-list-preview {
+        font-size: 1.48vw;
+    }
+
+    .list__total-preview {
+        font-size: 1.59vw;
+        min-width: 34.3vw;
+        padding-top: 0.73vw;
+    }
+
+    .tabel__line-preview {
+        font-size: 1.48vw;
+    }
+
+    .tabel__line_product-preview {
+        font-size: 1.9vw;
+    }
+
+}

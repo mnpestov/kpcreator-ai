@@ -1,0 +1,57 @@
+/* Блок главной страницы */
+.home {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Поисковая строка */
+.home__search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.home__table {
+  display: grid;
+  grid-template-columns: min-content min-content 1fr; /* ширина колонок */
+}
+
+.home__table-row {
+  display: contents; /* чтобы grid-ячейки вести себя как таблица */
+  cursor: pointer;
+}
+
+.home__table-header {
+  font-weight: bold;
+  background: #f5f5f5;
+}
+
+.home__table-cell {
+  padding: 5px 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.home__table-data:hover .home__table-cell {
+  background: #aaaaaa1a;
+}
+
+/* Адаптивность поиска: на мобильном кнопка под полем */
+@media (max-width: 600px) {
+  .home__search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Блок списка последних КП */
+.home__recent-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+/* Сообщение об отсутствии данных */
+.home__no-kp {
+  font-style: italic;
+  color: #777;
+}

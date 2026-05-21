@@ -1,0 +1,178 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.popup {
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Предотвращение зума на iOS */
+.popup input,
+.popup select {
+    font-size: 16px !important;
+    padding: 12px !important;
+    min-height: 44px !important;
+}
+
+.popup_select {
+    height: 32px;
+    padding: 5px 7px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 2px;
+    display: flex;
+    width: 100%;
+}
+
+/* Стили для выпадающего списка */
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion-item {
+    padding: 7px 7px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+    background-color: #f5f5f5;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.hint {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #888;
+}
+
+.popup__button_close {
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    font-size: 30px;
+    height: 40px;
+    justify-content: center;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: 40px;
+}
+
+/* Медиа-запросы для мобильных */
+@media (max-width: 768px) {
+    .popup-overlay {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+
+    .popup {
+        width: max(50%, 500px);
+        margin: 0;
+        padding: 15px;
+    }
+}
+
+/* Дополнительные стили для предотвращения зума */
+@media screen and (max-width: 768px) {
+    .popup {
+        font-size: 16px;
+    }
+
+    .popup input,
+    .popup select,
+    .popup button {
+        font-size: 16px !important;
+    }
+
+    .popup input:focus,
+    .popup select:focus {
+        font-size: 16px !important;
+        transform: none !important;
+    }
+}
+
+/* Отключение зума для iOS */
+@supports (-webkit-touch-callout: none) {
+
+    .popup input,
+    .popup select,
+    .popup textarea {
+        font-size: 16px !important;
+    }
+
+    .popup-overlay {
+        touch-action: manipulation;
+    }
+}
+
+/* Исправление z-index для Select из @skbkontur/react-ui */
+.popup [data-comp-name="Select"] {
+    z-index: 10002 !important;
+    position: relative;
+}
+
+.popup [data-comp-name="DropdownContainer"] {
+    z-index: 10003 !important;
+}
+
+.popup [data-comp-name="Menu"] {
+    z-index: 10004 !important;
+}
+
+.popup-overlay {
+    z-index: 10000;
+}
+
+.popup {
+    z-index: 10001;
+    position: relative;
+}
+
+.suggestions-list {
+    z-index: 10005;
+}

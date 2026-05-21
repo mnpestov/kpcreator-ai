@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Админка проекта kpcreator.ru</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1, h2 {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    ul {
+      margin: 0 0 1em 1.2em;
+    }
+    .note {
+      background: #eaf7ff;
+      padding: 10px;
+      border-left: 4px solid #2196f3;
+      margin: 1em 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Админка проекта <code>kpcreator.ru</code></h1>
+  <p>Эта страница — шпаргалка для администратора проекта. Тут собраны основные команды и процессы по управлению сервером.</p>
+
+  <h2>1. Проверка состояния</h2>
+  <ul>
+    <li>Проверить работу фронтенда: <code>https://kpcreator.ru</code></li>
+    <li>Проверить API: <code>https://kpcreator.ru/api/healthz</code></li>
+    <li>Проверить процессы: <code>pm2 list</code></li>
+    <li>Логи API: <code>pm2 logs kurgi-api --lines 100</code></li>
+  </ul>
+
+  <h2>2. Бэкапы базы данных</h2>
+  <p>Автоматический бэкап выполняется ежедневно в 03:00. Файлы хранятся в <code>/var/backups/pg</code> (хранятся 14 дней).</p>
+  <ul>
+    <li>Создать бэкап вручную:
+      <pre>pg_dump -h 127.0.0.1 -U kurgidb -d kurgikp | gzip > /var/backups/pg/dump_$(date +%F).sql.gz</pre>
+    </li>
+  </ul>
+
+  <h2>3. Обновление кода</h2>
+  <h3>Backend</h3>
+  <pre>
+cd /var/www/kurgi/Kurgi_KP_backend
+git pull origin main
+npm install --production
+pm2 restart kurgi-api
+  </pre>
+
+  <h3>Frontend</h3>
+  <pre>
+cd /var/www/kurgi/Kurgi_KP_frontend
+git pull origin main
+npm install
+npm run build
+rm -rf /var/www/kurgi/frontend_build/*
+cp -r build/* /var/www/kurgi/frontend_build/
+sudo systemctl reload nginx
+  </pre>
+
+  <div class="note">
+    <b>Важно:</b> перед деплоем убедись, что база данных в актуальном состоянии (бэкап сделан).
+  </div>
+
+  <h2>4. SSL-сертификат</h2>
+  <ul>
+    <li>Проверить срок действия: <code>sudo certbot certificates</code></li>
+    <li>Принудительно обновить: <code>sudo certbot renew --force-renewal</code></li>
+  </ul>
+
+  <h2>5. PM2</h2>
+  <ul>
+    <li>Сохранить процессы: <code>pm2 save</code></li>
+    <li>Автозапуск при старте: <code>pm2 startup</code></li>
+    <li>Лог-ротация: настроен модуль <code>pm2-logrotate</code></li>
+  </ul>
+
+  <h2>6. Чеклист после обновления</h2>
+  <ul>
+    <li>Фронтенд открывается без ошибок</li>
+    <li>API отвечает на <code>/api/healthz</code></li>
+    <li>Проверить работу CRUD-операций КП</li>
+    <li>Проверить генерацию PDF</li>
+    <li>Проверить адаптивность интерфейса</li>
+  </ul>
+
+  <p><em>Последнее обновление инструкции: сентябрь 2025.</em></p>
+</body>
+</html>
