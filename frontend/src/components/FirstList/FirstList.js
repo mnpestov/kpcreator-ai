@@ -1,6 +1,7 @@
 import './FirstList.css';
 import logo from '../../images/logo.png'
 import useAuthStore from '../../hooks/useAuthStore';
+import { API_BASE_URL } from '../../utils/const';
 
 function FirstList({ kpNumber, kpDate, contractNumber, contractDate, kpPreviewSelectors, listSelector }) {
     const {
@@ -15,7 +16,6 @@ function FirstList({ kpNumber, kpDate, contractNumber, contractDate, kpPreviewSe
     } = kpPreviewSelectors
 
     const { user } = useAuthStore();
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
     return (
         <section className="first-list">
@@ -37,7 +37,7 @@ function FirstList({ kpNumber, kpDate, contractNumber, contractDate, kpPreviewSe
                             <p className="manager_info manager_info__email">{user.email}</p>
                             <p className="manager_info manager_info__tel">{user.tel}</p>
                         </div>
-                        <img className={managerPhotoSelector} src={`${API_URL}/static/${user.photo}`} alt="manager" />
+                        <img className={managerPhotoSelector} src={`${API_BASE_URL}/static/${user.photo}`} alt="manager" />
                     </div>
                 </div>
             </div>

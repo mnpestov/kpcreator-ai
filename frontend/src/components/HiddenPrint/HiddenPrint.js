@@ -25,7 +25,6 @@ function HiddenPrint({
 }) {
   // kpPreviewSelectors.listSelector = 'hiden-list'
   const { user } = useAuthStore();
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
   const listsKp = useKpStore((s) => s.listsKp);
   // Форматирование даты (ожидаем ISO)
   const formatDate = (value) => {

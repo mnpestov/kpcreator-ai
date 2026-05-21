@@ -10,6 +10,7 @@ import HiddenPrint from "../../components/HiddenPrint/HiddenPrint";
 import "./PreviewHidden.css";
 import useAuthStore from '../../hooks/useAuthStore';
 import useKpStore from '../../hooks/useKpStore';
+import { API_BASE_URL } from '../../utils/const';
 
 // Подключаем LastList лениво (lazy), как это было сделано в App.js
 const LastList = lazy(() => import('../../components/LastList/LastList'));
@@ -37,7 +38,6 @@ function Preview({
     console.log(listsKp);
 
     // const { user } = useContext(AuthContext);
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
     const navigate = useNavigate();
     const compactPdfRef = useRef(null);
     const hiddenPrintRef = useRef(null);
@@ -77,7 +77,7 @@ function Preview({
                     kpDate={formatDate(formData.kpDate)}
                     contractNumber={formData.contractNumber}
                     contractDate={formatDate(formData.contractDate)}
-                    managerPhoto={`${API_URL}/static/${user.photo}`}
+                    managerPhoto={`${API_BASE_URL}/static/${user.photo}`}
                     kpPreviewSelectors={kpPreviewSelectors}
                     listSelector={'list list-preview'}
                 />

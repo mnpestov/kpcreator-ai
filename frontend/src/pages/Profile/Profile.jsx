@@ -9,11 +9,11 @@ import useAuthStore from '../../hooks/useAuthStore';
 import { MainApi } from '../../utils/MainApi';
 import { saveToken } from '../../utils/auth';
 import { profileSchema } from '../../validation/profileSchema';
+import { API_BASE_URL } from '../../utils/const';
 
 function Profile() {
   // const { user, setUser } = useContext(AuthContext);
   const { user, setUser } = useAuthStore();
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
   const {
     register,
@@ -54,7 +54,7 @@ function Profile() {
     try {
       const token = localStorage.getItem('authToken');
       const res = await axios.post(
-        `${API_URL}/profile/upload-avatar`,
+        `${API_BASE_URL}/profile/upload-avatar`,
         formData,
         {
           headers: {
@@ -78,12 +78,12 @@ function Profile() {
     try {
       const token = localStorage.getItem('authToken');
 
-      await axios.patch(`${API_URL}/profile/profile`, data, {
+      await axios.patch(`${API_BASE_URL}/profile/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       // 🔁 Обновляем токен
-      const checkRes = await axios.get(`${API_URL}/auth/check`, {
+      const checkRes = await axios.get(`${API_BASE_URL}/auth/check`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -108,7 +108,7 @@ function Profile() {
         {user?.photo && (
           <img
             className='profile__avatar'
-            src={`${API_URL}/static/${user.photo}`}
+            src={`${API_BASE_URL}/static/${user.photo}`}
             alt="Аватар"
             style={{
               width: 100,
