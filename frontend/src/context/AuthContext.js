@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { getUserFromToken, getToken, saveToken, removeToken } from '../utils/auth';
 import { MainApi } from '../utils/MainApi';
+import { API_BASE_URL } from '../utils/const';
 
 export const AuthContext = createContext({
   user: null,
@@ -11,7 +12,6 @@ export const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }) => {
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
   const [user, setUser] = useState(getUserFromToken());
   const [isAuth, setIsAuth] = useState(!!getToken());
 
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    fetch(`${API_URL}/auth/check`, {
+    fetch(`${API_BASE_URL}/auth/check`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,

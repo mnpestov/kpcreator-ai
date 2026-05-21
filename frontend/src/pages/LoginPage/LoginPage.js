@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../utils/const';
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)

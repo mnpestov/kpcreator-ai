@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getToken, saveToken, removeToken } from '../utils/auth';
 import { MainApi } from '../utils/MainApi';
+import { API_BASE_URL } from '../utils/const';
 
 const useAuthStore = create((set) => ({
     user: null,
@@ -11,7 +12,7 @@ const useAuthStore = create((set) => ({
         if (!token) return;
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/auth/check`, {
+            const res = await fetch(`${API_BASE_URL}/auth/check`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
