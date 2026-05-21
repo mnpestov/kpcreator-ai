@@ -1,3 +1,5 @@
+import { API_BASE_URL } from './const';
+
 class Api {
     constructor({ baseUrl }) {
         this._baseUrl = baseUrl;
@@ -121,6 +123,6 @@ class Api {
 //   baseUrl: API_BASE,
 // });
 export const MainApi = new Api({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: API_BASE_URL,
     // baseUrl: 'https://kurgi-kp-backend.onrender.com',
 });

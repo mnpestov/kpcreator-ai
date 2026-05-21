@@ -210,3 +210,6 @@ export const kpPreviewSelectors = {
     lastListLogoContainerSelector: 'last-list__logo-container',
     lastListCountContainerSelector: 'last-list__count-container'
   }
+
+// API configuration – single source of truth for the backend base URL
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
