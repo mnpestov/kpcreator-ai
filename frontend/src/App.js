@@ -447,6 +447,7 @@ function App() {
       // scale=2 оставляем для чёткости рендеринга шрифтов и линий
       const canvas = await html2canvas(list, {
         scale: 2,
+        useCORS: true,
         onclone: (clonedDoc) => {
           const clonedList = clonedDoc.querySelectorAll(".hiden-list")[index];
           if (clonedList) {
@@ -500,6 +501,7 @@ function App() {
     for (const [index, list] of listsCompact.entries()) {
       const canvas = await html2canvas(list, {
         scale: 2,
+        useCORS: true,
         onclone: (clonedDoc) => {
           const clonedList = clonedDoc.querySelectorAll(".listCompact")[index];
           if (clonedList) {

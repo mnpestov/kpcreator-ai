@@ -37,7 +37,7 @@ function FirstList({ kpNumber, kpDate, contractNumber, contractDate, kpPreviewSe
                             <p className="manager_info manager_info__email">{user.email}</p>
                             <p className="manager_info manager_info__tel">{user.tel}</p>
                         </div>
-                        <img className={managerPhotoSelector} src={`${API_BASE_URL}/static/${user.photo}`} alt="manager" />
+                        <img className={managerPhotoSelector} src={`${API_BASE_URL}/static/${user.photo}`} alt="manager" crossOrigin="anonymous" />
                     </div>
                 </div>
             </div>

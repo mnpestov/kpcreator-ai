@@ -1,7 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
+import Cropper from 'react-easy-crop';
+import './Profile.css';
 
 // import { AuthContext } from '../../context/AuthContext';
 import useAuthStore from '../../hooks/useAuthStore';
@@ -45,6 +47,36 @@ function Profile() {
       });
     }
   }, [user, reset, setUser]);
+
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const onFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setImageSrc(reader.result);
+      });
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCancel = () => {
+    setImageSrc(null);
+    setCroppedAreaPixels(null);
+  };
+
+  const handleSave = () => {
+    console.log('Crop result pixels:', croppedAreaPixels);
+    setImageSrc(null);
+  };
 
   // 🖼️ Загрузка аватара
   const handleAvatarUpload = async (file) => {
@@ -124,8 +156,51 @@ function Profile() {
           className='profile__input form__input'
           type="file"
           accept="image/*"
-          onChange={(e) => e.target.files?.[0] && handleAvatarUpload(e.target.files[0])}
+          onChange={onFileChange}
         />
+
+        {imageSrc && (
+          <div className="crop-modal-overlay">
+            <div className="crop-modal-container">
+              <h3 className="crop-modal-title">Обрезка аватара</h3>
+              <div className="crop-modal-area-wrapper">
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="round"
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+              <div className="crop-modal-controls">
+                <label className="crop-modal-zoom-label">
+                  Масштаб:
+                  <input
+                    type="range"
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    aria-label="Zoom"
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="crop-modal-zoom-slider"
+                  />
+                </label>
+              </div>
+              <div className="crop-modal-buttons">
+                <button type="button" className="crop-modal-btn crop-modal-btn--cancel" onClick={handleCancel}>
+                  Отмена
+                </button>
+                <button type="button" className="crop-modal-btn crop-modal-btn--save" onClick={handleSave}>
+                  Сохранить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       
 
       {/* <form className='profile__form form' onSubmit={handleSubmit(onSubmit)}> */}
