@@ -28,7 +28,7 @@ const useAuthStore = create((set) => ({
         }
     },
 
-    setUser: (user) => set({ user }),
+    setUser: (updater) => set((state) => ({ user: typeof updater === 'function' ? updater(state.user) : updater })),
     logout: () => {
         removeToken();
         set({ user: null, isAuth: false });
