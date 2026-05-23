@@ -72,6 +72,7 @@ function Home({ dispatch, setIsNewKp }) {
               {/* Заголовки */}
               <div className="home__table-row home__table-header">
                 <div className="home__table-cell">Номер</div>
+                <div className="home__table-cell">Контрагент</div>
                 <div className="home__table-cell">Дата мероприятия</div>
                 <div className="home__table-cell">Место мероприятия</div>
               </div>
@@ -94,6 +95,7 @@ function Home({ dispatch, setIsNewKp }) {
                     <div className="home__table-cell">
                       <strong>{kp.kpNumber}</strong>
                     </div>
+                    <div className="home__table-cell">{kp.contractor?.companyName || '—'}</div>
                     <div className="home__table-cell">{prettyDate}</div>
                     <div className="home__table-cell">{kp.eventPlace}</div>
                   </div>

@@ -56,7 +56,8 @@ function App() {
     countOfPerson: '',
     logisticsCost: 0,
     isWithinMkad: true,
-    listTitle: ''
+    listTitle: '',
+    contractorId: null
   });
 
   useEffect(() => {
@@ -263,6 +264,7 @@ function App() {
   // Нормализуем только поля-даты формы КП
   const normalizeKpPayload = (data) => ({
     ...data,
+    managerName: data.managerName || user?.name || '',
     kpDate: toISO(data.kpDate),
     contractDate: toISO(data.contractDate),
     startEvent: toISO(data.startEvent),

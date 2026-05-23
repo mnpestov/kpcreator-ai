@@ -90,6 +90,9 @@ User.hasMany(Kp, { foreignKey: 'managerId' });
 Event.belongsTo(Contractor, { foreignKey: 'contractorId' });
 Contractor.hasMany(Event, { foreignKey: 'contractorId' });
 
+Kp.belongsTo(Contractor, { foreignKey: 'contractorId', as: 'contractor' });
+Contractor.hasMany(Kp, { foreignKey: 'contractorId' });
+
 module.exports = {
     Kp, List, Row, User, Contractor, Event,
 }

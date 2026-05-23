@@ -79,7 +79,8 @@ const getDefaultFormData = () => ({
     countOfPerson: '',
     logisticsCost: 0,
     isWithinMkad: true,
-    listTitle: ''
+    listTitle: '',
+    contractorId: null
 });
 
 const sortRowsByOrder = (rows) => {

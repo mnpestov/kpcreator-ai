@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Button, Input, DatePicker } from '@skbkontur/react-ui';
+import { Button, Input, DatePicker, Select } from '@skbkontur/react-ui';
 import { Add, ArrowBoldLeft } from '@skbkontur/react-icons';
 import { MainApi } from '../../utils/MainApi'
 import "./Form.css";
@@ -51,6 +51,19 @@ function Form({
   // Состояние для списка позиций КП (таблица)
   const [products, setProducts] = useState([]);
   const [showProductPopup, setShowProductPopup] = useState(false);
+  const [contractors, setContractors] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    MainApi.getContractors()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          setContractors(data);
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки контрагентов:", err));
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     if (!isNewKp) return;
@@ -440,6 +453,27 @@ function Form({
               />
 
             </div>
+          </div>
+
+          <div className="form__field">
+            <label className="form__label" htmlFor="contractorId">Контрагент</label>
+            <Select
+              id="contractorId"
+              items={['none', ...contractors.map(c => String(c.id))]}
+              value={formData.contractorId ? String(formData.contractorId) : 'none'}
+              onValueChange={value => handleInputChange({ target: { name: 'contractorId', value: value === 'none' ? null : Number(value) } })}
+              renderItem={item => {
+                  if (item === 'none') return '— Не выбран —';
+                  const match = contractors.find(c => String(c.id) === item);
+                  return match ? match.companyName : item;
+              }}
+              renderValue={item => {
+                  if (item === 'none') return '— Не выбран —';
+                  const match = contractors.find(c => String(c.id) === item);
+                  return match ? match.companyName : item;
+              }}
+              width="100%"
+            />
           </div>
 
           <div className="form__field">

@@ -12,11 +12,11 @@
 
 .home__table {
   display: grid;
-  grid-template-columns: 100px 180px 1fr; /* aligned columns */
+  grid-template-columns: 80px minmax(120px, 1.5fr) 140px minmax(120px, 1fr); /* 4 columns */
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   background: #ffffff;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .home__table-row {
