@@ -10,9 +10,9 @@ const Sidebar = ({ isOpen, onClose }) => {
     { label: 'Список КП', path: '/', isPlaceholder: false },
     { label: 'Новое КП', path: '/new', isPlaceholder: false },
     { label: 'Контрагенты', path: '/contractors', isPlaceholder: false },
+    { label: 'События', path: '/events', isPlaceholder: false },
     { label: 'Профиль', path: '/profile', isPlaceholder: false },
     { label: 'Справочники', path: '/directories', isPlaceholder: true },
-    { label: 'События', path: '/events', isPlaceholder: true },
   ];
 
   return (

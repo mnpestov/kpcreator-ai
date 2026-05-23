@@ -15,6 +15,9 @@ import Profile from './pages/Profile/Profile.jsx';
 import ContractorsList from './pages/Contractors/ContractorsList.jsx';
 import ContractorDetails from './pages/Contractors/ContractorDetails.jsx';
 import ContractorForm from './pages/Contractors/ContractorForm.jsx';
+import EventsList from './pages/Events/EventsList.jsx';
+import EventDetails from './pages/Events/EventDetails.jsx';
+import EventForm from './pages/Events/EventForm.jsx';
 import Header from './components/Header/Header';
 import AppLayout from './components/Layout/AppLayout';
 import useAuthStore from './hooks/useAuthStore.js';
@@ -634,6 +637,10 @@ function App() {
             <Route path="/contractors/new" element={<ContractorForm />} />
             <Route path="/contractors/:id" element={<ContractorDetails />} />
             <Route path="/contractors/:id/edit" element={<ContractorForm />} />
+            <Route path="/events" element={<EventsList />} />
+            <Route path="/events/new" element={<EventForm />} />
+            <Route path="/events/:id" element={<EventDetails />} />
+            <Route path="/events/:id/edit" element={<EventForm />} />
 
             {/* Страница формы нового КП */}
             <Route

@@ -1,0 +1,338 @@
+/* Events list / details / form styles — follows Contractors.css pattern */
+
+/* ---- List Filter Bar ---- */
+.events-list__filter-bar {
+  display: flex;
+  margin-top: 1.5rem;
+  margin-bottom: 1.25rem;
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.events-list__search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---- Loading / Error / Empty ---- */
+.events-list__loader,
+.event-details__loader,
+.event-form__loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.events-list__error,
+.event-details__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  gap: 12px;
+}
+
+.events-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  color: #64748b;
+  text-align: center;
+}
+
+.events-list__empty h3 {
+  margin: 0 0 8px 0;
+  color: #334155;
+}
+
+.events-list__empty p {
+  margin: 0 0 16px 0;
+  font-size: 0.875rem;
+}
+
+/* ---- Dense Table ---- */
+.events-table-wrapper {
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.events-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.events-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.events-table tr:last-child td {
+  border-bottom: none;
+}
+
+.events-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+.events-table__title {
+  color: #0070f3;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.events-table__title:hover {
+  text-decoration: underline;
+}
+
+.events-table__empty-cell {
+  color: #cbd5e1;
+}
+
+.events-table__truncate {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.events-table__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.events-table__action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.events-table__action-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.events-table__action-btn--delete:hover {
+  background-color: #fee2e2;
+}
+
+/* ---- Status Badge ---- */
+.events-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.events-status-badge--Draft       { background: #f1f5f9; color: #475569; }
+.events-status-badge--Approved    { background: #dcfce7; color: #16a34a; }
+.events-status-badge--Preparation { background: #fef9c3; color: #ca8a04; }
+.events-status-badge--Scheduled   { background: #dbeafe; color: #1d4ed8; }
+.events-status-badge--Completed   { background: #ede9fe; color: #6d28d9; }
+.events-status-badge--Cancelled   { background: #fee2e2; color: #dc2626; }
+
+/* ---- Form Card ---- */
+.event-form__card {
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.event-form__card-title {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.event-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.event-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-form__field--full {
+  grid-column: 1 / -1;
+}
+
+.event-form__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.event-form__label--required::after {
+  content: " *";
+  color: #dc2626;
+}
+
+.event-form__error-message {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+.event-form__select {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1e293b;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.event-form__select:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
+}
+
+.event-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ---- Details Page ---- */
+.event-details__header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.event-details__card {
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.event-details__card-title {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.event-details__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.event-details__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.event-details__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.event-details__value {
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.event-details__empty {
+  color: #cbd5e1;
+}
+
+.event-details__notes {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.event-details__notes-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.event-details__notes-placeholder {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .event-form__grid,
+  .event-details__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-form__field--full {
+    grid-column: 1;
+  }
+
+  .events-table th,
+  .events-table td {
+    padding: 8px 12px;
+  }
+}

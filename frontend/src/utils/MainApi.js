@@ -176,6 +176,68 @@ class Api {
             .then(this._checkResponse);
     }
 
+    getEvents(search = '') {
+        const token = localStorage.getItem('authToken');
+        const url = search
+            ? `${this._baseUrl}/events?search=${encodeURIComponent(search)}`
+            : `${this._baseUrl}/events`;
+        return fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    getOneEvent(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/events/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    createEvent(eventData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/events`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(eventData)
+        })
+            .then(this._checkResponse);
+    }
+
+    updateEvent(id, eventData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/events/${id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(eventData)
+        })
+            .then(this._checkResponse);
+    }
+
+    deleteEvent(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/events/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(this._checkResponse);
+    }
+
 }
 // const API_BASE =
 //   (process.env.REACT_APP_API_BASE && process.env.REACT_APP_API_BASE.replace(/\/$/, ''))
