@@ -1,7 +1,7 @@
 import React, { useRef, Suspense, lazy, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download } from '@skbkontur/react-icons';
-import { ArrowBoldLeft } from "@skbkontur/react-icons";
+import { Download, ArrowBoldLeft } from '@skbkontur/react-icons';
+import { Button } from '@skbkontur/react-ui';
 import FirstList from '../../components/FirstList/FirstList';
 import Kp from '../../components/KP/Kp';
 import KpCompact from '../../components/KpCompact/KpCompact';
@@ -11,6 +11,8 @@ import "./PreviewHidden.css";
 import useAuthStore from '../../hooks/useAuthStore';
 import useKpStore from '../../hooks/useKpStore';
 import { API_BASE_URL } from '../../utils/const';
+import PageContainer from '../../components/Layout/PageContainer';
+import PageHeader from '../../components/Layout/PageHeader';
 
 // Подключаем LastList лениво (lazy), как это было сделано в App.js
 const LastList = lazy(() => import('../../components/LastList/LastList'));
@@ -62,11 +64,38 @@ function Preview({
     // const m = MANAGERS[managerKey];
 
     return (
-        <div className="preview-page">
-            <div className='list__buttons'>
-                <button type="button" className={`list__button navigation-button`} onClick={() => navigate('/')}><ArrowBoldLeft />На главную</button>
-            </div>
-            <div className="preview">
+        <PageContainer maxWidth="1200px">
+            <PageHeader
+                title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
+                subtitle={`Дата создания: ${formatDate(formData.kpDate)} | Мероприятие: ${formData.listTitle || ''}`}
+                actions={
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <Button
+                            use="default"
+                            icon={<ArrowBoldLeft />}
+                            onClick={() => navigate('/')}
+                        >
+                            На главную
+                        </Button>
+                        <Button
+                            use="primary"
+                            icon={<Download />}
+                            onClick={exportHiddenPDF}
+                        >
+                            Скачать PDF
+                        </Button>
+                        <Button
+                            use="success"
+                            icon={<Download />}
+                            onClick={downloadSpec}
+                        >
+                            Скачать спецификацию
+                        </Button>
+                    </div>
+                }
+            />
+            <div className="preview-page" style={{ paddingTop: '1.5rem' }}>
+                <div className="preview">
                 {/* Шапка КП */}
                 <FirstList
                     managerName={user.name}
@@ -190,12 +219,8 @@ function Preview({
                     kpPreviewSelectors={kpPrintSelectors}
                 />
             </div>
-            {/* Кнопки скачивания PDF и спецификации */}
-            <div className="list__buttons">
-                <button type="button" className={`list__button save-button`} onClick={exportHiddenPDF}><Download />Скачать PDF</button>
-                <button type="button" className={`list__button edit-button`} onClick={downloadSpec}><Download />Скачать спецификацию</button>
             </div>
-        </div >
+      </PageContainer>
     );
 }
 

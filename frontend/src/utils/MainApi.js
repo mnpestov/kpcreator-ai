@@ -114,6 +114,68 @@ class Api {
             .then(this._checkResponse)
     }
 
+    getContractors(search = '') {
+        const token = localStorage.getItem('authToken');
+        const url = search 
+            ? `${this._baseUrl}/contractors?search=${encodeURIComponent(search)}`
+            : `${this._baseUrl}/contractors`;
+        return fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    getContractor(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/contractors/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    createContractor(contractorData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/contractors`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contractorData)
+        })
+            .then(this._checkResponse);
+    }
+
+    updateContractor(id, contractorData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/contractors/${id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contractorData)
+        })
+            .then(this._checkResponse);
+    }
+
+    deleteContractor(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/contractors/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(this._checkResponse);
+    }
+
 }
 // const API_BASE =
 //   (process.env.REACT_APP_API_BASE && process.env.REACT_APP_API_BASE.replace(/\/$/, ''))

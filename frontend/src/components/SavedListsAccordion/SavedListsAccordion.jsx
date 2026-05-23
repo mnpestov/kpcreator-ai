@@ -94,7 +94,7 @@ function SavedListsAccordion({
       }
     }
     deleteList(listId)
-  }, [deleteList])
+  }, [deleteList, isNewKp])
 
   const renderHeader = useCallback((list) => {
     const opened = expandedIds.has(list.id);
@@ -131,7 +131,7 @@ function SavedListsAccordion({
 
           <div className="sla__actions">
             <Button icon={<Add />} use="default" onClick={() => openAdd(list.id)} disabled={(list.rows.length < 7) ? false : true}>
-
+              Добавить позицию
             </Button>
             <Button icon={<Trash />} use="default" onClick={() => handleDelete(list.id)}>
               Удалить лист

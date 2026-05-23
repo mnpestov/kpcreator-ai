@@ -12,6 +12,8 @@ import { MainApi } from '../../utils/MainApi';
 import { saveToken } from '../../utils/auth';
 import { profileSchema } from '../../validation/profileSchema';
 import { API_BASE_URL } from '../../utils/const';
+import PageContainer from '../../components/Layout/PageContainer';
+import PageHeader from '../../components/Layout/PageHeader';
 
 const createImage = (url) =>
   new Promise((resolve, reject) => {
@@ -186,32 +188,100 @@ function Profile() {
   };
 
   return (
-    <form className='profile__form form' onSubmit={handleSubmit(onSubmit)}>
-      <h2 className='form__title'>Личный кабинет</h2>
+    <PageContainer maxWidth="800px">
+      <PageHeader
+        title="Личный кабинет"
+        subtitle="Управление вашими данными, паролем и аватаром"
+      />
+      <form className='profile__form form' onSubmit={handleSubmit(onSubmit)} style={{ paddingTop: '1rem' }}>
+        
+        {/* Card 1: Фото профиля */}
+        <div className="profile__section-card">
+          <h3 className="profile__section-card-title">Фото профиля</h3>
+          <div className="profile__avatar-container">
+            {user?.photo ? (
+              <img
+                className='profile__avatar-preview'
+                src={`${API_BASE_URL}/static/${user.photo}`}
+                alt="Аватар"
+              />
+            ) : (
+              <div className="profile__avatar-placeholder">
+                {user?.name?.slice(0, 1).toUpperCase() || 'U'}
+              </div>
+            )}
+            <div className="profile__avatar-actions">
+              <label className="profile__avatar-upload-label">
+                <span>Выбрать фото</span>
+                <input
+                  className='profile__avatar-file-input'
+                  type="file"
+                  accept="image/*"
+                  onChange={onFileChange}
+                />
+              </label>
+              <p className="profile__avatar-hint">Рекомендуется квадратное изображение JPG/PNG</p>
+            </div>
+          </div>
+        </div>
 
-      
-        {user?.photo && (
-          <img
-            className='profile__avatar'
-            src={`${API_BASE_URL}/static/${user.photo}`}
-            alt="Аватар"
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: '50%',
-              objectFit: 'cover',
-              marginBottom: 16,
-            }}
-          />
-        )}
+        {/* Card 2: Личные данные */}
+        <div className="profile__section-card">
+          <h3 className="profile__section-card-title">Личные данные</h3>
+          <div className="profile__grid">
+            <div className="form__field">
+              <label className="form__label">Имя</label>
+              <input className='form__input' {...register('name')} placeholder="Имя" />
+              {errors.name && <span className="form__error">{errors.name.message}</span>}
+            </div>
 
-        <input
-          className='profile__input form__input'
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-        />
+            <div className="form__field">
+              <label className="form__label">Email</label>
+              <input className='form__input' {...register('email')} placeholder="Email" />
+              {errors.email && <span className="form__error">{errors.email.message}</span>}
+            </div>
 
+            <div className="form__field">
+              <label className="form__label">Должность</label>
+              <input className='form__input' {...register('job')} placeholder="Должность" />
+            </div>
+
+            <div className="form__field">
+              <label className="form__label">Телефон</label>
+              <input className='form__input' {...register('tel')} placeholder="Телефон" />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Безопасность */}
+        <div className="profile__section-card">
+          <h3 className="profile__section-card-title">Безопасность</h3>
+          <p className="profile__section-card-hint">Для изменения пароля заполните оба поля ниже</p>
+          <div className="profile__grid">
+            <div className="form__field">
+              <label className="form__label">Текущий пароль</label>
+              <input
+                className='form__input'
+                type="password"
+                {...register('password')}
+                placeholder="Текущий пароль"
+              />
+            </div>
+
+            <div className="form__field">
+              <label className="form__label">Новый пароль</label>
+              <input
+                className='form__input'
+                type="password"
+                {...register('newPassword')}
+                placeholder="Новый пароль"
+              />
+              {errors.newPassword && <span className="form__error">{errors.newPassword.message}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Crop modal */}
         {imageSrc && (
           <div className="crop-modal-overlay">
             <div className="crop-modal-container">
@@ -254,39 +324,15 @@ function Profile() {
             </div>
           </div>
         )}
-      
 
-      {/* <form className='profile__form form' onSubmit={handleSubmit(onSubmit)}> */}
-        <input className='profile__input form__input' {...register('name')} placeholder="Имя" />
-        <p>{errors.name?.message}</p>
-
-        <input className='profile__input form__input' {...register('email')} placeholder="Email" />
-        <p>{errors.email?.message}</p>
-
-        <input className='profile__input form__input' {...register('job')} placeholder="Должность" />
-
-        <input className='profile__input form__input' {...register('tel')} placeholder="Телефон" />
-
-        <input
-          className='profile__input form__input'
-          type="password"
-          {...register('password')}
-          placeholder="Текущий пароль"
-        />
-
-        <input
-          className='profile__input form__input'
-          type="password"
-          {...register('newPassword')}
-          placeholder="Новый пароль"
-        />
-        <p>{errors.newPassword?.message}</p>
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Сохранение...' : 'Сохранить'}
-        </button>
-      {/* </form>  */}
-    </form>
+        {/* Действия формы */}
+        <div className="profile__actions">
+          <button type="submit" className="profile__save-btn" disabled={isSubmitting}>
+            {isSubmitting ? 'Сохранение...' : 'Сохранить изменения'}
+          </button>
+        </div>
+      </form>
+    </PageContainer>
   );
 }
 

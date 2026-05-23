@@ -9,8 +9,8 @@ import ProductPopup from "../../components/ProductPopup/ProductPopup";
 import SavedListsAccordion from "../../components/SavedListsAccordion/SavedListsAccordion";
 import Switcher from "../../components/Switcher/Switcher";
 import useKpStore from '../../hooks/useKpStore';
-// import { kpSchema } from '../../validations/kpSchema';
-// import { KP_DEFAULT_VALUES } from '../../utils/consts';
+import PageContainer from "../../components/Layout/PageContainer";
+import PageHeader from "../../components/Layout/PageHeader";
 
 function Form({
   onSubmit,
@@ -287,15 +287,21 @@ function Form({
   }
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <Button
-        use="default"
-        icon={<ArrowBoldLeft />}
-        onClick={() => navigate('/')}
-      >
-        На главную
-      </Button>
-      <h1 className="form__title">Коммерческое предложение</h1>
+    <PageContainer maxWidth="1000px">
+      <PageHeader
+        title={isNewKp ? "Новое коммерческое предложение" : "Редактирование коммерческого предложения"}
+        subtitle="Заполните основные данные, сведения о мероприятии, логистике и добавьте позиции КП"
+        actions={
+          <Button
+            use="default"
+            icon={<ArrowBoldLeft />}
+            onClick={() => navigate('/')}
+          >
+            На главную
+          </Button>
+        }
+      />
+      <form className="form" onSubmit={handleSubmit}>
 
       {/* Секция: Основная информация */}
       <div className="form__section">
@@ -631,6 +637,7 @@ function Form({
         </Button>
       </div>
     </form>
+  </PageContainer>
   );
 }
 

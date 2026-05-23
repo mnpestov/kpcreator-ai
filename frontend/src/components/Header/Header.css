@@ -2,15 +2,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  background-color: #f2f2f2;
-  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   flex-wrap: wrap;
+  min-height: 56px;
+  box-sizing: border-box;
 }
 
 .header__title {
   font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  display: none; /* Hidden on desktop since sidebar shows logo */
 }
 
 .header__actions {
@@ -18,34 +21,86 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-left: auto; /* Push actions to the right on desktop */
 }
 
 .header__user {
   font-weight: 500;
   white-space: nowrap;
+  font-size: 0.875rem;
+  color: #475569;
 }
 
-.header__button {
-  background-color: #e0e0e0;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
+/* Normalize header button size to override large global styles */
+.header .list__button {
+  font-size: 0.875rem !important;
+  padding: 6px 12px !important;
+  margin-bottom: 0 !important;
+  height: 32px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  transition: all 0.2s ease !important;
 }
 
-.header__button:hover {
-  background-color: #d5d5d5;
+.header .list__button:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
 }
 
-@media (max-width: 600px) {
+.header__burger {
+  display: none;
+}
+
+@media (max-width: 768px) {
   .header {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    gap: 12px;
+  }
+
+  .header__burger {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    justify-content: space-between;
+    width: 20px;
+    height: 14px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .header__burger-line {
+    width: 100%;
+    height: 2px;
+    background-color: #334155;
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+  }
+
+  .header__burger:hover .header__burger-line {
+    background-color: #0f172a;
+  }
+
+  .header__title {
+    display: block; /* Visible on mobile */
+    font-size: 1.125rem;
+    color: #0f172a;
   }
 
   .header__actions {
-    justify-content: flex-start;
+    margin-left: auto; /* Push actions to the right on mobile as well */
+    gap: 0.5rem;
   }
 }
+

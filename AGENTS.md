@@ -636,4 +636,16 @@ AI agents are collaborators, not autonomous owners of the system.
 
 ---
 
+## Development Philosophy
+
+- incremental evolution over rewrites
+- minimal diffs
+- reusable foundations
+- build after changes
+- avoid unrelated refactors
+- stabilize before expanding
+- update docs as architecture evolves
+
+---
+
 *Last updated: May 2026*

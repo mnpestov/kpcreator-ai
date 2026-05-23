@@ -1,7 +1,23 @@
-.sla { margin-top: 16px; }
-.sla__caption { margin: 0 0 8px; }
+.sla {
+  margin-top: 1.25rem;
+}
 
-.sla__item { border: 1px solid #E5E5E5; border-radius: 6px; margin-bottom: 8px; overflow: hidden; background: #fff; }
+.sla__caption {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin: 0 0 8px 0;
+}
+
+.sla__item {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
 
 .sla__header {
   width: 100%;
@@ -9,13 +25,17 @@
   grid-template-columns: 24px 1fr auto;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  background: #F7F7F7;
+  padding: 8px 12px;
+  background: #f8fafc;
   border: none;
+  border-bottom: 1px solid #e2e8f0;
   cursor: pointer;
   text-align: left;
 }
-.sla__header:hover { background: #F0F0F0; }
+
+.sla__header:hover {
+  background: #f1f5f9;
+}
 
 .sla__chevron {
   width: 10px; height: 10px;

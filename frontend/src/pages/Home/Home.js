@@ -4,6 +4,8 @@ import { Input, Button } from "@skbkontur/react-ui";
 import "./Home.css";
 import { MainApi } from "../../utils/MainApi";
 import useKpStore from '../../hooks/useKpStore';
+import PageContainer from "../../components/Layout/PageContainer";
+import PageHeader from "../../components/Layout/PageHeader";
 
 function Home({ dispatch, setIsNewKp }) {
   const [searchNumber, setSearchNumber] = useState("");
@@ -34,72 +36,76 @@ function Home({ dispatch, setIsNewKp }) {
   }
 
   return (
-    <div className="home">
-      {/* Поиск */}
-      <form className="home__search" onSubmit={handleSearch} style={{ display: "flex", gap: 8 }}>
-        <Input
-          placeholder="Номер КП..."
-          value={searchNumber}
-          onValueChange={setSearchNumber}
-          width="100%"
-        />
-        <Button use="primary" type="submit">
-          Поиск
-        </Button>
-      </form>
+    <PageContainer maxWidth="1000px">
+      <PageHeader
+        title="Коммерческие предложения"
+        subtitle="Список последних созданных коммерческих предложений и поиск"
+        actions={
+          <Button
+            use="success"
+            onClick={handleCreatNewKp}
+          >
+            Создать новое КП
+          </Button>
+        }
+      />
+      <div className="home">
+        {/* Поиск */}
+        <form className="home__search" onSubmit={handleSearch} style={{ display: "flex", gap: 8 }}>
+          <Input
+            placeholder="Номер КП..."
+            value={searchNumber}
+            onValueChange={setSearchNumber}
+            width="100%"
+          />
+          <Button use="primary" type="submit">
+            Поиск
+          </Button>
+        </form>
 
-      {/* Последние КП */}
-      <div className="home__recent" style={{ marginTop: 24 }}>
-        <h2 className="home__recent-title">Последние коммерческие предложения</h2>
+        {/* Последние КП */}
+        <div className="home__recent" style={{ marginTop: 24 }}>
+          <h2 className="home__recent-title">Последние коммерческие предложения</h2>
 
-        {Array.isArray(lastKps) && lastKps.length > 0 ? (
-          <div className="home__table">
-            {/* Заголовки */}
-            <div className="home__table-row home__table-header">
-              <div className="home__table-cell">Номер</div>
-              <div className="home__table-cell">Дата мероприятия</div>
-              <div className="home__table-cell">Место мероприятия</div>
-            </div>
+          {Array.isArray(lastKps) && lastKps.length > 0 ? (
+            <div className="home__table">
+              {/* Заголовки */}
+              <div className="home__table-row home__table-header">
+                <div className="home__table-cell">Номер</div>
+                <div className="home__table-cell">Дата мероприятия</div>
+                <div className="home__table-cell">Место мероприятия</div>
+              </div>
 
-            {/* Данные */}
-            {lastKps.map((kp) => {
-              const prettyDate = kp.startEvent
-                ? new Date(kp.startEvent).toLocaleDateString('ru-RU', {
-                  year: 'numeric',
-                  month: 'numeric',
-                  day: 'numeric',
-                })
-                : '';
-              return (
-                <div
-                  key={kp.id}
-                  className="home__table-row home__table-data"
-                  onClick={() => navigate(`/kp/${kp.kpNumber}`)}
-                >
-                  <div className="home__table-cell">
-                    <strong>{kp.kpNumber}</strong>
+              {/* Данные */}
+              {lastKps.map((kp) => {
+                const prettyDate = kp.startEvent
+                  ? new Date(kp.startEvent).toLocaleDateString('ru-RU', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                  })
+                  : '';
+                return (
+                  <div
+                    key={kp.id}
+                    className="home__table-row home__table-data"
+                    onClick={() => navigate(`/kp/${kp.kpNumber}`)}
+                  >
+                    <div className="home__table-cell">
+                      <strong>{kp.kpNumber}</strong>
+                    </div>
+                    <div className="home__table-cell">{prettyDate}</div>
+                    <div className="home__table-cell">{kp.eventPlace}</div>
                   </div>
-                  <div className="home__table-cell">{prettyDate}</div>
-                  <div className="home__table-cell">{kp.eventPlace}</div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="home__no-kp">Нет данных для отображения.</p>
-        )}
+                );
+              })}
+            </div>
+          ) : (
+            <p className="home__no-kp">Нет данных для отображения.</p>
+          )}
+        </div>
       </div>
-      {/* Создание нового КП */}
-      <div style={{ marginTop: 16 }}>
-        <Button
-          width="100%"
-          use="success"
-          onClick={handleCreatNewKp}
-        >
-          Создать новое КП
-        </Button>
-      </div>
-    </div>
+    </PageContainer>
   );
 }
 

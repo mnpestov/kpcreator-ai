@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../hooks/useAuthStore';
 // import { Home } from 'lucide-react'; // иконка (можно заменить на любую другую)
 
-const Header = () => {
+const Header = ({ onBurgerClick }) => {
 //   const { user, logout, isAuth } = useContext(AuthContext);
   const { user, logout, isAuth } = useAuthStore();
   const navigate = useNavigate();
@@ -15,6 +15,12 @@ const Header = () => {
 
   return (
     <header className="header">
+      <button className="header__burger" onClick={onBurgerClick} aria-label="Открыть меню">
+        <span className="header__burger-line"></span>
+        <span className="header__burger-line"></span>
+        <span className="header__burger-line"></span>
+      </button>
+
       <div className="header__title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
         {/* <Home size={20} style={{ marginRight: 8 }} /> */}
         <strong>KpCreator</strong>

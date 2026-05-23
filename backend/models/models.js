@@ -2,6 +2,7 @@ const sequelize = require('../db')
 
 const { DataTypes } = require('sequelize')
 const User = require('./User');
+const Contractor = require('./Contractor');
 
 const Kp = sequelize.define('kp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -86,5 +87,5 @@ User.hasMany(Kp, { foreignKey: 'managerId' });
 // Row.belongsTo(Product);
 
 module.exports = {
-    Kp, List, Row, User,
+    Kp, List, Row, User, Contractor,
 }

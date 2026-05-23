@@ -12,7 +12,11 @@ import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
 import LoginPage from './pages/LoginPage/LoginPage.js';
 import Profile from './pages/Profile/Profile.jsx';
+import ContractorsList from './pages/Contractors/ContractorsList.jsx';
+import ContractorDetails from './pages/Contractors/ContractorDetails.jsx';
+import ContractorForm from './pages/Contractors/ContractorForm.jsx';
 import Header from './components/Header/Header';
+import AppLayout from './components/Layout/AppLayout';
 import useAuthStore from './hooks/useAuthStore.js';
 import useKpStore from './hooks/useKpStore';
 import { kpPreviewSelectors, kpPrintSelectors } from './utils/const.js'
@@ -592,17 +596,16 @@ function App() {
 
   return (
     <>
-      <Header />
-      <Routes>
-        {!isAuth ? (
-          <>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </>
-        ) : (
-          <>
+      {!isAuth ? (
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      ) : (
+        <AppLayout>
+          <Routes>
             {/* Главная страница */}
-            < Route
+            <Route
               path="/"
               element={
                 <Home
@@ -613,6 +616,10 @@ function App() {
                 />}
             />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/contractors" element={<ContractorsList />} />
+            <Route path="/contractors/new" element={<ContractorForm />} />
+            <Route path="/contractors/:id" element={<ContractorDetails />} />
+            <Route path="/contractors/:id/edit" element={<ContractorForm />} />
 
             {/* Страница формы нового КП */}
             <Route
@@ -670,9 +677,9 @@ function App() {
                 />
               }
             />
-          </>
-        )}
-      </Routes>
+          </Routes>
+        </AppLayout>
+      )}
     </>
   );
 }

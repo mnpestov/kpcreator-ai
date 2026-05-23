@@ -1,7 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Input } from '@skbkontur/react-ui';
 import { AuthContext } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../utils/const';
+import logo from '../../images/logo.png';
+import './LoginPage.css';
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -9,20 +12,18 @@ const LoginPage = () => {
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
       const data = await response.json();
@@ -32,24 +33,68 @@ const LoginPage = () => {
       navigate('/');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Вход</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email: </label><br />
-          <input type="email" name="email" value={form.email} onChange={handleChange} required />
+    <div className="auth-container">
+      <div className="auth-card">
+        {/* Брендинг */}
+        <div className="auth-branding">
+          <img className="auth-logo" src={logo} alt="KpCreator" />
+          <h2 className="auth-brand-name">KpCreator</h2>
+          <span className="auth-subtitle">Вход в систему</span>
         </div>
-        <div>
-          <label>Пароль: </label><br />
-          <input type="password" name="password" value={form.password} onChange={handleChange} required />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Войти</button>
-      </form>
+
+        {/* Форма авторизации */}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email</label>
+            <Input
+              width="100%"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="name@example.com"
+              value={form.email}
+              disabled={loading}
+              onValueChange={(val) => setForm((prev) => ({ ...prev, email: val }))}
+              required
+            />
+          </div>
+
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="password">Пароль</label>
+            <Input
+              width="100%"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              value={form.password}
+              disabled={loading}
+              onValueChange={(val) => setForm((prev) => ({ ...prev, password: val }))}
+              required
+            />
+          </div>
+
+          {error && <p className="auth-error">{error}</p>}
+
+          <div className="auth-actions">
+            <Button
+              width="100%"
+              use="primary"
+              type="submit"
+              loading={loading}
+              disabled={loading}
+            >
+              Войти
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
