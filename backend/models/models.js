@@ -3,6 +3,7 @@ const sequelize = require('../db')
 const { DataTypes } = require('sequelize')
 const User = require('./User');
 const Contractor = require('./Contractor');
+const Event = require('./Event');
 
 const Kp = sequelize.define('kp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -86,6 +87,9 @@ User.hasMany(Kp, { foreignKey: 'managerId' });
 // Product.hasMany(Row);
 // Row.belongsTo(Product);
 
+Event.belongsTo(Contractor, { foreignKey: 'contractorId' });
+Contractor.hasMany(Event, { foreignKey: 'contractorId' });
+
 module.exports = {
-    Kp, List, Row, User, Contractor,
+    Kp, List, Row, User, Contractor, Event,
 }

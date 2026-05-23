@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useReducer, useCallback, useState, useEffect } from "react";
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Form from './pages/Form/Form.js';
@@ -25,9 +25,11 @@ function App() {
   const [isNewKp, setIsNewKp] = useState(true)
   const [updetedRows, setUpdatedRows] = useState([])
   const navigate = useNavigate();
-  const { isAuth } = useContext(AuthContext);
+  const location = useLocation();
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const authReady = useAuthStore((state) => state.authReady);
   const initAuth = useAuthStore((state) => state.initAuth);
-  const { formData, resetFormData, updateField } = useKpStore();
+  const { formData, resetFormData, resetListsKp, updateField } = useKpStore();
   const { user } = useAuthStore();
 
   const setFormData = useKpStore((s) => s.setFormData);
@@ -60,6 +62,14 @@ function App() {
   useEffect(() => {
     initAuth();
   }, [initAuth]);
+
+  useEffect(() => {
+    if (location.pathname === '/new') {
+      setIsNewKp(true);
+      resetFormData();
+      resetListsKp();
+    }
+  }, [location.pathname, resetFormData, resetListsKp]);
 
   useEffect(() => {
     if (user && isNewKp) {
@@ -593,6 +603,8 @@ function App() {
       await updateRowInDb(updatedRow);
     }
   }, [isNewKp]);
+
+  if (!authReady) return null;
 
   return (
     <>

@@ -6,10 +6,14 @@ import { API_BASE_URL } from '../utils/const';
 const useAuthStore = create((set) => ({
     user: null,
     isAuth: false,
+    authReady: false,
 
     initAuth: async () => {
         const token = getToken();
-        if (!token) return;
+        if (!token) {
+            set({ authReady: true });
+            return;
+        }
 
         try {
             const res = await fetch(`${API_BASE_URL}/auth/check`, {
@@ -20,11 +24,14 @@ const useAuthStore = create((set) => ({
             if (data.token) {
                 saveToken(data.token);
                 const userRes = await MainApi.getUser();
-                set({ user: userRes.user, isAuth: true });
+                set({ user: userRes.user, isAuth: true, authReady: true });
+            } else {
+                removeToken();
+                set({ user: null, isAuth: false, authReady: true });
             }
         } catch (e) {
             removeToken();
-            set({ user: null, isAuth: false });
+            set({ user: null, isAuth: false, authReady: true });
         }
     },
 

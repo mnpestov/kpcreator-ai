@@ -263,6 +263,7 @@ function Profile() {
               <input
                 className='form__input'
                 type="password"
+                autoComplete="new-password"
                 {...register('password')}
                 placeholder="Текущий пароль"
               />
@@ -273,6 +274,7 @@ function Profile() {
               <input
                 className='form__input'
                 type="password"
+                autoComplete="new-password"
                 {...register('newPassword')}
                 placeholder="Новый пароль"
               />

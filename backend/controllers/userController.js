@@ -28,21 +28,27 @@ class UserController {
                 return res.status(404).json({ message: 'Пользователь не найден' });
             }
 
+            const cleanPassword = password ? String(password).trim() : '';
+            const cleanNewPassword = newPassword ? String(newPassword).trim() : '';
+
             // если указали смену пароля — проверим старый
-            if (password && newPassword) {
-                const isMatch = await bcrypt.compare(password, user.password);
+            if (cleanPassword || cleanNewPassword) {
+                if (!cleanPassword || !cleanNewPassword) {
+                    return res.status(400).json({ message: 'Для смены пароля необходимо указать и текущий, и новый пароль' });
+                }
+                const isMatch = await bcrypt.compare(cleanPassword, user.password);
                 if (!isMatch) {
                     return res.status(403).json({ message: 'Неверный текущий пароль' });
                 }
-                user.password = await bcrypt.hash(newPassword, 5);
+                user.password = await bcrypt.hash(cleanNewPassword, 5);
             }
 
             // обновляем другие поля
-            user.name = name || user.name;
-            user.email = email || user.email;
-            user.job = job || user.job;
-            user.tel = tel || user.tel;
-            user.photo = photo || user.photo;
+            user.name = name !== undefined ? name : user.name;
+            user.email = email !== undefined ? email : user.email;
+            user.job = job !== undefined ? job : user.job;
+            user.tel = tel !== undefined ? tel : user.tel;
+            user.photo = photo !== undefined ? photo : user.photo;
 
             await user.save();
 

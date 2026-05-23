@@ -8,14 +8,18 @@ export const profileSchema = yup.object({
     .required('Email обязателен'),
   job: yup.string().nullable(),
   tel: yup.string().nullable(),
-  password: yup.string().nullable(),
+  password: yup
+    .string()
+    .nullable()
+    .transform((value) => (value === '' ? null : value)),
   newPassword: yup
     .string()
     .nullable()
+    .transform((value) => (value === '' ? null : value))
     .min(6, 'Минимум 6 символов')
     .when('password', {
-      is: (val) => !!val,
-      then: (schema) =>
-        schema.required('Введите новый пароль'),
+      is: (val) => !!val && val.length > 0,
+      then: (schema) => schema.required('Введите новый пароль'),
     }),
 });
+

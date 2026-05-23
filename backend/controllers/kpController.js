@@ -212,9 +212,9 @@ class KpController {
 
     async getLastFive(req, res, next) {
         try {
-            // Запрос последних 5 КП по дате (самые новые)
+            // Запрос последних 5 КП по дате (самые новые с числовой сортировкой)
             const kps = await Kp.findAll({
-                order: [['kpNumber', 'DESC']],
+                order: [['id', 'DESC']],
                 limit: 6,
                 attributes: ['id', 'kpNumber', 'kpDate', 'startEvent', 'eventPlace']
             });

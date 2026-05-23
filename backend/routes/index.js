@@ -7,6 +7,7 @@ const row = require('./row')
 const authRouter = require('./authRouter');
 const user = require('./user')
 const contractor = require('./contractor')
+const event = require('./event')
 
 router.use('/kp',kp)
 router.use('/list', list)
@@ -14,5 +15,6 @@ router.use('/row', row)
 router.use('/auth', authRouter);
 router.use('/profile', user)
 router.use('/contractors', contractor)
+router.use('/events', event)
 
 module.exports = router

@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { getUserFromToken, getToken, saveToken, removeToken } from '../utils/auth';
 import { MainApi } from '../utils/MainApi';
 import { API_BASE_URL } from '../utils/const';
+import useAuthStore from '../hooks/useAuthStore';
 
 export const AuthContext = createContext({
   user: null,
@@ -59,14 +60,21 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     localStorage.setItem('authToken', token);
-    setUser(getUserFromToken());
+    const decodedUser = getUserFromToken();
+    setUser(decodedUser);
     setIsAuth(true);
+    // Sync with Zustand store synchronously
+    useAuthStore.setState({ user: decodedUser, isAuth: true });
+    // Run async fetch to populate full user info
+    useAuthStore.getState().initAuth();
   };
 
   const logout = () => {
     localStorage.removeItem('authToken');
     setUser(null);
     setIsAuth(false);
+    // Sync with Zustand store
+    useAuthStore.setState({ user: null, isAuth: false });
   };
 
   return (
