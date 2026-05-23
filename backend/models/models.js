@@ -93,6 +93,9 @@ Contractor.hasMany(Event, { foreignKey: 'contractorId' });
 Kp.belongsTo(Contractor, { foreignKey: 'contractorId', as: 'contractor' });
 Contractor.hasMany(Kp, { foreignKey: 'contractorId' });
 
+Kp.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
+Event.hasMany(Kp, { foreignKey: 'eventId' });
+
 module.exports = {
     Kp, List, Row, User, Contractor, Event,
 }

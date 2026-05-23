@@ -60,7 +60,8 @@ function App() {
     logisticsCost: 0,
     isWithinMkad: true,
     listTitle: '',
-    contractorId: null
+    contractorId: null,
+    eventId: null
   });
 
   useEffect(() => {
@@ -276,6 +277,7 @@ function App() {
     endTimeStartEvent: toHHMM(data.endTimeStartEvent),
     startTimeEndEvent: toHHMM(data.startTimeEndEvent),
     endTimeEndEvent: toHHMM(data.endTimeEndEvent),
+    eventId: data.eventId || null,
   });
 
   // Форматирование цены

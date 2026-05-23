@@ -147,6 +147,34 @@ const EventDetails = () => {
             )}
           </div>
         </div>
+
+        {/* Связанные КП */}
+        <div className="event-details__card">
+          <h3 className="event-details__card-title">Связанные КП</h3>
+          <div className="event-details__kps">
+            {event.kps && event.kps.length > 0 ? (
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {event.kps.map(kp => (
+                  <li key={kp.id} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>
+                    <div style={{ fontWeight: '500' }}>
+                      <a 
+                        href={`/preview/${kp.kpNumber}`} 
+                        onClick={(e) => { e.preventDefault(); navigate(`/preview/${kp.kpNumber}`); }}
+                        style={{ color: '#0070fb', textDecoration: 'none', cursor: 'pointer' }}
+                      >
+                        КП № {kp.kpNumber}
+                      </a>
+                    </div>
+                    {kp.listTitle && <div style={{ fontSize: '0.9rem', color: '#666' }}>{kp.listTitle}</div>}
+                    <div style={{ fontSize: '0.85rem', color: '#999' }}>Дата КП: {formatDate(kp.kpDate)}</div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="event-details__notes-placeholder">Нет связанных коммерческих предложений.</p>
+            )}
+          </div>
+        </div>
       </div>
     </PageContainer>
   );

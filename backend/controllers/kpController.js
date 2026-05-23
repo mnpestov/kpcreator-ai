@@ -1,4 +1,4 @@
-const { Kp, Manager, List, Row, Contractor } = require('../models/models')
+const { Kp, Manager, List, Row, Contractor, Event } = require('../models/models')
 const ApiError = require('../errors/ApiError')
 const { log } = require('console')
 const { literal } = require('sequelize');
@@ -19,7 +19,8 @@ class KpController {
                 listTitle,
                 isWithinMkad,
                 managerName,
-                contractorId
+                contractorId,
+                eventId
             } = req.body
 
             const kp = await Kp.create({
@@ -36,7 +37,8 @@ class KpController {
                 listTitle,
                 isWithinMkad,
                 managerName,
-                contractorId: contractorId || null
+                contractorId: contractorId || null,
+                eventId: eventId || null
             })
             return res.json(kp)
         } catch (err) {
@@ -62,6 +64,11 @@ class KpController {
                         model: Contractor,
                         as: 'contractor',
                         attributes: ['id', 'companyName']
+                    },
+                    {
+                        model: Event,
+                        as: 'event',
+                        attributes: ['id', 'title']
                     },
                     {
                         model: List,
@@ -140,6 +147,8 @@ class KpController {
                     listTitle: kp.listTitle,
                     contractorId: kp.contractorId,
                     contractor: kp.contractor || null,
+                    eventId: kp.eventId,
+                    event: kp.event || null,
                 },
                 // также возвращаем детальные данные каждого листа
                 listsKp: kp.lists.map((list) => ({
@@ -226,11 +235,18 @@ class KpController {
                 order: [['id', 'DESC']],
                 limit: 6,
                 attributes: ['id', 'kpNumber', 'kpDate', 'startEvent', 'eventPlace'],
-                include: [{
-                    model: Contractor,
-                    as: 'contractor',
-                    attributes: ['id', 'companyName']
-                }]
+                include: [
+                    {
+                        model: Contractor,
+                        as: 'contractor',
+                        attributes: ['id', 'companyName']
+                    },
+                    {
+                        model: Event,
+                        as: 'event',
+                        attributes: ['id', 'title']
+                    }
+                ]
             });
             return res.json(kps);
         } catch (err) {
@@ -253,6 +269,7 @@ class KpController {
             listTitle,
             managerName,
             contractorId,
+            eventId,
         } = req.body;
 
         try {
@@ -275,6 +292,7 @@ class KpController {
                 listTitle: normStr(listTitle),
                 managerName: normStr(managerName),
                 contractorId: contractorId || null,
+                eventId: eventId || null,
             };
 
             const [updatedCount, [updated]] = await Kp.update(

@@ -67,7 +67,7 @@ function Preview({
         <PageContainer maxWidth="1200px">
             <PageHeader
                 title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
-                subtitle={`Дата создания: ${formatDate(formData.kpDate)} | Мероприятие: ${formData.listTitle || ''}${formData.contractor?.companyName ? ` | Контрагент: ${formData.contractor.companyName}` : ''}`}
+                subtitle={`Дата создания: ${formatDate(formData.kpDate)} | Мероприятие: ${formData.listTitle || ''}${formData.contractor?.companyName ? ` | Контрагент: ${formData.contractor.companyName}` : ''}${formData.event?.title ? ` | Событие: ${formData.event.title}` : ''}`}
                 actions={
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <Button

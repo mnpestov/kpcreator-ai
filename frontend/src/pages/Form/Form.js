@@ -52,6 +52,7 @@ function Form({
   const [products, setProducts] = useState([]);
   const [showProductPopup, setShowProductPopup] = useState(false);
   const [contractors, setContractors] = useState([]);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +63,17 @@ function Form({
         }
       })
       .catch((err) => console.error("Ошибка загрузки контрагентов:", err));
+
+    MainApi.getEvents()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          // Filter for upcoming events (not Completed/Cancelled)
+          const upcoming = data.filter(e => !['Completed', 'Cancelled'].includes(e.status));
+          setEvents(upcoming);
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки событий:", err));
+
     return () => { cancelled = true; };
   }, []);
 
@@ -474,6 +486,24 @@ function Form({
               }}
               width="100%"
             />
+          </div>
+
+          <div className="form__field">
+            <label className="form__label" htmlFor="eventId">Связь с событием</label>
+            <select
+              id="eventId"
+              className="event-form__select"
+              value={formData.eventId || ''}
+              onChange={e => handleInputChange({ target: { name: 'eventId', value: e.target.value ? Number(e.target.value) : null } })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', background: 'white' }}
+            >
+              <option value="">— Не привязано —</option>
+              {events.map((ev) => (
+                <option key={ev.id} value={ev.id}>
+                  {ev.title} ({ev.eventDate})
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form__field">

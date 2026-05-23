@@ -1,4 +1,4 @@
-const { Event, Contractor } = require('../models/models');
+const { Event, Contractor, Kp } = require('../models/models');
 const { Op } = require('sequelize');
 
 const ALLOWED_STATUSES = ['Draft', 'Approved', 'Preparation', 'Scheduled', 'Completed', 'Cancelled'];
@@ -31,7 +31,10 @@ class EventController {
     try {
       const { id } = req.params;
       const event = await Event.findByPk(id, {
-        include: [{ model: Contractor, attributes: ['id', 'companyName', 'contactPerson'] }]
+        include: [
+          { model: Contractor, attributes: ['id', 'companyName', 'contactPerson'] },
+          { model: Kp, attributes: ['id', 'kpNumber', 'listTitle', 'kpDate'] }
+        ]
       });
       if (!event) {
         return res.status(404).json({ message: 'Событие не найдено' });
