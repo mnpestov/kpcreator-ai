@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { label: 'Новое КП', path: '/new', isPlaceholder: false },
     { label: 'Контрагенты', path: '/contractors', isPlaceholder: false },
     { label: 'События', path: '/events', isPlaceholder: false },
+    { label: 'Меню', path: '/menu', isPlaceholder: false },
     { label: 'Профиль', path: '/profile', isPlaceholder: false },
     { label: 'Справочники', path: '/directories', isPlaceholder: true },
   ];

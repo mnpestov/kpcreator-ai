@@ -81,7 +81,8 @@ const getDefaultFormData = () => ({
     isWithinMkad: true,
     listTitle: '',
     contractorId: null,
-    eventId: null
+    eventId: null,
+    status: 'draft'
 });
 
 const sortRowsByOrder = (rows) => {

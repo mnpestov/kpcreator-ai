@@ -27,7 +27,13 @@ class ContractorController {
   async getOne(req, res) {
     try {
       const { id } = req.params;
-      const contractor = await Contractor.findByPk(id);
+      const contractor = await Contractor.findByPk(id, {
+        include: [{
+          model: require('../models/models').Kp,
+          as: 'kps', // Assumes Contractor.hasMany(Kp) aliases as 'kps' by default. If it uses different alias we might need to adjust, but typically default plural is used. Wait, in models.js: Contractor.hasMany(Kp, { foreignKey: 'contractorId' });
+          attributes: ['kpNumber', 'listTitle', 'eventPlace', 'status', 'createdAt']
+        }]
+      });
       if (!contractor) {
         return res.status(404).json({ message: 'Контрагент не найден' });
       }

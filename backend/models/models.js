@@ -4,6 +4,7 @@ const { DataTypes } = require('sequelize')
 const User = require('./User');
 const Contractor = require('./Contractor');
 const Event = require('./Event');
+const MenuItem = require('./MenuItem');
 
 const Kp = sequelize.define('kp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -18,6 +19,7 @@ const Kp = sequelize.define('kp', {
     isWithinMkad: { type: DataTypes.BOOLEAN, defaultValue: true },
     logisticsCost: { type: DataTypes.INTEGER },
     listTitle: { type: DataTypes.STRING },
+    status: { type: DataTypes.STRING, defaultValue: 'draft' },
     managerName: { type: DataTypes.STRING, allowNull: false },
     managerId: {
         type: DataTypes.INTEGER,
@@ -97,5 +99,5 @@ Kp.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
 Event.hasMany(Kp, { foreignKey: 'eventId' });
 
 module.exports = {
-    Kp, List, Row, User, Contractor, Event,
+    Kp, List, Row, User, Contractor, Event, MenuItem
 }

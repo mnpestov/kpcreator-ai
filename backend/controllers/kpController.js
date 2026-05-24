@@ -20,7 +20,8 @@ class KpController {
                 isWithinMkad,
                 managerName,
                 contractorId,
-                eventId
+                eventId,
+                status
             } = req.body
 
             const kp = await Kp.create({
@@ -38,7 +39,8 @@ class KpController {
                 isWithinMkad,
                 managerName,
                 contractorId: contractorId || null,
-                eventId: eventId || null
+                eventId: eventId || null,
+                status: status || 'draft'
             })
             return res.json(kp)
         } catch (err) {
@@ -145,6 +147,7 @@ class KpController {
                     logisticsCost: kp.logisticsCost,
                     isWithinMkad: kp.isWithinMkad,
                     listTitle: kp.listTitle,
+                    status: kp.status || 'draft',
                     contractorId: kp.contractorId,
                     contractor: kp.contractor || null,
                     eventId: kp.eventId,
@@ -270,6 +273,7 @@ class KpController {
             managerName,
             contractorId,
             eventId,
+            status,
         } = req.body;
 
         try {
@@ -293,6 +297,7 @@ class KpController {
                 managerName: normStr(managerName),
                 contractorId: contractorId || null,
                 eventId: eventId || null,
+                status: normStr(status) || 'draft',
             };
 
             const [updatedCount, [updated]] = await Kp.update(

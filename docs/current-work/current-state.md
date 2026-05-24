@@ -377,3 +377,177 @@ NOT through:
 * premature abstractions
 * workflow overengineering
 * synchronization complexity
+
+---
+
+# Smoke Testing Foundation
+
+## Current Status
+
+Minimal Playwright smoke foundation is implemented and stable.
+
+Purpose:
+
+* regression prevention
+* operational stability verification
+* critical flow validation
+
+This is:
+
+* lightweight smoke coverage only
+
+This is NOT:
+
+* enterprise QA architecture
+* full E2E coverage
+* coverage-driven testing
+* CI-heavy testing infrastructure
+
+---
+
+# Current Smoke Coverage
+
+Verified through Playwright smoke suite:
+
+## Authentication
+
+* login
+* protected layout rendering
+* authenticated navigation
+
+---
+
+## KP Flow
+
+* KP creation
+* form interaction
+* adding products/lists
+* preview rendering
+* save flow
+
+---
+
+## Events Flow
+
+* Event creation
+* Event editing
+* Event details rendering
+
+---
+
+## Event ↔ KP Linking
+
+* linking Event during KP creation
+* relationship persistence
+* linked Event rendering in preview
+
+IMPORTANT:
+Current smoke suite reflects REAL current product capabilities.
+
+The system currently supports:
+
+* linking during creation
+
+The system currently does NOT support:
+
+* editing KP header after save
+* unlinking Event after save
+* editable KP header workflows
+
+This is an intentional current limitation,
+NOT a bug.
+
+---
+
+# Stable Testing Strategy
+
+Preferred:
+
+* explicit smoke flows
+* operational workflow coverage
+* stable selectors
+* readable tests
+* minimal abstraction
+
+Avoid:
+
+* page object frameworks
+* generic test helpers
+* enterprise QA architecture
+* snapshot-heavy testing
+* visual regression complexity
+
+---
+
+# Selector Policy
+
+Preferred:
+
+* data-testid selectors
+* stable identifiers
+* explicit test hooks
+
+Avoid:
+
+* brittle text selectors
+* DOM traversal selectors
+* nth() chains
+* CSS hierarchy coupling
+
+---
+
+# Current Smoke Philosophy
+
+Smoke tests exist to:
+
+* detect regressions
+* validate operational flows
+* expose architectural inconsistencies
+* verify stabilized business paths
+
+Smoke tests should NOT:
+
+* drive architecture decisions
+* force workflow redesign
+* introduce test-specific complexity
+
+---
+
+# Important Architectural Discovery
+
+Playwright stabilization revealed:
+
+```txt id="f1f5uk"
+KP header editing architecture
+does not currently exist.
+```
+
+Current product state:
+
+* KP creation supported
+* KP preview supported
+* inline row/list operations supported
+
+But:
+
+* editable KP header workflow not implemented yet
+
+This is now an explicit known architectural boundary.
+
+---
+
+# Current Smoke Execution Time
+
+Approximate full suite runtime:
+
+```txt id="d4pjha"
+~5 seconds
+```
+
+This is intentional.
+
+Goal:
+
+* fast operational verification
+* low maintenance
+* high signal

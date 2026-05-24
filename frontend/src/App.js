@@ -18,6 +18,9 @@ import ContractorForm from './pages/Contractors/ContractorForm.jsx';
 import EventsList from './pages/Events/EventsList.jsx';
 import EventDetails from './pages/Events/EventDetails.jsx';
 import EventForm from './pages/Events/EventForm.jsx';
+import MenuList from './pages/Menu/MenuList.jsx';
+import MenuDetails from './pages/Menu/MenuDetails.jsx';
+import MenuForm from './pages/Menu/MenuForm.jsx';
 import Header from './components/Header/Header';
 import AppLayout from './components/Layout/AppLayout';
 import useAuthStore from './hooks/useAuthStore.js';
@@ -243,7 +246,7 @@ function App() {
 
   const getProductWeightWithMeasure = (productWeight, typeOfProduct) => {
     if (!productWeight) return productWeight;
-    return typeOfProduct === 'eat' ? `${productWeight}гр` : `${productWeight}мл`;
+    return typeOfProduct === 'eat' ? `${productWeight}г` : `${productWeight}мл`;
   };
 
   // Приводим DD.MM.YYYY -> YYYY-MM-DD, всё остальное аккуратно пропускаем
@@ -643,6 +646,10 @@ function App() {
             <Route path="/events/new" element={<EventForm />} />
             <Route path="/events/:id" element={<EventDetails />} />
             <Route path="/events/:id/edit" element={<EventForm />} />
+            <Route path="/menu" element={<MenuList />} />
+            <Route path="/menu/new" element={<MenuForm />} />
+            <Route path="/menu/:id" element={<MenuDetails />} />
+            <Route path="/menu/:id/edit" element={<MenuForm />} />
 
             {/* Страница формы нового КП */}
             <Route

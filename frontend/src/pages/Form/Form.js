@@ -377,6 +377,25 @@ function Form({
               onValueChange={value => handleInputChange({ target: { name: 'contractDate', value } })}
             />
           </div>
+          <div className="form__field">
+            <label className="form__label" htmlFor="status">Статус КП</label>
+            <Select
+              id="status"
+              data-testid="kp-status-select"
+              items={['draft', 'sent', 'approved', 'paid', 'completed', 'cancelled']}
+              value={formData.status || 'draft'}
+              onValueChange={value => handleInputChange({ target: { name: 'status', value } })}
+              renderItem={item => {
+                const map = { draft: 'Черновик', sent: 'Отправлено', approved: 'Согласовано', paid: 'Оплачено', completed: 'Завершено', cancelled: 'Отменено' };
+                return map[item] || item;
+              }}
+              renderValue={item => {
+                const map = { draft: 'Черновик', sent: 'Отправлено', approved: 'Согласовано', paid: 'Оплачено', completed: 'Завершено', cancelled: 'Отменено' };
+                return map[item] || item;
+              }}
+              width="100%"
+            />
+          </div>
         </div>
       </div>
 
@@ -476,6 +495,7 @@ function Form({
             <label className="form__label" htmlFor="contractorId">Контрагент</label>
             <Select
               id="contractorId"
+              data-testid="kp-contractor-select"
               items={['none', ...contractors.map(c => String(c.id))]}
               value={formData.contractorId ? String(formData.contractorId) : 'none'}
               onValueChange={value => handleInputChange({ target: { name: 'contractorId', value: value === 'none' ? null : Number(value) } })}

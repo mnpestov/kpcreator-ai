@@ -9,7 +9,7 @@ module.exports = defineConfig({
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:3001', // Frontend port
-    trace: 'on-first-retry',
+    trace: 'on', screenshot: 'on',
     viewport: { width: 1280, height: 720 },
   },
   projects: [

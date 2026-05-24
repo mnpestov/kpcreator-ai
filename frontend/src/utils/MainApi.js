@@ -238,6 +238,68 @@ class Api {
             .then(this._checkResponse);
     }
 
+    getMenuItems(search = '') {
+        const token = localStorage.getItem('authToken');
+        const url = search
+            ? `${this._baseUrl}/menu?search=${encodeURIComponent(search)}`
+            : `${this._baseUrl}/menu`;
+        return fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    getOneMenuItem(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/menu/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    createMenuItem(menuData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/menu`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(menuData)
+        })
+            .then(this._checkResponse);
+    }
+
+    updateMenuItem(id, menuData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/menu/${id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(menuData)
+        })
+            .then(this._checkResponse);
+    }
+
+    deleteMenuItem(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/menu/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(this._checkResponse);
+    }
+
 }
 // const API_BASE =
 //   (process.env.REACT_APP_API_BASE && process.env.REACT_APP_API_BASE.replace(/\/$/, ''))

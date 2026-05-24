@@ -120,6 +120,53 @@ const ContractorDetails = () => {
             )}
           </div>
         </div>
+
+        {/* Card: Коммерческие предложения */}
+        <div className="contractor-details__card">
+          <h3 className="contractor-details__card-title">Коммерческие предложения</h3>
+          <div className="contractor-details__kps">
+            {(!contractor.kps || contractor.kps.length === 0) ? (
+              <p className="contractor-details__notes-placeholder">Нет связанных коммерческих предложений.</p>
+            ) : (
+              <div className="contractors-table-wrapper">
+                <table className="contractors-table">
+                  <thead>
+                    <tr>
+                      <th>№ КП</th>
+                      <th>Название</th>
+                      <th>Статус</th>
+                      <th>Дата</th>
+                      <th style={{ textAlign: 'right' }}>Действие</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contractor.kps.map(kp => {
+                      const statusMap = {
+                        draft: 'Черновик',
+                        sent: 'Отправлено',
+                        approved: 'Согласовано',
+                        paid: 'Оплачено',
+                        completed: 'Завершено',
+                        cancelled: 'Отменено'
+                      };
+                      return (
+                        <tr key={kp.id}>
+                          <td>{kp.kpNumber}</td>
+                          <td>{kp.eventPlace || kp.listTitle || '—'}</td>
+                          <td>{statusMap[kp.status || 'draft'] || kp.status || 'Черновик'}</td>
+                          <td>{kp.createdAt ? new Date(kp.createdAt).toLocaleDateString('ru-RU') : '—'}</td>
+                          <td style={{ textAlign: 'right' }}>
+                            <Button size="small" onClick={() => navigate(`/kp/${kp.kpNumber}`)}>Открыть</Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </PageContainer>
   );

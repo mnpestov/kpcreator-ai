@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input, Button } from '@skbkontur/react-ui';
 import './ProductPopup.css';
-import productsCatalog from '../../data/products.json';
+import { MainApi } from '../../utils/MainApi';
 
 function ProductPopup({ onClose, onSave, productId, productToEdit }) {
     const [productData, setProductData] = useState({
@@ -17,8 +17,22 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
     const [isAuto, setIsAuto] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
+    const [menuItems, setMenuItems] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+
+    useEffect(() => {
+        const fetchMenu = async () => {
+            try {
+                const items = await MainApi.getMenuItems();
+                // Only use active items for selection
+                setMenuItems(items.filter(item => item.active));
+            } catch (err) {
+                console.error('Failed to fetch menu items:', err);
+            }
+        };
+        fetchMenu();
+    }, []);
 
     const suggestionsRef = useRef(null);
     const inputRef = useRef(null);
@@ -41,8 +55,6 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
             setProductData(productToEdit);
             setInputValue(productToEdit.product || "");
             if (productToEdit.productId) {
-                const found = productsCatalog.find(p => p.id === productToEdit.productId);
-                if (found) setInputValue(found.name);
                 setIsAuto(true);
             } else {
                 setIsAuto(false);
@@ -134,24 +146,26 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
 
     const filterSuggestions = (value = "") => {
         if (value.length > 0) {
-            const filtered = productsCatalog
-                .filter(p => p.name.toLowerCase().includes(value.toLowerCase()))
+            const filtered = menuItems
+                .filter(p => p.title.toLowerCase().includes(value.toLowerCase()))
                 .slice(0, 20);
             setSuggestions(filtered);
         } else {
-            setSuggestions(productsCatalog.slice(0, 20));
+            setSuggestions(menuItems.slice(0, 20));
         }
         setShowSuggestions(true);
     };
 
     const handleSuggestionClick = (product) => {
-        setInputValue(product.name);
+        setInputValue(product.title);
         setProductData(prev => ({
             ...prev,
             productId: product.id,
-            product: product.name,
-            composition: product.composition || '',
-            typeOfProduct: product.type || 'eat',
+            product: product.title,
+            composition: product.description || '',
+            typeOfProduct: product.category || 'eat',
+            productWeight: product.weight !== null ? product.weight.toString() : '',
+            priceOfProduct: product.price !== null ? product.price.toString() : ''
         }));
         setIsAuto(true);
         setShowSuggestions(false);
@@ -197,7 +211,7 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
                                         className="suggestion-item"
                                         onClick={() => handleSuggestionClick(product)}
                                     >
-                                        {product.name}
+                                        {product.title}
                                     </div>
                                 ))}
                             </div>
@@ -221,7 +235,6 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
                                 value={productData[field]}
                                 onValueChange={value => handleChange({ target:{name:field,value} })}
                                 width="100%"
-                                disabled={field==='composition' && isAuto}
                             />
                         </div>
                     ))}
