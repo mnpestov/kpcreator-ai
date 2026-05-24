@@ -52,6 +52,17 @@ class Api {
             .then(this._checkResponse);
     }
 
+    updateKpStatus(kpNumber, status) {
+        return fetch(`${this._baseUrl}/kp/${kpNumber}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        })
+            .then(this._checkResponse);
+    }
+
     deleteKp(id) {
         return fetch(`${this._baseUrl}/kp/${id}`, {
             method: 'DELETE'

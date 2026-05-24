@@ -257,6 +257,33 @@ class KpController {
         }
     }
 
+    async updateStatus(req, res, next) {
+        try {
+            const { kpNumber } = req.params;
+            const { status } = req.body;
+            
+            if (!status) {
+                return next(ApiError.badRequest('Не передан статус'));
+            }
+
+            const [updatedCount, [updated]] = await Kp.update(
+                { status },
+                {
+                    where: { kpNumber },
+                    returning: true,
+                }
+            );
+
+            if (updatedCount === 0) {
+                return next(ApiError.badRequest('КП не найдено'));
+            }
+
+            return res.json(updated);
+        } catch (e) {
+            return next(ApiError.badRequest(e.message));
+        }
+    }
+
     async update(req, res, next) {
         const kpNumber = req.params.kpNumber;
         let {

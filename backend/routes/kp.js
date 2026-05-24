@@ -7,6 +7,7 @@ router.get('/lastKpNumber', kpController.getLastKpNumber)
 router.get('/latest', kpController.getLastFive); 
 router.get('/:id', kpController.getOne)
 router.put('/:kpNumber', kpController.update);
+router.patch('/:kpNumber/status', kpController.updateStatus);
 router.delete('/:id', kpController.delete);
 
 module.exports = router

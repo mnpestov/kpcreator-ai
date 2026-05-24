@@ -1,7 +1,8 @@
 import React, { useRef, Suspense, lazy, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download, ArrowBoldLeft } from '@skbkontur/react-icons';
-import { Button } from '@skbkontur/react-ui';
+import { Button, Select } from '@skbkontur/react-ui';
+import { MainApi } from '../../utils/MainApi';
 import FirstList from '../../components/FirstList/FirstList';
 import Kp from '../../components/KP/Kp';
 import KpCompact from '../../components/KpCompact/KpCompact';
@@ -45,6 +46,28 @@ function Preview({
     const hiddenPrintRef = useRef(null);
 
 
+    const updateField = useKpStore((s) => s.updateField);
+
+    const handleStatusChange = async (newStatus) => {
+        try {
+            await MainApi.updateKpStatus(formData.kpNumber, newStatus);
+            updateField('status', newStatus);
+        } catch (e) {
+            console.error('Failed to update status', e);
+            alert('Ошибка при обновлении статуса');
+        }
+    };
+
+    const handleExportPDF = async () => {
+        // 1. Start PDF generation
+        await exportHiddenPDF();
+        
+        // 2. Transition if draft
+        if (formData.status === 'draft') {
+            await handleStatusChange('sent');
+        }
+    };
+
     // Форматирование даты (ожидаем ISO)
     const formatDate = (value) => {
         if (!value) return '';
@@ -80,7 +103,7 @@ function Preview({
                         <Button
                             use="primary"
                             icon={<Download />}
-                            onClick={exportHiddenPDF}
+                            onClick={handleExportPDF}
                         >
                             Скачать PDF
                         </Button>
@@ -95,6 +118,39 @@ function Preview({
                 }
             />
             <div className="preview-page" style={{ paddingTop: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center', backgroundColor: '#f2f2f2', padding: '12px 16px', borderRadius: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '14px', color: '#666' }}>Статус:</span>
+                        <Select
+                            id="preview-status"
+                            data-testid="preview-status-select"
+                            items={['draft', 'sent', 'approved', 'paid']}
+                            value={formData.status || 'draft'}
+                            onValueChange={handleStatusChange}
+                            renderItem={item => {
+                                const map = { draft: 'Черновик', sent: 'Отправлено', approved: 'Согласовано', paid: 'Оплачено' };
+                                return map[item] || item;
+                            }}
+                            renderValue={item => {
+                                const map = { draft: 'Черновик', sent: 'Отправлено', approved: 'Согласовано', paid: 'Оплачено' };
+                                return map[item] || item;
+                            }}
+                            width="140px"
+                        />
+                    </div>
+                    {formData.contractor && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '14px', color: '#666' }}>Контрагент:</span>
+                            <span style={{ padding: '2px 8px', backgroundColor: '#e0e0e0', borderRadius: '4px', fontSize: '13px' }}>{formData.contractor.companyName}</span>
+                        </div>
+                    )}
+                    {formData.event && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '14px', color: '#666' }}>Событие:</span>
+                            <span style={{ padding: '2px 8px', backgroundColor: '#e0e0e0', borderRadius: '4px', fontSize: '13px' }}>{formData.event.title}</span>
+                        </div>
+                    )}
+                </div>
                 <div className="preview">
                 {/* Шапка КП */}
                 <FirstList

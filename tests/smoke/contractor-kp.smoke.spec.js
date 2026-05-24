@@ -34,9 +34,7 @@ test.describe('Contractor ↔ KP Visibility Smoke Test', () => {
     await page.getByTestId('kp-contractor-select').click();
     await page.getByText('[SMOKE] Visible Contractor', { exact: true }).first().click();
 
-    // Select Status "Отправлено"
-    await page.getByTestId('kp-status-select').click();
-    await page.getByText('Отправлено', { exact: true }).first().click();
+    // Select Status "Отправлено" - Removed from form
 
     await page.getByTestId('kp-add-row-button').click();
     await page.getByTestId('product-name').fill('Smoke Item');
@@ -59,6 +57,6 @@ test.describe('Contractor ↔ KP Visibility Smoke Test', () => {
 
     // Verify KP is in the table
     await expect(page.getByText('[SMOKE] Place').first()).toBeVisible();
-    await expect(page.getByText('Отправлено').first()).toBeVisible();
+    await expect(page.getByText('Черновик').first()).toBeVisible();
   });
 });
