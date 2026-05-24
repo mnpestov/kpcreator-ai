@@ -145,6 +145,7 @@ const EventForm = () => {
               <Input
                 width="100%"
                 value={form.title}
+                data-testid="event-title"
                 placeholder="Корпоратив «Лето 2026»"
                 onValueChange={(val) => handleChange('title', val)}
                 error={!!errors.title}
@@ -178,6 +179,7 @@ const EventForm = () => {
                 width="100%"
                 type="date"
                 value={form.eventDate}
+                data-testid="event-date"
                 onValueChange={(val) => handleChange('eventDate', val)}
                 error={!!errors.eventDate}
               />
@@ -228,6 +230,7 @@ const EventForm = () => {
               <Input
                 width="100%"
                 value={form.location}
+                data-testid="event-location"
                 placeholder="Ресторан «Арбат», Москва"
                 onValueChange={(val) => handleChange('location', val)}
               />
@@ -261,6 +264,7 @@ const EventForm = () => {
           <Button
             type="submit"
             use="primary"
+            data-testid="event-save-button"
             loading={loading}
             disabled={loading}
           >

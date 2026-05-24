@@ -57,6 +57,7 @@ const LoginPage = () => {
               type="email"
               id="email"
               name="email"
+              data-testid="login-email"
               placeholder="name@example.com"
               value={form.email}
               disabled={loading}
@@ -72,6 +73,7 @@ const LoginPage = () => {
               type="password"
               id="password"
               name="password"
+              data-testid="login-password"
               placeholder="••••••••"
               value={form.password}
               disabled={loading}
@@ -87,6 +89,7 @@ const LoginPage = () => {
               width="100%"
               use="primary"
               type="submit"
+              data-testid="login-submit-button"
               loading={loading}
               disabled={loading}
             >

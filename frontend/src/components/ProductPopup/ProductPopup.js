@@ -181,6 +181,7 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
                         <Input
                             ref={inputRef}
                             id="product"
+                            data-testid="product-name"
                             value={inputValue}
                             onValueChange={handleInputChange}
                             onFocus={handleInputFocus}
@@ -216,6 +217,7 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
                             <Input
                                 id={field}
                                 name={field}
+                                data-testid={field === 'countOfProduct' ? 'product-quantity' : field === 'priceOfProduct' ? 'product-price' : undefined}
                                 value={productData[field]}
                                 onValueChange={value => handleChange({ target:{name:field,value} })}
                                 width="100%"
@@ -268,7 +270,7 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
                 </div>
 
                 <div style={{ marginTop:'24px', display:'flex', justifyContent:'flex-end', gap:'12px' }}>
-                    <Button use="primary" onClick={handleSave}>Сохранить</Button>
+                    <Button use="primary" data-testid="product-save-button" onClick={handleSave}>Сохранить</Button>
                     <Button use="default" onClick={onClose}>Отмена</Button>
                 </div>
             </div>

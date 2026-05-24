@@ -338,6 +338,7 @@ function Form({
               width="100%"
               id="kpNumber"
               name="kpNumber"
+              data-testid="kp-number"
               className={`form__input ${errors.kpNumber ? 'error' : ''}`}
               value={(isNewKp) ? formData.kpNumber : formInfo.kpNumber}
               onValueChange={value => handleInputChange({ target: { name: 'kpNumber', value } })}
@@ -348,6 +349,7 @@ function Form({
             <DatePicker
               id="kpDate"
               name="kpDate"
+              data-testid="kp-date"
               className={`form__input ${errors.kpDate ? 'error' : ''}`}
               value={(isNewKp) ? toDDMMYYYY(formData.kpDate) : toDDMMYYYY(formInfo.kpDate)}
               onValueChange={value => handleInputChange({ target: { name: 'kpDate', value } })}
@@ -359,6 +361,7 @@ function Form({
               width="100%"
               id="contractNumber"
               name="contractNumber"
+              data-testid="kp-contract-number"
               className={`form__input ${errors.contractNumber ? 'error' : ''}`}
               value={formData.contractNumber}
               onValueChange={value => handleInputChange({ target: { name: 'contractNumber', value } })}
@@ -387,6 +390,7 @@ function Form({
             <DatePicker
               id="startEvent"
               name="startEvent"
+              data-testid="kp-start-event-date"
               className={`form__input ${errors.startEvent ? 'error' : ''}`}
               value={(isNewKp) ? toDDMMYYYY(formData.startEvent) : toDDMMYYYY(formInfo.startEvent)}
               onValueChange={value => handleInputChange({ target: { name: 'startEvent', value } })}
@@ -427,6 +431,7 @@ function Form({
             <DatePicker
               id="endEvent"
               name="endEvent"
+              data-testid="kp-end-event-date"
               className={`form__input ${errors.endEvent ? 'error' : ''}`}
               value={(isNewKp) ? toDDMMYYYY(formData.endEvent) : toDDMMYYYY(formInfo.endEvent)}
               onValueChange={value => handleInputChange({ target: { name: 'endEvent', value } })}
@@ -492,6 +497,7 @@ function Form({
             <label className="form__label" htmlFor="eventId">Связь с событием</label>
             <select
               id="eventId"
+              data-testid="kp-event-select"
               className="event-form__select"
               value={formData.eventId || ''}
               onChange={e => handleInputChange({ target: { name: 'eventId', value: e.target.value ? Number(e.target.value) : null } })}
@@ -512,6 +518,7 @@ function Form({
               width="100%"
               id="eventPlace"
               name="eventPlace"
+              data-testid="kp-event-place"
               value={formData.eventPlace}
               className={`form__input ${errors.eventPlace ? 'error' : ''}`}
               onValueChange={value => handleInputChange({ target: { name: 'eventPlace', value } })}
@@ -525,6 +532,7 @@ function Form({
               type="number"
               id="countOfPerson"
               name="countOfPerson"
+              data-testid="kp-count-of-person"
               className={`form__input ${errors.countOfPerson ? 'error' : ''}`}
               value={formData.countOfPerson}
               onValueChange={value => handleInputChange({ target: { name: 'countOfPerson', value } })}
@@ -537,6 +545,7 @@ function Form({
               width="100%"
               id="listTitle"
               name="listTitle"
+              data-testid="kp-event-title"
               className={`form__input ${errors.listTitle ? 'error' : ''}`}
               value={formData.listTitle}
               onValueChange={value => handleInputChange({ target: { name: 'listTitle', value } })}
@@ -577,6 +586,7 @@ function Form({
               type="number"
               id="logisticsCost"
               name="logisticsCost"
+              data-testid="kp-logistics"
               className={`form__input ${errors.logisticsCost ? 'error' : ''}`}
               value={formData.logisticsCost}
               onValueChange={(value) =>
@@ -648,6 +658,7 @@ function Form({
             <Button
               icon={<Add />}
               use="default"
+              data-testid="kp-add-row-button"
               onClick={() => {
                 setProductToEdit(null);
                 setShowProductPopup(true);
@@ -661,6 +672,7 @@ function Form({
 
             <Button
               use="primary"
+              data-testid="kp-save-list-button"
               onClick={() => {
                 if (!products || products.length === 0) {
                   alert('Добавьте хотя бы одну позицию перед сохранением листа');
@@ -696,7 +708,7 @@ function Form({
 
       {/* Кнопка сохранения формы */}
       <div className="form__actions">
-        <Button use="success" type="submit" disabled={!isFormValidNow}>
+        <Button use="success" type="submit" data-testid="kp-save-button" disabled={!isFormValidNow}>
           Сохранить коммерческое предложение
         </Button>
       </div>
