@@ -8,6 +8,7 @@ import FormRow from "../../components/FormRow/FormRow";
 import ProductPopup from "../../components/ProductPopup/ProductPopup";
 import SavedListsAccordion from "../../components/SavedListsAccordion/SavedListsAccordion";
 import Switcher from "../../components/Switcher/Switcher";
+import ContractorPopup from "../../components/ContractorPopup/ContractorPopup";
 import useKpStore from '../../hooks/useKpStore';
 import PageContainer from "../../components/Layout/PageContainer";
 import PageHeader from "../../components/Layout/PageHeader";
@@ -51,6 +52,7 @@ function Form({
   // Состояние для списка позиций КП (таблица)
   const [products, setProducts] = useState([]);
   const [showProductPopup, setShowProductPopup] = useState(false);
+  const [showContractorPopup, setShowContractorPopup] = useState(false);
   const [contractors, setContractors] = useState([]);
   const [events, setEvents] = useState([]);
 
@@ -269,6 +271,47 @@ function Form({
     setProducts(prev => prev.filter(item => item.id !== id));
   }, []);
 
+  const extractPersonsCount = useCallback((notes) => {
+    if (!notes) return '';
+    const regex = /(?:кол-во\s*гостей|гостей|персон|человек)\s*[:-]?\s*(\d+)|(\d+)\s*(?:гостей|персон|человек)/i;
+    const match = notes.match(regex);
+    return match ? (match[1] || match[2]) : '';
+  }, []);
+
+  const handleEventSelect = useCallback((e) => {
+    const selectedId = e.target.value ? Number(e.target.value) : null;
+
+    if (selectedId) {
+      const selectedEvent = events.find(ev => ev.id === selectedId);
+      if (selectedEvent) {
+        const newFields = { eventId: selectedId };
+        if (selectedEvent.title) newFields.listTitle = selectedEvent.title;
+        if (selectedEvent.eventDate) newFields.startEvent = selectedEvent.eventDate;
+        if (selectedEvent.startTime) newFields.startTimeStartEvent = selectedEvent.startTime.slice(0, 5);
+        if (selectedEvent.endTime) newFields.endTimeEndEvent = selectedEvent.endTime.slice(0, 5);
+        if (selectedEvent.location) newFields.eventPlace = selectedEvent.location;
+        const count = extractPersonsCount(selectedEvent.notes);
+        if (count) newFields.countOfPerson = count;
+
+        updateFields(newFields);
+      }
+    } else {
+      updateField('eventId', null);
+    }
+  }, [events, updateFields, updateField, extractPersonsCount]);
+
+  const handleCreateContractor = async (contractorData) => {
+    try {
+      const createdContractor = await MainApi.createContractor(contractorData);
+      setContractors(prev => [...prev, createdContractor]);
+      updateField('contractorId', createdContractor.id);
+      setShowContractorPopup(false);
+    } catch (err) {
+      console.error('Ошибка при создании контрагента:', err);
+      alert('Не удалось создать контрагента. Проверьте консоль.');
+    }
+  };
+
   // Отправка формы (создание нового КП)
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -281,7 +324,7 @@ function Form({
     }
 
     if (typeof onSubmit === 'function') {
-      onSubmit(formData,listsKp);
+      onSubmit(formData, listsKp);
     } else {
       console.error('onSubmit не передан в Form');
     }
@@ -328,281 +371,293 @@ function Form({
       />
       <form className="form" onSubmit={handleSubmit}>
 
-      {/* Секция: Основная информация */}
-      <div className="form__section">
-        <h3 className="form__section-title">Основная информация</h3>
-        <div className="form__fields">
-          <div className="form__field">
-            <label className="form__label" htmlFor="kpNumber">Номер коммерческого предложения</label>
-            <Input
-              width="100%"
-              id="kpNumber"
-              name="kpNumber"
-              data-testid="kp-number"
-              className={`form__input ${errors.kpNumber ? 'error' : ''}`}
-              value={(isNewKp) ? formData.kpNumber : formInfo.kpNumber}
-              onValueChange={value => handleInputChange({ target: { name: 'kpNumber', value } })}
-            />
-          </div>
-          <div className="form__field">
-            <label className="form__label" htmlFor="kpDate">Дата коммерческого предложения</label>
-            <DatePicker
-              id="kpDate"
-              name="kpDate"
-              data-testid="kp-date"
-              className={`form__input ${errors.kpDate ? 'error' : ''}`}
-              value={(isNewKp) ? toDDMMYYYY(formData.kpDate) : toDDMMYYYY(formInfo.kpDate)}
-              onValueChange={value => handleInputChange({ target: { name: 'kpDate', value } })}
-            />
-          </div>
-          <div className="form__field">
-            <label className="form__label" htmlFor="contractNumber">№ договора</label>
-            <Input
-              width="100%"
-              id="contractNumber"
-              name="contractNumber"
-              data-testid="kp-contract-number"
-              className={`form__input ${errors.contractNumber ? 'error' : ''}`}
-              value={formData.contractNumber}
-              onValueChange={value => handleInputChange({ target: { name: 'contractNumber', value } })}
-            />
-          </div>
-          <div className="form__field">
-            <label className="form__label" htmlFor="contractDate">Дата договора</label>
-            <DatePicker
-              id="contractDate"
-              name="contractDate"
-              className={`form__input ${errors.contractDate ? 'error' : ''}`}
-              value={(isNewKp) ? toDDMMYYYY(formData.contractDate) : toDDMMYYYY(formInfo.contractDate)}
-              onValueChange={value => handleInputChange({ target: { name: 'contractDate', value } })}
-            />
+        {/* Секция: Основная информация */}
+        <div className="form__section">
+          <h3 className="form__section-title">Основная информация</h3>
+          <div className="form__fields">
+            <div className="form__field">
+              <label className="form__label" htmlFor="kpNumber">Номер коммерческого предложения</label>
+              <Input
+                width="100%"
+                id="kpNumber"
+                name="kpNumber"
+                data-testid="kp-number"
+                className={`form__input ${errors.kpNumber ? 'error' : ''}`}
+                value={(isNewKp) ? formData.kpNumber : formInfo.kpNumber}
+                onValueChange={value => handleInputChange({ target: { name: 'kpNumber', value } })}
+              />
+            </div>
+            <div className="form__field">
+              <label className="form__label" htmlFor="kpDate">Дата коммерческого предложения</label>
+              <DatePicker
+                id="kpDate"
+                name="kpDate"
+                data-testid="kp-date"
+                className={`form__input ${errors.kpDate ? 'error' : ''}`}
+                value={(isNewKp) ? toDDMMYYYY(formData.kpDate) : toDDMMYYYY(formInfo.kpDate)}
+                onValueChange={value => handleInputChange({ target: { name: 'kpDate', value } })}
+              />
+            </div>
+            <div className="form__field">
+              <label className="form__label" htmlFor="contractNumber">№ договора</label>
+              <Input
+                width="100%"
+                id="contractNumber"
+                name="contractNumber"
+                data-testid="kp-contract-number"
+                className={`form__input ${errors.contractNumber ? 'error' : ''}`}
+                value={formData.contractNumber}
+                onValueChange={value => handleInputChange({ target: { name: 'contractNumber', value } })}
+              />
+            </div>
+            <div className="form__field">
+              <label className="form__label" htmlFor="contractDate">Дата договора</label>
+              <DatePicker
+                id="contractDate"
+                name="contractDate"
+                className={`form__input ${errors.contractDate ? 'error' : ''}`}
+                value={(isNewKp) ? toDDMMYYYY(formData.contractDate) : toDDMMYYYY(formInfo.contractDate)}
+                onValueChange={value => handleInputChange({ target: { name: 'contractDate', value } })}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Секция: Данные мероприятия */}
-      <div className="form__section">
-        <h3 className="form__section-title">Данные мероприятия</h3>
-        <div className="form__fields">
+        {/* Секция: Данные мероприятия */}
+        <div className="form__section">
+          <h3 className="form__section-title">Данные мероприятия</h3>
+          <div className="form__fields">
 
-          <div className="form__field">
-            <label className="form__label" htmlFor="startEvent">Дата начала</label>
-            <DatePicker
-              id="startEvent"
-              name="startEvent"
-              data-testid="kp-start-event-date"
-              className={`form__input ${errors.startEvent ? 'error' : ''}`}
-              value={(isNewKp) ? toDDMMYYYY(formData.startEvent) : toDDMMYYYY(formInfo.startEvent)}
-              onValueChange={value => handleInputChange({ target: { name: 'startEvent', value } })}
-            />
-          </div>
-
-          <div className="form__field form__field__time">
             <div className="form__field">
-              <label className="form__label" htmlFor="startTimeStartEvent">Время начала</label>
-              <Input
-                width="100%"
-                type="time"
-                id="startTimeStartEvent"
-                name="startTimeStartEvent"
-                className={`form__input ${errors.startTimeStartEvent ? 'error' : ''}`}
-                value={formData.startTimeStartEvent}
-                onValueChange={value => handleInputChange({ target: { name: 'startTimeStartEvent', value } })}
+              <label className="form__label" htmlFor="startEvent">Дата начала</label>
+              <DatePicker
+                id="startEvent"
+                name="startEvent"
+                data-testid="kp-start-event-date"
+                className={`form__input ${errors.startEvent ? 'error' : ''}`}
+                value={(isNewKp) ? toDDMMYYYY(formData.startEvent) : toDDMMYYYY(formInfo.startEvent)}
+                onValueChange={value => handleInputChange({ target: { name: 'startEvent', value } })}
               />
-
             </div>
-            <div className="form__field">
-              <label className="form__label" htmlFor="endTimeStartEvent">Время окончания</label>
-              <Input
-                width="100%"
-                type="time"
-                id="endTimeStartEvent"
-                name="endTimeStartEvent"
-                className={`form__input ${errors.endTimeStartEvent ? 'error' : ''}`}
-                value={formData.endTimeStartEvent}
-                onValueChange={value => handleInputChange({ target: { name: 'endTimeStartEvent', value } })}
-              />
 
-            </div>
-          </div>
+            <div className="form__field form__field__time">
+              <div className="form__field">
+                <label className="form__label" htmlFor="startTimeStartEvent">Время начала</label>
+                <Input
+                  width="100%"
+                  type="time"
+                  id="startTimeStartEvent"
+                  name="startTimeStartEvent"
+                  className={`form__input ${errors.startTimeStartEvent ? 'error' : ''}`}
+                  value={formData.startTimeStartEvent}
+                  onValueChange={value => handleInputChange({ target: { name: 'startTimeStartEvent', value } })}
+                />
 
-          <div className="form__field">
-            <label className="form__label" htmlFor="endEvent">Дата окончания</label>
-            <DatePicker
-              id="endEvent"
-              name="endEvent"
-              data-testid="kp-end-event-date"
-              className={`form__input ${errors.endEvent ? 'error' : ''}`}
-              value={(isNewKp) ? toDDMMYYYY(formData.endEvent) : toDDMMYYYY(formInfo.endEvent)}
-              onValueChange={value => handleInputChange({ target: { name: 'endEvent', value } })}
-            />
-            {!isDatesValid && (
-              <div className="form__error" style={{ color: '#d00', marginTop: 8 }}>
-                Дата начала не может быть позже даты окончания
               </div>
-            )}
-          </div>
+              <div className="form__field">
+                <label className="form__label" htmlFor="endTimeStartEvent">Время окончания</label>
+                <Input
+                  width="100%"
+                  type="time"
+                  id="endTimeStartEvent"
+                  name="endTimeStartEvent"
+                  className={`form__input ${errors.endTimeStartEvent ? 'error' : ''}`}
+                  value={formData.endTimeStartEvent}
+                  onValueChange={value => handleInputChange({ target: { name: 'endTimeStartEvent', value } })}
+                />
 
-          <div className="form__field form__field__time">
+              </div>
+            </div>
+
             <div className="form__field">
-              <label className="form__label" htmlFor="startTimeEndEvent">Время начала</label>
+              <label className="form__label" htmlFor="endEvent">Дата окончания</label>
+              <DatePicker
+                id="endEvent"
+                name="endEvent"
+                data-testid="kp-end-event-date"
+                className={`form__input ${errors.endEvent ? 'error' : ''}`}
+                value={(isNewKp) ? toDDMMYYYY(formData.endEvent) : toDDMMYYYY(formInfo.endEvent)}
+                onValueChange={value => handleInputChange({ target: { name: 'endEvent', value } })}
+              />
+              {!isDatesValid && (
+                <div className="form__error" style={{ color: '#d00', marginTop: 8 }}>
+                  Дата начала не может быть позже даты окончания
+                </div>
+              )}
+            </div>
+
+            <div className="form__field form__field__time">
+              <div className="form__field">
+                <label className="form__label" htmlFor="startTimeEndEvent">Время начала</label>
+                <Input
+                  width="100%"
+                  type="time"
+                  id="startTimeEndEvent"
+                  name="startTimeEndEvent"
+                  className={`form__input ${errors.startTimeEndEvent ? 'error' : ''}`}
+                  value={formData.startTimeEndEvent}
+                  onValueChange={value => handleInputChange({ target: { name: 'startTimeEndEvent', value } })}
+                />
+
+              </div>
+              <div className="form__field">
+                <label className="form__label" htmlFor="endTimeEndEvent">Время окончания</label>
+                <Input
+                  width="100%"
+                  type="time"
+                  id="endTimeEndEvent"
+                  name="endTimeEndEvent"
+                  className={`form__input ${errors.endTimeEndEvent ? 'error' : ''}`}
+                  value={formData.endTimeEndEvent}
+                  onValueChange={value => handleInputChange({ target: { name: 'endTimeEndEvent', value } })}
+                />
+
+              </div>
+            </div>
+
+            <div className="form__field">
+              <label className="form__label" htmlFor="contractorId">Контрагент</label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{ flexGrow: 1 }}>
+                  <Select
+                    id="contractorId"
+                    data-testid="kp-contractor-select"
+                    items={['none', ...contractors.map(c => String(c.id))]}
+                    value={formData.contractorId ? String(formData.contractorId) : 'none'}
+                    onValueChange={value => handleInputChange({ target: { name: 'contractorId', value: value === 'none' ? null : Number(value) } })}
+                    renderItem={item => {
+                      if (item === 'none') return '— Не выбран —';
+                      const match = contractors.find(c => String(c.id) === item);
+                      return match ? match.companyName : item;
+                    }}
+                    renderValue={item => {
+                      if (item === 'none') return '— Не выбран —';
+                      const match = contractors.find(c => String(c.id) === item);
+                      return match ? match.companyName : item;
+                    }}
+                    width="100%"
+                  />
+                </div>
+                <span data-testid="add-contractor-btn">
+                  <Button
+                    use="default"
+                    icon={<Add />}
+                    onClick={() => setShowContractorPopup(true)}
+                    title="Добавить контрагента"
+                  />
+                </span>
+              </div>
+            </div>
+
+            <div className="form__field">
+              <label className="form__label" htmlFor="eventId">Связь с событием</label>
+              <select
+                id="eventId"
+                data-testid="kp-event-select"
+                className="event-form__select"
+                value={formData.eventId || ''}
+                onChange={handleEventSelect}
+                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', background: 'white' }}
+              >
+                <option value="">— Новое событие —</option>
+                {events.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.title} ({ev.eventDate})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form__field">
+              <label className="form__label" htmlFor="eventPlace">Место проведения</label>
               <Input
                 width="100%"
-                type="time"
-                id="startTimeEndEvent"
-                name="startTimeEndEvent"
-                className={`form__input ${errors.startTimeEndEvent ? 'error' : ''}`}
-                value={formData.startTimeEndEvent}
-                onValueChange={value => handleInputChange({ target: { name: 'startTimeEndEvent', value } })}
+                id="eventPlace"
+                name="eventPlace"
+                data-testid="kp-event-place"
+                value={formData.eventPlace}
+                className={`form__input ${errors.eventPlace ? 'error' : ''}`}
+                onValueChange={value => handleInputChange({ target: { name: 'eventPlace', value } })}
               />
-
             </div>
+
             <div className="form__field">
-              <label className="form__label" htmlFor="endTimeEndEvent">Время окончания</label>
+              <label className="form__label" htmlFor="countOfPerson">Кол-во персон</label>
               <Input
                 width="100%"
-                type="time"
-                id="endTimeEndEvent"
-                name="endTimeEndEvent"
-                className={`form__input ${errors.endTimeEndEvent ? 'error' : ''}`}
-                value={formData.endTimeEndEvent}
-                onValueChange={value => handleInputChange({ target: { name: 'endTimeEndEvent', value } })}
+                type="number"
+                id="countOfPerson"
+                name="countOfPerson"
+                data-testid="kp-count-of-person"
+                className={`form__input ${errors.countOfPerson ? 'error' : ''}`}
+                value={formData.countOfPerson}
+                onValueChange={value => handleInputChange({ target: { name: 'countOfPerson', value } })}
               />
+            </div>
 
+            <div className="form__field form__field--full">
+              <label className="form__label" htmlFor="listTitle">Название мероприятия</label>
+              <Input
+                width="100%"
+                id="listTitle"
+                name="listTitle"
+                data-testid="kp-event-title"
+                className={`form__input ${errors.listTitle ? 'error' : ''}`}
+                value={formData.listTitle}
+                onValueChange={value => handleInputChange({ target: { name: 'listTitle', value } })}
+              />
+            </div>
+
+          </div>
+        </div>
+
+        {/* Секция: Логистика */}
+        <div className="form__section">
+          <h3 className="form__section-title">Логистика</h3>
+          <div className="form__fields form__field_logistic">
+            <div className="form__field">
+              <label className="form__label">В пределах МКАД?</label>
+              <Switcher
+                ariaLabel="В пределах МКАД"
+                name="isWithinMkad"
+                value={formData.isWithinMkad ? "true" : "false"}
+                options={[
+                  { value: "true", label: "Да" },
+                  { value: "false", label: "Нет" },
+                ]}
+                onChange={(val) =>
+                  handleInputChange({
+                    target: { name: "isWithinMkad", value: val === "true" },
+                  })
+                }
+              />
+            </div>
+
+            <div className="form__field">
+              <label className="form__label" htmlFor="logisticsCost">
+                Стоимость логистики
+              </label>
+              <Input
+                width="100%"
+                type="number"
+                id="logisticsCost"
+                name="logisticsCost"
+                data-testid="kp-logistics"
+                className={`form__input ${errors.logisticsCost ? 'error' : ''}`}
+                value={formData.logisticsCost}
+                onValueChange={(value) =>
+                  handleInputChange({
+                    target: { name: 'logisticsCost', value },
+                  })
+                }
+              />
             </div>
           </div>
-
-          <div className="form__field">
-            <label className="form__label" htmlFor="contractorId">Контрагент</label>
-            <Select
-              id="contractorId"
-              data-testid="kp-contractor-select"
-              items={['none', ...contractors.map(c => String(c.id))]}
-              value={formData.contractorId ? String(formData.contractorId) : 'none'}
-              onValueChange={value => handleInputChange({ target: { name: 'contractorId', value: value === 'none' ? null : Number(value) } })}
-              renderItem={item => {
-                  if (item === 'none') return '— Не выбран —';
-                  const match = contractors.find(c => String(c.id) === item);
-                  return match ? match.companyName : item;
-              }}
-              renderValue={item => {
-                  if (item === 'none') return '— Не выбран —';
-                  const match = contractors.find(c => String(c.id) === item);
-                  return match ? match.companyName : item;
-              }}
-              width="100%"
-            />
-          </div>
-
-          <div className="form__field">
-            <label className="form__label" htmlFor="eventId">Связь с событием</label>
-            <select
-              id="eventId"
-              data-testid="kp-event-select"
-              className="event-form__select"
-              value={formData.eventId || ''}
-              onChange={e => handleInputChange({ target: { name: 'eventId', value: e.target.value ? Number(e.target.value) : null } })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', background: 'white' }}
-            >
-              <option value="">— Не привязано —</option>
-              {events.map((ev) => (
-                <option key={ev.id} value={ev.id}>
-                  {ev.title} ({ev.eventDate})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form__field">
-            <label className="form__label" htmlFor="eventPlace">Место проведения</label>
-            <Input
-              width="100%"
-              id="eventPlace"
-              name="eventPlace"
-              data-testid="kp-event-place"
-              value={formData.eventPlace}
-              className={`form__input ${errors.eventPlace ? 'error' : ''}`}
-              onValueChange={value => handleInputChange({ target: { name: 'eventPlace', value } })}
-            />
-          </div>
-
-          <div className="form__field">
-            <label className="form__label" htmlFor="countOfPerson">Кол-во персон</label>
-            <Input
-              width="100%"
-              type="number"
-              id="countOfPerson"
-              name="countOfPerson"
-              data-testid="kp-count-of-person"
-              className={`form__input ${errors.countOfPerson ? 'error' : ''}`}
-              value={formData.countOfPerson}
-              onValueChange={value => handleInputChange({ target: { name: 'countOfPerson', value } })}
-            />
-          </div>
-
-          <div className="form__field form__field--full">
-            <label className="form__label" htmlFor="listTitle">Название мероприятия</label>
-            <Input
-              width="100%"
-              id="listTitle"
-              name="listTitle"
-              data-testid="kp-event-title"
-              className={`form__input ${errors.listTitle ? 'error' : ''}`}
-              value={formData.listTitle}
-              onValueChange={value => handleInputChange({ target: { name: 'listTitle', value } })}
-            />
-          </div>
-
         </div>
-      </div>
-
-      {/* Секция: Логистика */}
-      <div className="form__section">
-        <h3 className="form__section-title">Логистика</h3>
-        <div className="form__fields form__field_logistic">
-          <div className="form__field">
-            <label className="form__label">В пределах МКАД?</label>
-            <Switcher
-              ariaLabel="В пределах МКАД"
-              name="isWithinMkad"
-              value={formData.isWithinMkad ? "true" : "false"}
-              options={[
-                { value: "true", label: "Да" },
-                { value: "false", label: "Нет" },
-              ]}
-              onChange={(val) =>
-                handleInputChange({
-                  target: { name: "isWithinMkad", value: val === "true" },
-                })
-              }
-            />
-          </div>
-
-          <div className="form__field">
-            <label className="form__label" htmlFor="logisticsCost">
-              Стоимость логистики
-            </label>
-            <Input
-              width="100%"
-              type="number"
-              id="logisticsCost"
-              name="logisticsCost"
-              data-testid="kp-logistics"
-              className={`form__input ${errors.logisticsCost ? 'error' : ''}`}
-              value={formData.logisticsCost}
-              onValueChange={(value) =>
-                handleInputChange({
-                  target: { name: 'logisticsCost', value },
-                })
-              }
-            />
-          </div>
-        </div>
-      </div>
 
 
-      {/* Секция: Менеджер */}
-      {/* <div className="form__section">
+        {/* Секция: Менеджер */}
+        {/* <div className="form__section">
         <h3 className="form__section-title">Ответственный менеджер</h3>
         <div className="form__fields">
           <div className="form__field form__field--full">
@@ -621,100 +676,107 @@ function Form({
         </div>
       </div> */}
 
-      {/* Секция: Состав КП (таблица с позициями) */}
-      <div className="form__section" style={{ marginBottom: 0 }}>
-        <h3 className="form__section-title">Состав КП</h3>
-        {Array.isArray(listsSummary) && listsSummary.length > 0 && (
-          <SavedListsAccordion
-            lists={listsSummary}
-            isNewKp={isNewKp}              // прокинем из App
-            onDeleteRow={onDeleteRow}      // (listId, rowIndex)
-            onUpdateRow={onUpdateRow}      // (listId, rowIndex, updatedRow)
-            onAddRowOnList={onAddRowOnList}// (row, listId)
-            // onDeleteList={onDeleteList}    // (listId)
-            getProductWeightWithMeasure={getProductWeightWithMeasure}
-          />
-        )}
-        <div className="form__table-container">
-
-          {/* Ряды таблицы */}
-          {products.map((prod) => (
-            <FormRow
-              key={prod.id}
-              productData={prod}
-              handleRemoveProduct={handleRemoveProduct}
-              handleEditProduct={handleEditProduct}
+        {/* Секция: Состав КП (таблица с позициями) */}
+        <div className="form__section" style={{ marginBottom: 0 }}>
+          <h3 className="form__section-title">Состав КП</h3>
+          {Array.isArray(listsSummary) && listsSummary.length > 0 && (
+            <SavedListsAccordion
+              lists={listsSummary}
+              isNewKp={isNewKp}              // прокинем из App
+              onDeleteRow={onDeleteRow}      // (listId, rowIndex)
+              onUpdateRow={onUpdateRow}      // (listId, rowIndex, updatedRow)
+              onAddRowOnList={onAddRowOnList}// (row, listId)
+              // onDeleteList={onDeleteList}    // (listId)
               getProductWeightWithMeasure={getProductWeightWithMeasure}
             />
-          ))}
-          {errors._lists && (
-            <div className="form__error" style={{ marginTop: 8 }}>{errors._lists}</div>
+          )}
+          <div className="form__table-container">
+
+            {/* Ряды таблицы */}
+            {products.map((prod) => (
+              <FormRow
+                key={prod.id}
+                productData={prod}
+                handleRemoveProduct={handleRemoveProduct}
+                handleEditProduct={handleEditProduct}
+                getProductWeightWithMeasure={getProductWeightWithMeasure}
+              />
+            ))}
+            {errors._lists && (
+              <div className="form__error" style={{ marginTop: 8 }}>{errors._lists}</div>
+            )}
+          </div>
+
+          {/* Кнопки управления */}
+
+          <label className="" style={{ display: "grid", "font-size": "12px" }}>
+            <div className='form__table-button'>
+              <Button
+                icon={<Add />}
+                use="default"
+                data-testid="kp-add-row-button"
+                onClick={() => {
+                  setProductToEdit(null);
+                  setShowProductPopup(true);
+                  console.log(products);
+
+                }}
+                disabled={(products.length < 7) ? false : true}
+              >
+                Добавить позицию
+              </Button>
+
+              <Button
+                use="primary"
+                data-testid="kp-save-list-button"
+                onClick={() => {
+                  if (!products || products.length === 0) {
+                    alert('Добавьте хотя бы одну позицию перед сохранением листа');
+                    return;
+                  }
+                  if (typeof addList === 'function') {
+                    addList(products);
+                    console.log(listsKp);
+                  }
+                  setProducts([]);         // очистим текущий временный лист
+                  setProductToEdit(null);  // сброс редактируемого продукта, если был
+                }}
+              >
+                Сохранить лист
+              </Button>
+            </div>
+            <span className="form__error" style={((products.length < 7) ? { color: '#ff000000' } : { color: '#d00', "text-align": "justify" })}>Достигнуто максимальное количество продуктов на одном листе</span>
+          </label>
+
+
+          {/* Попап */}
+          {showProductPopup && (
+            <ProductPopup
+              onClose={() => {
+                setProductToEdit(null);
+                setShowProductPopup(false);
+              }}
+              onSave={productToEdit ? handleUpdateProduct : handleAddProduct}
+              productToEdit={productToEdit}
+            />
+          )}
+
+          {showContractorPopup && (
+            <ContractorPopup
+              onClose={() => setShowContractorPopup(false)}
+              onSave={handleCreateContractor}
+            />
           )}
         </div>
 
-        {/* Кнопки управления */}
-
-        <label className="" style={{ display: "grid", "font-size": "12px" }}>
-          <div className='form__table-button'>
-            <Button
-              icon={<Add />}
-              use="default"
-              data-testid="kp-add-row-button"
-              onClick={() => {
-                setProductToEdit(null);
-                setShowProductPopup(true);
-                console.log(products);
-
-              }}
-              disabled={(products.length < 7) ? false : true}
-            >
-              Добавить позицию
-            </Button>
-
-            <Button
-              use="primary"
-              data-testid="kp-save-list-button"
-              onClick={() => {
-                if (!products || products.length === 0) {
-                  alert('Добавьте хотя бы одну позицию перед сохранением листа');
-                  return;
-                }
-                if (typeof addList === 'function') {
-                  addList(products);
-                  console.log(listsKp);
-                }
-                setProducts([]);         // очистим текущий временный лист
-                setProductToEdit(null);  // сброс редактируемого продукта, если был
-              }}
-            >
-              Сохранить лист
-            </Button>
-          </div>
-          <span className="form__error" style={((products.length < 7) ? { color: '#ff000000' } : { color: '#d00', "text-align": "justify" })}>Достигнуто максимальное количество продуктов на одном листе</span>
-        </label>
-
-
-        {/* Попап */}
-        {showProductPopup && (
-          <ProductPopup
-            onClose={() => {
-              setProductToEdit(null);
-              setShowProductPopup(false);
-            }}
-            onSave={productToEdit ? handleUpdateProduct : handleAddProduct}
-            productToEdit={productToEdit}
-          />
-        )}
-      </div>
-
-      {/* Кнопка сохранения формы */}
-      <div className="form__actions">
-        <Button use="success" type="submit" data-testid="kp-save-button" disabled={!isFormValidNow}>
-          Сохранить коммерческое предложение
-        </Button>
-      </div>
-    </form>
-  </PageContainer>
+        {/* Кнопка сохранения формы */}
+        <div className="form__actions">
+          <Button use="success" type="submit" data-testid="kp-save-button" disabled={!isFormValidNow}>
+            Сохранить коммерческое предложение
+          </Button>
+        </div>
+      </form>
+    </PageContainer>
   );
 }
 

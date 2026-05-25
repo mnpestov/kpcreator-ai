@@ -21,7 +21,8 @@ class KpController {
                 managerName,
                 contractorId,
                 eventId,
-                status
+                status,
+                totalAmount
             } = req.body
 
             const kp = await Kp.create({
@@ -40,7 +41,8 @@ class KpController {
                 managerName,
                 contractorId: contractorId || null,
                 eventId: eventId || null,
-                status: status || 'draft'
+                status: status || 'draft',
+                totalAmount: totalAmount || null
             })
             return res.json(kp)
         } catch (err) {
@@ -237,7 +239,7 @@ class KpController {
             const kps = await Kp.findAll({
                 order: [['id', 'DESC']],
                 limit: 6,
-                attributes: ['id', 'kpNumber', 'kpDate', 'startEvent', 'eventPlace'],
+                attributes: ['id', 'kpNumber', 'kpDate', 'startEvent', 'eventPlace', 'status', 'totalAmount'],
                 include: [
                     {
                         model: Contractor,
@@ -301,6 +303,7 @@ class KpController {
             contractorId,
             eventId,
             status,
+            totalAmount,
         } = req.body;
 
         try {
@@ -325,6 +328,7 @@ class KpController {
                 contractorId: contractorId || null,
                 eventId: eventId || null,
                 status: normStr(status) || 'draft',
+                totalAmount: totalAmount == null ? null : Number(totalAmount),
             };
 
             const [updatedCount, [updated]] = await Kp.update(

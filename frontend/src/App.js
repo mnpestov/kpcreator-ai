@@ -26,6 +26,7 @@ import AppLayout from './components/Layout/AppLayout';
 import useAuthStore from './hooks/useAuthStore.js';
 import useKpStore from './hooks/useKpStore';
 import { kpPreviewSelectors, kpPrintSelectors } from './utils/const.js'
+import { calculateKpTotal } from './utils/calculateKpTotal';
 
 function App() {
   const [isNewKp, setIsNewKp] = useState(true)
@@ -309,11 +310,45 @@ function App() {
     console.log(formData);
     console.log(listsKp);
 
+    // --- AUTO EVENT CREATION ---
+    let finalEventId = formData.eventId;
+    
+    // Auto-create Event ONLY when eventId is missing AND minimal fields are present
+    if (!finalEventId && formData.listTitle && formData.startEvent && formData.eventPlace) {
+      try {
+        console.log('Auto-creating event from KP data...');
+        const newEventPayload = {
+          title: formData.listTitle,
+          eventDate: toISO(formData.startEvent),
+          startTime: toHHMM(formData.startTimeStartEvent) || null,
+          endTime: toHHMM(formData.endTimeEndEvent) || null,
+          location: formData.eventPlace,
+          notes: formData.countOfPerson ? `Кол-во гостей: ${formData.countOfPerson}` : null
+        };
+        const createdEvent = await MainApi.createEvent(newEventPayload);
+        finalEventId = createdEvent.id;
+        
+        // Update local state if needed
+        updateField('eventId', finalEventId);
+      } catch (err) {
+        console.error('Ошибка при автосоздании события:', err);
+      }
+    }
+    
+    // Mutate local formData to ensure the new eventId is included in normalizeKpPayload
+    const updatedFormData = { ...formData, eventId: finalEventId };
+    // --- END AUTO EVENT CREATION ---
+
 
     if (isNewKp) {
       try {
+        const { finalTotalAmount } = calculateKpTotal(listsKp, updatedFormData);
+        
         // 1) нормализуем шапку КП по датам
-        const kpPayload = normalizeKpPayload(formData);
+        const kpPayload = {
+          ...normalizeKpPayload(updatedFormData),
+          totalAmount: finalTotalAmount
+        };
 
         // 2) создаём КП
         const kpRes = await MainApi.addKp(kpPayload);
@@ -332,9 +367,9 @@ function App() {
           updatedLists = await Promise.all(
             listsKp.map(async (list) => {
               const listRes = await MainApi.addList({
-                ...formData,
-                startEvent: toISO(formData.startEvent),
-                endEvent: toISO(formData.endEvent),
+                ...updatedFormData,
+                startEvent: toISO(updatedFormData.startEvent),
+                endEvent: toISO(updatedFormData.endEvent),
                 kpId: kpRes.id,
               });
               let createdRows = [];
@@ -384,7 +419,14 @@ function App() {
         console.log('update');
         console.log(formData.kpNumber);
 
-        const updatedKp = await MainApi.updateKp(formData, formData.kpNumber)
+        const { finalTotalAmount } = calculateKpTotal(listsKp, updatedFormData);
+        
+        const updatePayload = {
+          ...updatedFormData,
+          totalAmount: finalTotalAmount
+        };
+
+        const updatedKp = await MainApi.updateKp(updatePayload, updatedFormData.kpNumber)
         console.log('✅ Данные коммерческого предложения обновлены');
         console.log(updatedKp?.kp.kpNumber);
 

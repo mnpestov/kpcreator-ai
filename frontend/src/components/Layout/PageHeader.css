@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 16px;
-  gap: 16px;
+  padding-bottom: 7px;
+  gap: 7px;
 }
 
 .page-header__content {
@@ -14,7 +14,7 @@
 }
 
 .page-header__title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -37,7 +37,7 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .page-header__actions {
     width: 100%;
     justify-content: flex-start;

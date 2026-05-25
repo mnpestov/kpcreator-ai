@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../../hooks/useAuthStore';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuthStore();
 
   const navItems = [
     { label: 'Список КП', path: '/', isPlaceholder: false },
@@ -12,7 +14,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { label: 'Контрагенты', path: '/contractors', isPlaceholder: false },
     { label: 'События', path: '/events', isPlaceholder: false },
     { label: 'Меню', path: '/menu', isPlaceholder: false },
-    { label: 'Профиль', path: '/profile', isPlaceholder: false },
+    { label: 'Личный кабинет', path: '/profile', isPlaceholder: false },
     { label: 'Справочники', path: '/directories', isPlaceholder: true },
   ];
 
@@ -52,6 +54,11 @@ const Sidebar = ({ isOpen, onClose }) => {
             );
           })}
         </nav>
+        <div className="sidebar__footer">
+          <button className="sidebar__logout-btn" onClick={() => { logout(); onClose(); }}>
+            Выйти
+          </button>
+        </div>
       </aside>
     </>
   );

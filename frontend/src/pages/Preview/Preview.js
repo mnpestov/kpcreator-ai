@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, lazy, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, ArrowBoldLeft } from '@skbkontur/react-icons';
+import { Download } from '@skbkontur/react-icons';
 import { Button, Select } from '@skbkontur/react-ui';
 import { MainApi } from '../../utils/MainApi';
 import FirstList from '../../components/FirstList/FirstList';
@@ -40,8 +40,6 @@ function Preview({
     console.log(user);
     console.log(listsKp);
 
-    // const { user } = useContext(AuthContext);
-    const navigate = useNavigate();
     const compactPdfRef = useRef(null);
     const hiddenPrintRef = useRef(null);
 
@@ -61,7 +59,7 @@ function Preview({
     const handleExportPDF = async () => {
         // 1. Start PDF generation
         await exportHiddenPDF();
-        
+
         // 2. Transition if draft
         if (formData.status === 'draft') {
             await handleStatusChange('sent');
@@ -90,16 +88,8 @@ function Preview({
         <PageContainer maxWidth="1200px">
             <PageHeader
                 title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
-                subtitle={`Дата создания: ${formatDate(formData.kpDate)} | Мероприятие: ${formData.listTitle || ''}${formData.contractor?.companyName ? ` | Контрагент: ${formData.contractor.companyName}` : ''}${formData.event?.title ? ` | Событие: ${formData.event.title}` : ''}`}
                 actions={
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <Button
-                            use="default"
-                            icon={<ArrowBoldLeft />}
-                            onClick={() => navigate('/')}
-                        >
-                            На главную
-                        </Button>
                         <Button
                             use="primary"
                             icon={<Download />}
@@ -117,10 +107,10 @@ function Preview({
                     </div>
                 }
             />
-            <div className="preview-page" style={{ paddingTop: '1.5rem' }}>
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center', backgroundColor: '#f2f2f2', padding: '12px 16px', borderRadius: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '14px', color: '#666' }}>Статус:</span>
+            <div className="preview-page">
+                <div className="preview-meta-bar">
+                    <div className="preview-meta-status">
+                        <span className="preview-meta-label">Статус:</span>
                         <Select
                             id="preview-status"
                             data-testid="preview-status-select"
@@ -138,145 +128,133 @@ function Preview({
                             width="140px"
                         />
                     </div>
-                    {formData.contractor && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '14px', color: '#666' }}>Контрагент:</span>
-                            <span style={{ padding: '2px 8px', backgroundColor: '#e0e0e0', borderRadius: '4px', fontSize: '13px' }}>{formData.contractor.companyName}</span>
-                        </div>
-                    )}
-                    {formData.event && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '14px', color: '#666' }}>Событие:</span>
-                            <span style={{ padding: '2px 8px', backgroundColor: '#e0e0e0', borderRadius: '4px', fontSize: '13px' }}>{formData.event.title}</span>
-                        </div>
-                    )}
                 </div>
                 <div className="preview">
-                {/* Шапка КП */}
-                <FirstList
-                    managerName={user.name}
-                    managerJobTitle={user.job}
-                    managerEmail={user.email}
-                    managerTel={user.tel}
-                    kpNumber={formData.kpNumber}
-                    kpDate={formatDate(formData.kpDate)}
-                    contractNumber={formData.contractNumber}
-                    contractDate={formatDate(formData.contractDate)}
-                    managerPhoto={`${API_BASE_URL}/static/${user.photo}`}
-                    kpPreviewSelectors={kpPreviewSelectors}
-                    listSelector={'list list-preview'}
-                />
+                    {/* Шапка КП */}
+                    <FirstList
+                        managerName={user.name}
+                        managerJobTitle={user.job}
+                        managerEmail={user.email}
+                        managerTel={user.tel}
+                        kpNumber={formData.kpNumber}
+                        kpDate={formatDate(formData.kpDate)}
+                        contractNumber={formData.contractNumber}
+                        contractDate={formatDate(formData.contractDate)}
+                        managerPhoto={`${API_BASE_URL}/static/${user.photo}`}
+                        kpPreviewSelectors={kpPreviewSelectors}
+                        listSelector={'list list-preview'}
+                    />
 
-                {/* Списки товаров (каждый списокKp – отдельный блок КП) */}
-                {listsKp.map((item) => (
-                    <Kp
-                        key={item.id}
-                        startEvent={formatDate(formData.startEvent)}
-                        endEvent={formatDate(formData.endEvent)}
-                        eventPlace={formData.eventPlace}
-                        countOfPerson={formData.countOfPerson}
-                        list={item}
-                        id={item.id}
-                        listTitle={formData.listTitle}
-                        startTimeStartEvent={formatTime(formData.startTimeStartEvent)}
-                        endTimeStartEvent={formatTime(formData.endTimeStartEvent)}
-                        startTimeEndEvent={formatTime(formData.startTimeEndEvent)}
-                        endTimeEndEvent={formatTime(formData.endTimeEndEvent)}
+                    {/* Списки товаров (каждый списокKp – отдельный блок КП) */}
+                    {listsKp.map((item) => (
+                        <Kp
+                            key={item.id}
+                            startEvent={formatDate(formData.startEvent)}
+                            endEvent={formatDate(formData.endEvent)}
+                            eventPlace={formData.eventPlace}
+                            countOfPerson={formData.countOfPerson}
+                            list={item}
+                            id={item.id}
+                            listTitle={formData.listTitle}
+                            startTimeStartEvent={formatTime(formData.startTimeStartEvent)}
+                            endTimeStartEvent={formatTime(formData.endTimeStartEvent)}
+                            startTimeEndEvent={formatTime(formData.startTimeEndEvent)}
+                            endTimeEndEvent={formatTime(formData.endTimeEndEvent)}
+                            isNewKp={isNewKp}
+                            deleteRow={deleteRow}
+                            deleteList={deleteList}
+                            deleteRowFromDb={deleteRowFromDb}
+                            updateRowInDb={updateRowInDb}
+                            addRowOnList={addRowOnList}
+                            dispatch={dispatch}
+                            GetPrice={GetPrice}
+                            getProductWeightWithMeasure={getProductWeightWithMeasure}
+                            getDeclination={getDeclination}
+                            listSelector={'list list-preview'}
+                            kpPreviewSelectors={kpPreviewSelectors}
+                        />
+                    ))}
+
+                    {/* Скрытые компактные списки для спецификации (без цен) */}
+                    <div
+                        ref={compactPdfRef}
+                        style={{
+                            position: 'fixed',     // вне потока и не расширяет документ
+                            top: 0,
+                            left: 0,
+                            width: 0,
+                            height: 0,
+                            overflow: 'hidden',
+                            pointerEvents: 'none',
+                            opacity: 0             // можно убрать visibility
+                        }}
+                    >
+                        {listsKp.map((list, idx) => (
+                            <KpCompact
+                                key={`compact-${list.id}-${Date.now()}`}
+                                // key={`compact-${idx}`}
+                                list={list}
+                                listTitle={formData.listTitle}
+                                startEvent={formatDate(formData.startEvent)}
+                                endEvent={formatDate(formData.endEvent)}
+                                startTimeStartEvent={formatTime(formData.startTimeStartEvent)}
+                                endTimeStartEvent={formatTime(formData.endTimeStartEvent)}
+                                startTimeEndEvent={formatTime(formData.startTimeEndEvent)}
+                                endTimeEndEvent={formatTime(formData.endTimeEndEvent)}
+                                eventPlace={formData.eventPlace}
+                                countOfPerson={formData.countOfPerson}
+                                isNewKp={isNewKp}
+                                dispatch={dispatch}
+                                isCompact={true}
+                                deleteRow={deleteRow}
+                                deleteRowFromDb={deleteRowFromDb}
+                                updateRowInDb={updateRowInDb}
+                                getProductWeightWithMeasure={getProductWeightWithMeasure}
+                                kpPreviewSelectors={kpPrintSelectors}
+                            />
+                        ))}
+                    </div>
+
+
+                    {/* Итоговая часть КП (LastList) с расчетом стоимости, доставкой и пр. */}
+                    <Suspense fallback={<div>Загрузка LastList...</div>}>
+                        <LastList
+                            lists={listsKp}
+                            countOfPerson={formData.countOfPerson}
+                            logisticsCost={parseInt(formData.logisticsCost) || 0}
+                            isWithinMkad={formData.isWithinMkad}
+                            GetPrice={GetPrice}
+                            listSelector={'list list-preview list_last-list'}
+                            kpPreviewSelectors={kpPreviewSelectors}
+                        />
+                    </Suspense>
+                </div>
+                {/* НОВЫЙ скрытый компонент печати полной версии — полностью автономный */}
+                <div
+                    ref={hiddenPrintRef}
+                    className="hiddenPrintMount"
+                    data-role="hidden-print-mount"
+                >
+
+                    <HiddenPrint
+                        key={`hidden-${Date.now()}`}
+                        formData={formData}
+                        listsKp={listsKp}
                         isNewKp={isNewKp}
+                        dispatch={dispatch}
                         deleteRow={deleteRow}
                         deleteList={deleteList}
                         deleteRowFromDb={deleteRowFromDb}
                         updateRowInDb={updateRowInDb}
                         addRowOnList={addRowOnList}
-                        dispatch={dispatch}
                         GetPrice={GetPrice}
                         getProductWeightWithMeasure={getProductWeightWithMeasure}
                         getDeclination={getDeclination}
-                        listSelector={'list list-preview'}
-                        kpPreviewSelectors={kpPreviewSelectors}
+                        kpPreviewSelectors={kpPrintSelectors}
                     />
-                ))}
-
-                {/* Скрытые компактные списки для спецификации (без цен) */}
-                <div
-                    ref={compactPdfRef}
-                    style={{
-                        position: 'fixed',     // вне потока и не расширяет документ
-                        top: 0,
-                        left: 0,
-                        width: 0,
-                        height: 0,
-                        overflow: 'hidden',
-                        pointerEvents: 'none',
-                        opacity: 0             // можно убрать visibility
-                    }}
-                >
-                    {listsKp.map((list, idx) => (
-                        <KpCompact
-                            key={`compact-${list.id}-${Date.now()}`}
-                            // key={`compact-${idx}`}
-                            list={list}
-                            listTitle={formData.listTitle}
-                            startEvent={formatDate(formData.startEvent)}
-                            endEvent={formatDate(formData.endEvent)}
-                            startTimeStartEvent={formatTime(formData.startTimeStartEvent)}
-                            endTimeStartEvent={formatTime(formData.endTimeStartEvent)}
-                            startTimeEndEvent={formatTime(formData.startTimeEndEvent)}
-                            endTimeEndEvent={formatTime(formData.endTimeEndEvent)}
-                            eventPlace={formData.eventPlace}
-                            countOfPerson={formData.countOfPerson}
-                            isNewKp={isNewKp}
-                            dispatch={dispatch}
-                            isCompact={true}
-                            deleteRow={deleteRow}
-                            deleteRowFromDb={deleteRowFromDb}
-                            updateRowInDb={updateRowInDb}
-                            getProductWeightWithMeasure={getProductWeightWithMeasure}
-                            kpPreviewSelectors={kpPrintSelectors}
-                        />
-                    ))}
                 </div>
-
-
-                {/* Итоговая часть КП (LastList) с расчетом стоимости, доставкой и пр. */}
-                <Suspense fallback={<div>Загрузка LastList...</div>}>
-                    <LastList
-                        lists={listsKp}
-                        countOfPerson={formData.countOfPerson}
-                        logisticsCost={parseInt(formData.logisticsCost) || 0}
-                        isWithinMkad={formData.isWithinMkad}
-                        GetPrice={GetPrice}
-                        listSelector={'list list-preview list_last-list'}
-                        kpPreviewSelectors={kpPreviewSelectors}
-                    />
-                </Suspense>
             </div>
-            {/* НОВЫЙ скрытый компонент печати полной версии — полностью автономный */}
-            <div
-                ref={hiddenPrintRef}
-                className="hiddenPrintMount"
-                data-role="hidden-print-mount"
-            >
-
-                <HiddenPrint
-                    key={`hidden-${Date.now()}`}
-                    formData={formData}
-                    listsKp={listsKp}
-                    isNewKp={isNewKp}
-                    dispatch={dispatch}
-                    deleteRow={deleteRow}
-                    deleteList={deleteList}
-                    deleteRowFromDb={deleteRowFromDb}
-                    updateRowInDb={updateRowInDb}
-                    addRowOnList={addRowOnList}
-                    GetPrice={GetPrice}
-                    getProductWeightWithMeasure={getProductWeightWithMeasure}
-                    getDeclination={getDeclination}
-                    kpPreviewSelectors={kpPrintSelectors}
-                />
-            </div>
-            </div>
-      </PageContainer>
+        </PageContainer>
     );
 }
 

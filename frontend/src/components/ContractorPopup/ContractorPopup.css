@@ -1,0 +1,24 @@
+.contractor-popup {
+    max-width: 400px;
+    width: 100%;
+}
+
+.contractor-popup__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.contractor-popup__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contractor-popup__footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}

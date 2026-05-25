@@ -18,6 +18,7 @@ const Kp = sequelize.define('kp', {
     countOfPerson: { type: DataTypes.STRING },
     isWithinMkad: { type: DataTypes.BOOLEAN, defaultValue: true },
     logisticsCost: { type: DataTypes.INTEGER },
+    totalAmount: { type: DataTypes.INTEGER, allowNull: true },
     listTitle: { type: DataTypes.STRING },
     status: { type: DataTypes.STRING, defaultValue: 'draft' },
     managerName: { type: DataTypes.STRING, allowNull: false },

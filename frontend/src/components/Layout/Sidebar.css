@@ -154,3 +154,26 @@
     border-radius: 0;
   }
 }
+
+.sidebar__footer {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid #2e2e38;
+}
+
+.sidebar__logout-btn {
+  width: 100%;
+  padding: 10px 0;
+  background-color: transparent;
+  color: #a1a1aa;
+  border: 1px solid #3a3a4c;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar__logout-btn:hover {
+  background-color: #3a3a4c;
+  color: #fff;
+}

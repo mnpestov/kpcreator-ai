@@ -3,3 +3,25 @@
     background-color: transparent;
     border: 1px #ddd solid;
 }
+
+.preview-meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding-bottom: 7px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+.preview-meta-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-meta-label {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}

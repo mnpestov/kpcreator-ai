@@ -25,7 +25,7 @@ class Api {
     }
 
     getLastKpNumber() {
-        return fetch(`${this._baseUrl}/kp/lastKpNumber`, {
+        return fetch(`${this._baseUrl}/kp/lastKpNumber?t=${Date.now()}`, {
             headers: {}
         })
             .then(this._checkResponse)
