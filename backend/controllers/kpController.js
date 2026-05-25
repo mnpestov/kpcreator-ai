@@ -238,7 +238,7 @@ class KpController {
             // Запрос последних 5 КП по дате (самые новые с числовой сортировкой)
             const kps = await Kp.findAll({
                 order: [['id', 'DESC']],
-                limit: 6,
+                limit: 50,
                 attributes: ['id', 'kpNumber', 'kpDate', 'startEvent', 'eventPlace', 'status', 'totalAmount'],
                 include: [
                     {

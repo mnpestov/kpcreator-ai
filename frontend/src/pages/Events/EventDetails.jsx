@@ -97,14 +97,14 @@ const EventDetails = () => {
         <div className="event-details__card">
           <h3 className="event-details__card-title">Основная информация</h3>
           <div className="event-details__grid">
-            <div className="event-details__field">
+            {/* <div className="event-details__field">
               <span className="event-details__label">Статус</span>
               <span className="event-details__value">
                 <span className={`events-status-badge events-status-badge--${event.status}`}>
                   {STATUS_LABELS[event.status] || event.status}
                 </span>
               </span>
-            </div>
+            </div> */}
 
             <div className="event-details__field">
               <span className="event-details__label">Контрагент</span>
@@ -133,6 +133,13 @@ const EventDetails = () => {
                 {event.location || <span className="event-details__empty">—</span>}
               </span>
             </div>
+
+            <div className="event-details__field">
+              <span className="event-details__label">Количество гостей</span>
+              <span className="event-details__value">
+                {event.countOfPerson || <span className="event-details__empty">—</span>}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -157,8 +164,8 @@ const EventDetails = () => {
                 {event.kps.map(kp => (
                   <li key={kp.id} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>
                     <div style={{ fontWeight: '500' }}>
-                      <a 
-                        href={`/preview/${kp.kpNumber}`} 
+                      <a
+                        href={`/preview/${kp.kpNumber}`}
                         onClick={(e) => { e.preventDefault(); navigate(`/preview/${kp.kpNumber}`); }}
                         style={{ color: '#0070fb', textDecoration: 'none', cursor: 'pointer' }}
                       >

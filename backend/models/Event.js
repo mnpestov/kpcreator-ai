@@ -21,13 +21,37 @@ const Event = sequelize.define('Event', {
   },
   eventDate: {
     type: DataTypes.DATEONLY,
-    allowNull: false
+    allowNull: true // changed to true for backward compatibility as startEvent becomes primary
   },
   startTime: {
     type: DataTypes.TIME,
     allowNull: true
   },
   endTime: {
+    type: DataTypes.TIME,
+    allowNull: true
+  },
+  startEvent: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  endEvent: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  startTimeStartEvent: {
+    type: DataTypes.TIME,
+    allowNull: true
+  },
+  endTimeStartEvent: {
+    type: DataTypes.TIME,
+    allowNull: true
+  },
+  startTimeEndEvent: {
+    type: DataTypes.TIME,
+    allowNull: true
+  },
+  endTimeEndEvent: {
     type: DataTypes.TIME,
     allowNull: true
   },
@@ -39,6 +63,10 @@ const Event = sequelize.define('Event', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'Draft'
+  },
+  countOfPerson: {
+    type: DataTypes.INTEGER,
+    allowNull: true
   },
   notes: {
     type: DataTypes.TEXT,

@@ -89,6 +89,24 @@ class Api {
         })
             .then(this._checkResponse);
     }
+    deleteEvent(id) {
+        return fetch(`${this._baseUrl}/event/${id}`, {
+            method: 'DELETE',
+            headers: {}
+        }).then(this._checkResponse);
+    }
+
+    propagateEventLogistics(id, payload) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/events/${id}/propagate`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        }).then(this._checkResponse);
+    }
     deleteList(id) {
         return fetch(`${this._baseUrl}/list/${id}`, {
             method: 'DELETE',

@@ -1,4 +1,5 @@
 const { Event, Contractor, Kp } = require('../models/models');
+const sequelize = require('../db');
 const { Op } = require('sequelize');
 
 const ALLOWED_STATUSES = ['Draft', 'Approved', 'Preparation', 'Scheduled', 'Completed', 'Cancelled'];
@@ -47,15 +48,34 @@ class EventController {
 
   async create(req, res) {
     try {
-      const { title, contractorId, eventDate, startTime, endTime, location, status, notes } = req.body;
+      const { 
+        title, contractorId, status, notes, location,
+        eventDate, startTime, endTime,
+        startEvent, endEvent, 
+        startTimeStartEvent, endTimeStartEvent, 
+        startTimeEndEvent, endTimeEndEvent,
+        countOfPerson
+      } = req.body;
       
       // Lightweight validation
       if (!title) {
         return res.status(400).json({ message: 'Название события обязательно для заполнения' });
       }
-      if (!eventDate) {
+
+      // Backward compatibility logic
+      const finalStartEvent = startEvent || eventDate;
+      if (!finalStartEvent) {
         return res.status(400).json({ message: 'Дата события обязательна для заполнения' });
       }
+      
+      const finalEventDate = finalStartEvent;
+      const finalEndEvent = endEvent || finalStartEvent;
+
+      const finalStartTimeStartEvent = startTimeStartEvent || startTime || null;
+      const finalStartTime = finalStartTimeStartEvent;
+
+      const finalEndTimeEndEvent = endTimeEndEvent || endTime || null;
+      const finalEndTime = finalEndTimeEndEvent;
       
       // Status validation
       const finalStatus = status || 'Draft';
@@ -68,12 +88,24 @@ class EventController {
       const event = await Event.create({
         title,
         contractorId: contractorId || null,
-        eventDate,
-        startTime: startTime || null,
-        endTime: endTime || null,
         location: location || null,
         status: finalStatus,
-        notes: notes || null
+        notes: notes || null,
+        
+        // New schedule fields
+        startEvent: finalStartEvent,
+        endEvent: finalEndEvent,
+        startTimeStartEvent: finalStartTimeStartEvent,
+        endTimeStartEvent: endTimeStartEvent || null,
+        startTimeEndEvent: startTimeEndEvent || null,
+        endTimeEndEvent: finalEndTimeEndEvent,
+        
+        // Compatibility fields
+        eventDate: finalEventDate,
+        startTime: finalStartTime,
+        endTime: finalEndTime,
+        
+        countOfPerson: countOfPerson === '' ? null : countOfPerson
       });
 
       const responseEvent = await Event.findByPk(event.id, {
@@ -88,14 +120,18 @@ class EventController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { title, contractorId, eventDate, startTime, endTime, location, status, notes } = req.body;
+      const { 
+        title, contractorId, status, notes, location,
+        eventDate, startTime, endTime,
+        startEvent, endEvent, 
+        startTimeStartEvent, endTimeStartEvent, 
+        startTimeEndEvent, endTimeEndEvent,
+        countOfPerson
+      } = req.body;
       
       // Lightweight validation
       if (!title) {
         return res.status(400).json({ message: 'Название события обязательно для заполнения' });
-      }
-      if (!eventDate) {
-        return res.status(400).json({ message: 'Дата события обязательна для заполнения' });
       }
       
       // Status validation
@@ -110,15 +146,44 @@ class EventController {
         return res.status(404).json({ message: 'Событие не найдено' });
       }
 
+      // Backward compatibility logic
+      // Prefer new fields if provided; fallback to old fields; fallback to existing DB values
+      const finalStartEvent = startEvent || eventDate || event.startEvent || event.eventDate;
+      if (!finalStartEvent) {
+        return res.status(400).json({ message: 'Дата события обязательна для заполнения' });
+      }
+      const finalEventDate = finalStartEvent;
+      const finalEndEvent = endEvent || finalStartEvent;
+
+      const inputStartTimeStartEvent = startTimeStartEvent !== undefined ? startTimeStartEvent : startTime;
+      const finalStartTimeStartEvent = inputStartTimeStartEvent !== undefined ? inputStartTimeStartEvent : event.startTimeStartEvent;
+      const finalStartTime = finalStartTimeStartEvent;
+
+      const inputEndTimeEndEvent = endTimeEndEvent !== undefined ? endTimeEndEvent : endTime;
+      const finalEndTimeEndEvent = inputEndTimeEndEvent !== undefined ? inputEndTimeEndEvent : event.endTimeEndEvent;
+      const finalEndTime = finalEndTimeEndEvent;
+
       await event.update({
         title,
         contractorId: contractorId !== undefined ? contractorId : event.contractorId,
-        eventDate,
-        startTime: startTime !== undefined ? startTime : event.startTime,
-        endTime: endTime !== undefined ? endTime : event.endTime,
         location: location !== undefined ? location : event.location,
         status: status !== undefined ? status : event.status,
-        notes: notes !== undefined ? notes : event.notes
+        notes: notes !== undefined ? notes : event.notes,
+
+        // New schedule fields
+        startEvent: finalStartEvent,
+        endEvent: finalEndEvent,
+        startTimeStartEvent: finalStartTimeStartEvent,
+        endTimeStartEvent: endTimeStartEvent !== undefined ? endTimeStartEvent : event.endTimeStartEvent,
+        startTimeEndEvent: startTimeEndEvent !== undefined ? startTimeEndEvent : event.startTimeEndEvent,
+        endTimeEndEvent: finalEndTimeEndEvent,
+        
+        // Compatibility fields
+        eventDate: finalEventDate,
+        startTime: finalStartTime,
+        endTime: finalEndTime,
+        
+        countOfPerson: countOfPerson === '' ? null : (countOfPerson !== undefined ? countOfPerson : event.countOfPerson)
       });
 
       const responseEvent = await Event.findByPk(id, {
@@ -141,6 +206,57 @@ class EventController {
       return res.json({ message: 'Событие успешно удалено' });
     } catch (e) {
       return res.status(500).json({ message: 'Ошибка при удалении события', error: e.message });
+    }
+  }
+
+  async propagate(req, res) {
+    try {
+      const { id } = req.params;
+      const { 
+        startEvent, endEvent, 
+        startTimeStartEvent, endTimeStartEvent, 
+        startTimeEndEvent, endTimeEndEvent, 
+        location 
+      } = req.body;
+      
+      const event = await Event.findByPk(id);
+      if (!event) {
+        return res.status(404).json({ message: 'Событие не найдено' });
+      }
+
+      // Update related Kp records
+      await Kp.update({
+        startEvent: startEvent || null,
+        endEvent: endEvent || null,
+        eventPlace: location || null,
+      }, {
+        where: { eventId: id }
+      });
+
+      // Find all linked KPs to update their legacy List records
+      const linkedKps = await Kp.findAll({ where: { eventId: id }, attributes: ['id'] });
+      const kpIds = linkedKps.map(kp => kp.id);
+
+      if (kpIds.length > 0) {
+        // We ensure times are sliced if they are passed as full time strings, 
+        // but prefer direct copy if they are already in HH:MM format as the domain expects.
+        // Actually, Sequelize handles TIME correctly, but we'll ensure we pass them directly.
+        await sequelize.models.list.update({
+          startEvent: startEvent || null,
+          endEvent: endEvent || null,
+          startTimeStartEvent: startTimeStartEvent || null,
+          endTimeStartEvent: endTimeStartEvent || null,
+          startTimeEndEvent: startTimeEndEvent || null,
+          endTimeEndEvent: endTimeEndEvent || null,
+          eventPlace: location || null
+        }, {
+          where: { kpId: kpIds }
+        });
+      }
+
+      return res.json({ message: 'Данные события успешно синхронизированы со связанными КП' });
+    } catch (e) {
+      return res.status(500).json({ message: 'Ошибка при синхронизации события', error: e.message });
     }
   }
 }

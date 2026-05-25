@@ -9,6 +9,7 @@ import ProductPopup from "../../components/ProductPopup/ProductPopup";
 import SavedListsAccordion from "../../components/SavedListsAccordion/SavedListsAccordion";
 import Switcher from "../../components/Switcher/Switcher";
 import ContractorPopup from "../../components/ContractorPopup/ContractorPopup";
+import EventPopup from "../../components/EventPopup/EventPopup";
 import useKpStore from '../../hooks/useKpStore';
 import PageContainer from "../../components/Layout/PageContainer";
 import PageHeader from "../../components/Layout/PageHeader";
@@ -53,6 +54,7 @@ function Form({
   const [products, setProducts] = useState([]);
   const [showProductPopup, setShowProductPopup] = useState(false);
   const [showContractorPopup, setShowContractorPopup] = useState(false);
+  const [showEventPopup, setShowEventPopup] = useState(false);
   const [contractors, setContractors] = useState([]);
   const [events, setEvents] = useState([]);
 
@@ -227,13 +229,7 @@ function Form({
     updateField(name, value); // заменили setFormData на updateField
   };
 
-  // Валидация: пустые даты не блокируют форму; сравниваем только если обе заданы
-  const isDatesValid = (() => {
-    const s = dateToISO(formData.startEvent);
-    const e = dateToISO(formData.endEvent);
-    if (!s || !e) return true;
-    return s <= e;
-  })();
+
 
   const handleEditProduct = useCallback((product) => {
     setProductToEdit(product);
@@ -271,12 +267,7 @@ function Form({
     setProducts(prev => prev.filter(item => item.id !== id));
   }, []);
 
-  const extractPersonsCount = useCallback((notes) => {
-    if (!notes) return '';
-    const regex = /(?:кол-во\s*гостей|гостей|персон|человек)\s*[:-]?\s*(\d+)|(\d+)\s*(?:гостей|персон|человек)/i;
-    const match = notes.match(regex);
-    return match ? (match[1] || match[2]) : '';
-  }, []);
+
 
   const handleEventSelect = useCallback((e) => {
     const selectedId = e.target.value ? Number(e.target.value) : null;
@@ -286,19 +277,21 @@ function Form({
       if (selectedEvent) {
         const newFields = { eventId: selectedId };
         if (selectedEvent.title) newFields.listTitle = selectedEvent.title;
-        if (selectedEvent.eventDate) newFields.startEvent = selectedEvent.eventDate;
-        if (selectedEvent.startTime) newFields.startTimeStartEvent = selectedEvent.startTime.slice(0, 5);
-        if (selectedEvent.endTime) newFields.endTimeEndEvent = selectedEvent.endTime.slice(0, 5);
+        if (selectedEvent.startEvent || selectedEvent.eventDate) newFields.startEvent = selectedEvent.startEvent || selectedEvent.eventDate;
+        if (selectedEvent.endEvent || selectedEvent.eventDate) newFields.endEvent = selectedEvent.endEvent || selectedEvent.eventDate;
+        if (selectedEvent.startTimeStartEvent || selectedEvent.startTime) newFields.startTimeStartEvent = (selectedEvent.startTimeStartEvent || selectedEvent.startTime).slice(0, 5);
+        if (selectedEvent.endTimeStartEvent) newFields.endTimeStartEvent = selectedEvent.endTimeStartEvent.slice(0, 5);
+        if (selectedEvent.startTimeEndEvent) newFields.startTimeEndEvent = selectedEvent.startTimeEndEvent.slice(0, 5);
+        if (selectedEvent.endTimeEndEvent || selectedEvent.endTime) newFields.endTimeEndEvent = (selectedEvent.endTimeEndEvent || selectedEvent.endTime).slice(0, 5);
         if (selectedEvent.location) newFields.eventPlace = selectedEvent.location;
-        const count = extractPersonsCount(selectedEvent.notes);
-        if (count) newFields.countOfPerson = count;
+        if (selectedEvent.countOfPerson) newFields.countOfPerson = String(selectedEvent.countOfPerson);
 
         updateFields(newFields);
       }
     } else {
       updateField('eventId', null);
     }
-  }, [events, updateFields, updateField, extractPersonsCount]);
+  }, [events, updateFields, updateField]);
 
   const handleCreateContractor = async (contractorData) => {
     try {
@@ -309,6 +302,31 @@ function Form({
     } catch (err) {
       console.error('Ошибка при создании контрагента:', err);
       alert('Не удалось создать контрагента. Проверьте консоль.');
+    }
+  };
+
+  const handleCreateEvent = async (eventData) => {
+    try {
+      const createdEvent = await MainApi.createEvent(eventData);
+      setEvents(prev => [...prev, createdEvent]);
+      
+      // Auto-populate KP form data
+      const newFields = { eventId: createdEvent.id };
+      if (createdEvent.title) newFields.listTitle = createdEvent.title;
+      if (createdEvent.startEvent || createdEvent.eventDate) newFields.startEvent = createdEvent.startEvent || createdEvent.eventDate;
+      if (createdEvent.endEvent || createdEvent.eventDate) newFields.endEvent = createdEvent.endEvent || createdEvent.eventDate;
+      if (createdEvent.startTimeStartEvent || createdEvent.startTime) newFields.startTimeStartEvent = (createdEvent.startTimeStartEvent || createdEvent.startTime).slice(0, 5);
+      if (createdEvent.endTimeStartEvent) newFields.endTimeStartEvent = createdEvent.endTimeStartEvent.slice(0, 5);
+      if (createdEvent.startTimeEndEvent) newFields.startTimeEndEvent = createdEvent.startTimeEndEvent.slice(0, 5);
+      if (createdEvent.endTimeEndEvent || createdEvent.endTime) newFields.endTimeEndEvent = (createdEvent.endTimeEndEvent || createdEvent.endTime).slice(0, 5);
+      if (createdEvent.location) newFields.eventPlace = createdEvent.location;
+      if (createdEvent.countOfPerson) newFields.countOfPerson = String(createdEvent.countOfPerson);
+      
+      updateFields(newFields);
+      setShowEventPopup(false);
+    } catch (err) {
+      console.error('Ошибка при создании события:', err);
+      alert('Не удалось создать событие. Проверьте консоль.');
     }
   };
 
@@ -429,93 +447,6 @@ function Form({
           <div className="form__fields">
 
             <div className="form__field">
-              <label className="form__label" htmlFor="startEvent">Дата начала</label>
-              <DatePicker
-                id="startEvent"
-                name="startEvent"
-                data-testid="kp-start-event-date"
-                className={`form__input ${errors.startEvent ? 'error' : ''}`}
-                value={(isNewKp) ? toDDMMYYYY(formData.startEvent) : toDDMMYYYY(formInfo.startEvent)}
-                onValueChange={value => handleInputChange({ target: { name: 'startEvent', value } })}
-              />
-            </div>
-
-            <div className="form__field form__field__time">
-              <div className="form__field">
-                <label className="form__label" htmlFor="startTimeStartEvent">Время начала</label>
-                <Input
-                  width="100%"
-                  type="time"
-                  id="startTimeStartEvent"
-                  name="startTimeStartEvent"
-                  className={`form__input ${errors.startTimeStartEvent ? 'error' : ''}`}
-                  value={formData.startTimeStartEvent}
-                  onValueChange={value => handleInputChange({ target: { name: 'startTimeStartEvent', value } })}
-                />
-
-              </div>
-              <div className="form__field">
-                <label className="form__label" htmlFor="endTimeStartEvent">Время окончания</label>
-                <Input
-                  width="100%"
-                  type="time"
-                  id="endTimeStartEvent"
-                  name="endTimeStartEvent"
-                  className={`form__input ${errors.endTimeStartEvent ? 'error' : ''}`}
-                  value={formData.endTimeStartEvent}
-                  onValueChange={value => handleInputChange({ target: { name: 'endTimeStartEvent', value } })}
-                />
-
-              </div>
-            </div>
-
-            <div className="form__field">
-              <label className="form__label" htmlFor="endEvent">Дата окончания</label>
-              <DatePicker
-                id="endEvent"
-                name="endEvent"
-                data-testid="kp-end-event-date"
-                className={`form__input ${errors.endEvent ? 'error' : ''}`}
-                value={(isNewKp) ? toDDMMYYYY(formData.endEvent) : toDDMMYYYY(formInfo.endEvent)}
-                onValueChange={value => handleInputChange({ target: { name: 'endEvent', value } })}
-              />
-              {!isDatesValid && (
-                <div className="form__error" style={{ color: '#d00', marginTop: 8 }}>
-                  Дата начала не может быть позже даты окончания
-                </div>
-              )}
-            </div>
-
-            <div className="form__field form__field__time">
-              <div className="form__field">
-                <label className="form__label" htmlFor="startTimeEndEvent">Время начала</label>
-                <Input
-                  width="100%"
-                  type="time"
-                  id="startTimeEndEvent"
-                  name="startTimeEndEvent"
-                  className={`form__input ${errors.startTimeEndEvent ? 'error' : ''}`}
-                  value={formData.startTimeEndEvent}
-                  onValueChange={value => handleInputChange({ target: { name: 'startTimeEndEvent', value } })}
-                />
-
-              </div>
-              <div className="form__field">
-                <label className="form__label" htmlFor="endTimeEndEvent">Время окончания</label>
-                <Input
-                  width="100%"
-                  type="time"
-                  id="endTimeEndEvent"
-                  name="endTimeEndEvent"
-                  className={`form__input ${errors.endTimeEndEvent ? 'error' : ''}`}
-                  value={formData.endTimeEndEvent}
-                  onValueChange={value => handleInputChange({ target: { name: 'endTimeEndEvent', value } })}
-                />
-
-              </div>
-            </div>
-
-            <div className="form__field">
               <label className="form__label" htmlFor="contractorId">Контрагент</label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <div style={{ flexGrow: 1 }}>
@@ -551,61 +482,33 @@ function Form({
 
             <div className="form__field">
               <label className="form__label" htmlFor="eventId">Связь с событием</label>
-              <select
-                id="eventId"
-                data-testid="kp-event-select"
-                className="event-form__select"
-                value={formData.eventId || ''}
-                onChange={handleEventSelect}
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', background: 'white' }}
-              >
-                <option value="">— Новое событие —</option>
-                {events.map((ev) => (
-                  <option key={ev.id} value={ev.id}>
-                    {ev.title} ({ev.eventDate})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form__field">
-              <label className="form__label" htmlFor="eventPlace">Место проведения</label>
-              <Input
-                width="100%"
-                id="eventPlace"
-                name="eventPlace"
-                data-testid="kp-event-place"
-                value={formData.eventPlace}
-                className={`form__input ${errors.eventPlace ? 'error' : ''}`}
-                onValueChange={value => handleInputChange({ target: { name: 'eventPlace', value } })}
-              />
-            </div>
-
-            <div className="form__field">
-              <label className="form__label" htmlFor="countOfPerson">Кол-во персон</label>
-              <Input
-                width="100%"
-                type="number"
-                id="countOfPerson"
-                name="countOfPerson"
-                data-testid="kp-count-of-person"
-                className={`form__input ${errors.countOfPerson ? 'error' : ''}`}
-                value={formData.countOfPerson}
-                onValueChange={value => handleInputChange({ target: { name: 'countOfPerson', value } })}
-              />
-            </div>
-
-            <div className="form__field form__field--full">
-              <label className="form__label" htmlFor="listTitle">Название мероприятия</label>
-              <Input
-                width="100%"
-                id="listTitle"
-                name="listTitle"
-                data-testid="kp-event-title"
-                className={`form__input ${errors.listTitle ? 'error' : ''}`}
-                value={formData.listTitle}
-                onValueChange={value => handleInputChange({ target: { name: 'listTitle', value } })}
-              />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{ flexGrow: 1 }}>
+                  <select
+                    id="eventId"
+                    data-testid="kp-event-select"
+                    className="event-form__select"
+                    value={formData.eventId || ''}
+                    onChange={handleEventSelect}
+                    style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', background: 'white' }}
+                  >
+                    <option value="">— Новое событие —</option>
+                    {events.map((ev) => (
+                      <option key={ev.id} value={ev.id}>
+                        {ev.title} ({ev.eventDate || ev.startEvent})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <span data-testid="add-event-btn">
+                  <Button
+                    use="default"
+                    icon={<Add />}
+                    onClick={() => setShowEventPopup(true)}
+                    title="Создать событие"
+                  />
+                </span>
+              </div>
             </div>
 
           </div>
@@ -765,6 +668,15 @@ function Form({
             <ContractorPopup
               onClose={() => setShowContractorPopup(false)}
               onSave={handleCreateContractor}
+            />
+          )}
+
+          {showEventPopup && (
+            <EventPopup
+              onClose={() => setShowEventPopup(false)}
+              onSave={handleCreateEvent}
+              contractors={contractors}
+              initialContractorId={formData.contractorId}
             />
           )}
         </div>

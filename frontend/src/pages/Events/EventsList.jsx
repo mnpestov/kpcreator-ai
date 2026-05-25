@@ -117,68 +117,28 @@ const EventsList = () => {
           )}
         </div>
       ) : (
-        <div className="events-table-wrapper">
-          <table className="events-table">
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th>Название</th>
-                <th>Контрагент</th>
-                <th>Статус</th>
-                <th>Место</th>
-                <th style={{ width: '100px', textAlign: 'right' }}>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map((ev) => (
-                <tr key={ev.id}>
-                  <td>{formatDate(ev.eventDate)}</td>
-                  <td
-                    className="events-table__title"
-                    onClick={() => navigate(`/events/${ev.id}`)}
-                  >
-                    {ev.title}
-                  </td>
-                  <td className="events-table__truncate">
-                    {ev.Contractor?.companyName || (
-                      <span className="events-table__empty-cell">—</span>
-                    )}
-                  </td>
-                  <td>
-                    <span className={`events-status-badge events-status-badge--${ev.status}`}>
-                      {STATUS_LABELS[ev.status] || ev.status}
-                    </span>
-                  </td>
-                  <td className="events-table__truncate">
-                    {ev.location || <span className="events-table__empty-cell">—</span>}
-                  </td>
-                  <td className="events-table__actions">
-                    <button
-                      className="events-table__action-btn"
-                      onClick={() => navigate(`/events/${ev.id}`)}
-                      title="Просмотреть"
-                    >
-                      👁
-                    </button>
-                    <button
-                      className="events-table__action-btn"
-                      onClick={() => navigate(`/events/${ev.id}/edit`)}
-                      title="Редактировать"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="events-table__action-btn events-table__action-btn--delete"
-                      onClick={() => handleDelete(ev.id, ev.title)}
-                      title="Удалить"
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="events-stream">
+          {events.map((ev) => (
+            <div
+              key={ev.id}
+              className="event-card"
+              onClick={() => navigate(`/events/${ev.id}`)}
+            >
+              <div className="event-card__identity">
+                <div className="event-card__title" title={ev.title}>{ev.title}</div>
+                <div className="event-card__date">{formatDate(ev.eventDate)}</div>
+              </div>
+
+              <div className="event-card__context">
+                <div className="event-card__contractor" title={ev.Contractor?.companyName || '—'}>
+                  {ev.Contractor?.companyName || '—'}
+                </div>
+                <div className="event-card__location" title={`${ev.location || '—'} • Гостей: ${ev.countOfPerson || '—'}`}>
+                  {ev.location || '—'} • Гостей: {ev.countOfPerson || '—'}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </PageContainer>

@@ -103,53 +103,29 @@ const ContractorsList = () => {
           )}
         </div>
       ) : (
-        <div className="contractors-table-wrapper">
-          <table className="contractors-table">
-            <thead>
-              <tr>
-                <th>Компания</th>
-                <th>Контактное лицо</th>
-                <th>Телефон</th>
-                <th>Email</th>
-                <th style={{ width: '120px', textAlign: 'right' }}>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contractors.map((c) => (
-                <tr key={c.id}>
-                  <td className="contractors-table__company" onClick={() => navigate(`/contractors/${c.id}`)}>
-                    {c.companyName}
-                  </td>
-                  <td>{c.contactPerson || <span className="contractors-table__empty-cell">—</span>}</td>
-                  <td>{c.phone || <span className="contractors-table__empty-cell">—</span>}</td>
-                  <td>{c.email || <span className="contractors-table__empty-cell">—</span>}</td>
-                  <td className="contractors-table__actions">
-                    <button
-                      className="contractors-table__action-btn"
-                      onClick={() => navigate(`/contractors/${c.id}`)}
-                      title="Просмотреть"
-                    >
-                      👁
-                    </button>
-                    <button
-                      className="contractors-table__action-btn"
-                      onClick={() => navigate(`/contractors/${c.id}/edit`)}
-                      title="Редактировать"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="contractors-table__action-btn contractors-table__action-btn--delete"
-                      onClick={() => handleDelete(c.id, c.companyName)}
-                      title="Удалить"
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="contractors-stream">
+          {contractors.map((c) => (
+            <div 
+              key={c.id} 
+              className="contractor-card"
+              onClick={() => navigate(`/contractors/${c.id}`)}
+            >
+              <div className="contractor-card__identity">
+                <div className="contractor-card__title" title={c.companyName}>
+                  {c.companyName}
+                </div>
+              </div>
+
+              <div className="contractor-card__context">
+                <div className="contractor-card__person" title={c.contactPerson || '—'}>
+                  {c.contactPerson || '—'}
+                </div>
+                <div className="contractor-card__contacts" title={`${c.phone || '—'} • ${c.email || '—'}`}>
+                  {c.phone || '—'} • {c.email || '—'}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </PageContainer>

@@ -319,11 +319,14 @@ function App() {
         console.log('Auto-creating event from KP data...');
         const newEventPayload = {
           title: formData.listTitle,
-          eventDate: toISO(formData.startEvent),
-          startTime: toHHMM(formData.startTimeStartEvent) || null,
-          endTime: toHHMM(formData.endTimeEndEvent) || null,
           location: formData.eventPlace,
-          notes: formData.countOfPerson ? `Кол-во гостей: ${formData.countOfPerson}` : null
+          countOfPerson: (formData.countOfPerson === '' || formData.countOfPerson == null) ? null : Number(formData.countOfPerson),
+          startEvent: toISO(formData.startEvent) || null,
+          endEvent: toISO(formData.endEvent) || null,
+          startTimeStartEvent: toHHMM(formData.startTimeStartEvent) || null,
+          endTimeStartEvent: toHHMM(formData.endTimeStartEvent) || null,
+          startTimeEndEvent: toHHMM(formData.startTimeEndEvent) || null,
+          endTimeEndEvent: toHHMM(formData.endTimeEndEvent) || null
         };
         const createdEvent = await MainApi.createEvent(newEventPayload);
         finalEventId = createdEvent.id;
