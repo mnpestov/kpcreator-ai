@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.TIME,
         allowNull: true
       },
-      location: {
+      eventPlace: {
         type: Sequelize.STRING,
         allowNull: true
       },

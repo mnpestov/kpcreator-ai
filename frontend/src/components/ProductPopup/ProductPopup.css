@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
+    z-index: 4000;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -152,27 +152,27 @@
 
 /* Исправление z-index для Select из @skbkontur/react-ui */
 .popup [data-comp-name="Select"] {
-    z-index: 10002 !important;
+    z-index: 4002 !important;
     position: relative;
 }
 
 .popup [data-comp-name="DropdownContainer"] {
-    z-index: 10003 !important;
+    z-index: 4003 !important;
 }
 
 .popup [data-comp-name="Menu"] {
-    z-index: 10004 !important;
+    z-index: 4004 !important;
 }
 
 .popup-overlay {
-    z-index: 10000;
+    z-index: 4000;
 }
 
 .popup {
-    z-index: 10001;
+    z-index: 4001;
     position: relative;
 }
 
 .suggestions-list {
-    z-index: 10005;
+    z-index: 4005;
 }

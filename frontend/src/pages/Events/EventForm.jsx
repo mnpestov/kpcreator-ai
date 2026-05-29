@@ -27,7 +27,7 @@ const EMPTY_FORM = {
   endTimeStartEvent: '',
   startTimeEndEvent: '',
   endTimeEndEvent: '',
-  location: '',
+  eventPlace: '',
   countOfPerson: '',
   status: 'Draft',
   notes: '',
@@ -73,7 +73,7 @@ const EventForm = () => {
           startTimeEndEvent: res.startTimeEndEvent || '',
           endTimeEndEvent: res.endTimeEndEvent || res.endTime || '',
           countOfPerson: res.countOfPerson || '',
-          location: res.location || '',
+          eventPlace: res.eventPlace || '',
           status: res.status || 'Draft',
           notes: res.notes || '',
         };
@@ -126,7 +126,7 @@ const EventForm = () => {
         startTimeEndEvent: form.startTimeEndEvent === '' ? null : form.startTimeEndEvent,
         endTimeEndEvent: form.endTimeEndEvent === '' ? null : form.endTimeEndEvent,
         countOfPerson: form.countOfPerson === '' ? null : form.countOfPerson,
-        location: form.location || null,
+        eventPlace: form.eventPlace || null,
         status: form.status,
         notes: form.notes || null,
       };
@@ -144,7 +144,7 @@ const EventForm = () => {
             form.eventDate !== initialForm.eventDate ||
             form.startTime !== initialForm.startTime ||
             form.endTime !== initialForm.endTime ||
-            form.location !== initialForm.location;
+            form.eventPlace !== initialForm.eventPlace;
 
           if (isScheduleChanged && linkedKpCount > 0) {
             if (window.confirm("Обновить дату/тайминг/адрес в связанных КП?")) {
@@ -337,10 +337,10 @@ const EventForm = () => {
               <label className="event-form__label">Место проведения</label>
               <Input
                 width="100%"
-                value={form.location}
-                data-testid="event-location"
+                value={form.eventPlace}
+                data-testid="event-eventPlace"
                 placeholder="Ресторан «Арбат», Москва"
-                onValueChange={(val) => handleChange('location', val)}
+                onValueChange={(val) => handleChange('eventPlace', val)}
               />
             </div>
           </div>

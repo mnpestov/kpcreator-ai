@@ -30,7 +30,7 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
         endTimeStartEvent: "",
         startTimeEndEvent: "",
         endTimeEndEvent: "",
-        location: "",
+        eventPlace: "",
         countOfPerson: "",
     });
 
@@ -38,7 +38,11 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
 
     useEffect(() => {
         function handleClickOutside(event) {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
+            if (
+                modalRef.current && 
+                !modalRef.current.contains(event.target) &&
+                !event.target.closest('.react-ui')
+            ) {
                 onClose();
             }
         }
@@ -77,9 +81,21 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
             return;
         }
 
+        const normalizeDate = (value) => {
+            if (!value) return null;
+            if (/^\d{2}\.\d{2}\.\d{4}$/.test(value)) {
+                const [day, month, year] = value.split('.');
+                return `${year}-${month}-${day}`;
+            }
+            return value;
+        };
+
         // Convert to payload expected by backend
         const payload = {
             ...formData,
+            startEvent: normalizeDate(formData.startEvent),
+            endEvent: normalizeDate(formData.endEvent),
+            eventDate: normalizeDate(formData.startEvent),
             // Format time properly (e.g. padding, validation if necessary - handled by Input type="time" or backend)
             countOfPerson: formData.countOfPerson ? Number(formData.countOfPerson) : null,
             contractorId: formData.contractorId === 'none' ? null : formData.contractorId
@@ -144,7 +160,8 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
                         <DatePicker
                             id="startEvent"
                             name="startEvent"
-                            value={toDDMMYYYY(formData.startEvent)}
+                            width="100%"
+                            value={formData.startEvent}
                             onValueChange={value => handleChange({ target: { name: 'startEvent', value } })}
                         />
                     </div>
@@ -181,7 +198,8 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
                         <DatePicker
                             id="endEvent"
                             name="endEvent"
-                            value={toDDMMYYYY(formData.endEvent)}
+                            width="100%"
+                            value={formData.endEvent}
                             onValueChange={value => handleChange({ target: { name: 'endEvent', value } })}
                         />
                     </div>
@@ -214,14 +232,14 @@ function EventPopup({ onClose, onSave, contractors = [], initialContractorId = n
                     <div className="event-popup__section-title">Логистика</div>
 
                     <div className="form__field">
-                        <label htmlFor="location" className="form__label" style={{ display: 'block', marginBottom: '8px' }}>
+                        <label htmlFor="eventPlace" className="form__label" style={{ display: 'block', marginBottom: '8px' }}>
                             Место проведения
                         </label>
                         <Input
-                            id="location"
-                            name="location"
-                            value={formData.location}
-                            onValueChange={value => handleChange({ target: { name: 'location', value } })}
+                            id="eventPlace"
+                            name="eventPlace"
+                            value={formData.eventPlace}
+                            onValueChange={value => handleChange({ target: { name: 'eventPlace', value } })}
                             width="100%"
                         />
                     </div>

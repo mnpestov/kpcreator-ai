@@ -130,7 +130,7 @@ const EventDetails = () => {
             <div className="event-details__field">
               <span className="event-details__label">Место проведения</span>
               <span className="event-details__value">
-                {event.location || <span className="event-details__empty">—</span>}
+                {event.eventPlace || <span className="event-details__empty">—</span>}
               </span>
             </div>
 

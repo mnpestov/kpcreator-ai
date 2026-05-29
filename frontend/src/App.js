@@ -27,6 +27,7 @@ import useAuthStore from './hooks/useAuthStore.js';
 import useKpStore from './hooks/useKpStore';
 import { kpPreviewSelectors, kpPrintSelectors } from './utils/const.js'
 import { calculateKpTotal } from './utils/calculateKpTotal';
+import PrototypeKp from './pages/Prototype/PrototypeKp';
 
 function App() {
   const [isNewKp, setIsNewKp] = useState(true)
@@ -319,7 +320,7 @@ function App() {
         console.log('Auto-creating event from KP data...');
         const newEventPayload = {
           title: formData.listTitle,
-          location: formData.eventPlace,
+          eventPlace: formData.eventPlace,
           countOfPerson: (formData.countOfPerson === '' || formData.countOfPerson == null) ? null : Number(formData.countOfPerson),
           startEvent: toISO(formData.startEvent) || null,
           endEvent: toISO(formData.endEvent) || null,
@@ -695,6 +696,9 @@ function App() {
             <Route path="/menu/new" element={<MenuForm />} />
             <Route path="/menu/:id" element={<MenuDetails />} />
             <Route path="/menu/:id/edit" element={<MenuForm />} />
+
+            {/* Страница экспериментального прототипа */}
+            <Route path="/prototype" element={<PrototypeKp />} />
 
             {/* Страница формы нового КП */}
             <Route

@@ -133,8 +133,8 @@ const EventsList = () => {
                 <div className="event-card__contractor" title={ev.Contractor?.companyName || '—'}>
                   {ev.Contractor?.companyName || '—'}
                 </div>
-                <div className="event-card__location" title={`${ev.location || '—'} • Гостей: ${ev.countOfPerson || '—'}`}>
-                  {ev.location || '—'} • Гостей: {ev.countOfPerson || '—'}
+                <div className="event-card__location" title={`${ev.eventPlace || '—'} • Гостей: ${ev.countOfPerson || '—'}`}>
+                  {ev.eventPlace || '—'} • Гостей: {ev.countOfPerson || '—'}
                 </div>
               </div>
             </div>

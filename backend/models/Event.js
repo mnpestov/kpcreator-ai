@@ -55,7 +55,7 @@ const Event = sequelize.define('Event', {
     type: DataTypes.TIME,
     allowNull: true
   },
-  location: {
+  eventPlace: {
     type: DataTypes.STRING,
     allowNull: true
   },

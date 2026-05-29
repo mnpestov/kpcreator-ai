@@ -283,7 +283,7 @@ function Form({
         if (selectedEvent.endTimeStartEvent) newFields.endTimeStartEvent = selectedEvent.endTimeStartEvent.slice(0, 5);
         if (selectedEvent.startTimeEndEvent) newFields.startTimeEndEvent = selectedEvent.startTimeEndEvent.slice(0, 5);
         if (selectedEvent.endTimeEndEvent || selectedEvent.endTime) newFields.endTimeEndEvent = (selectedEvent.endTimeEndEvent || selectedEvent.endTime).slice(0, 5);
-        if (selectedEvent.location) newFields.eventPlace = selectedEvent.location;
+        if (selectedEvent.eventPlace) newFields.eventPlace = selectedEvent.eventPlace;
         if (selectedEvent.countOfPerson) newFields.countOfPerson = String(selectedEvent.countOfPerson);
 
         updateFields(newFields);
@@ -319,7 +319,7 @@ function Form({
       if (createdEvent.endTimeStartEvent) newFields.endTimeStartEvent = createdEvent.endTimeStartEvent.slice(0, 5);
       if (createdEvent.startTimeEndEvent) newFields.startTimeEndEvent = createdEvent.startTimeEndEvent.slice(0, 5);
       if (createdEvent.endTimeEndEvent || createdEvent.endTime) newFields.endTimeEndEvent = (createdEvent.endTimeEndEvent || createdEvent.endTime).slice(0, 5);
-      if (createdEvent.location) newFields.eventPlace = createdEvent.location;
+      if (createdEvent.eventPlace) newFields.eventPlace = createdEvent.eventPlace;
       if (createdEvent.countOfPerson) newFields.countOfPerson = String(createdEvent.countOfPerson);
       
       updateFields(newFields);

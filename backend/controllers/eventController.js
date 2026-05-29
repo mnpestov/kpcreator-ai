@@ -13,7 +13,7 @@ class EventController {
         where = {
           [Op.or]: [
             { title: { [Op.iLike]: `%${search}%` } },
-            { location: { [Op.iLike]: `%${search}%` } }
+            { eventPlace: { [Op.iLike]: `%${search}%` } }
           ]
         };
       }
@@ -49,7 +49,7 @@ class EventController {
   async create(req, res) {
     try {
       const { 
-        title, contractorId, status, notes, location,
+        title, contractorId, status, notes, eventPlace,
         eventDate, startTime, endTime,
         startEvent, endEvent, 
         startTimeStartEvent, endTimeStartEvent, 
@@ -62,19 +62,21 @@ class EventController {
         return res.status(400).json({ message: 'Название события обязательно для заполнения' });
       }
 
+      const normalizeTime = (v) => v === '' ? null : v;
+
       // Backward compatibility logic
-      const finalStartEvent = startEvent || eventDate;
+      const finalStartEvent = normalizeTime(startEvent || eventDate);
       if (!finalStartEvent) {
         return res.status(400).json({ message: 'Дата события обязательна для заполнения' });
       }
       
       const finalEventDate = finalStartEvent;
-      const finalEndEvent = endEvent || finalStartEvent;
+      const finalEndEvent = normalizeTime(endEvent || finalStartEvent);
 
-      const finalStartTimeStartEvent = startTimeStartEvent || startTime || null;
+      const finalStartTimeStartEvent = normalizeTime(startTimeStartEvent || startTime);
       const finalStartTime = finalStartTimeStartEvent;
 
-      const finalEndTimeEndEvent = endTimeEndEvent || endTime || null;
+      const finalEndTimeEndEvent = normalizeTime(endTimeEndEvent || endTime);
       const finalEndTime = finalEndTimeEndEvent;
       
       // Status validation
@@ -88,7 +90,7 @@ class EventController {
       const event = await Event.create({
         title,
         contractorId: contractorId || null,
-        location: location || null,
+        eventPlace: eventPlace || null,
         status: finalStatus,
         notes: notes || null,
         
@@ -96,8 +98,8 @@ class EventController {
         startEvent: finalStartEvent,
         endEvent: finalEndEvent,
         startTimeStartEvent: finalStartTimeStartEvent,
-        endTimeStartEvent: endTimeStartEvent || null,
-        startTimeEndEvent: startTimeEndEvent || null,
+        endTimeStartEvent: normalizeTime(endTimeStartEvent),
+        startTimeEndEvent: normalizeTime(startTimeEndEvent),
         endTimeEndEvent: finalEndTimeEndEvent,
         
         // Compatibility fields
@@ -113,6 +115,11 @@ class EventController {
       });
       return res.json(responseEvent);
     } catch (e) {
+      console.error(e);
+      console.error("error.message:", e.message);
+      console.error("error.errors:", e.errors);
+      console.error("error.parent:", e.parent);
+      console.error("error.original:", e.original);
       return res.status(500).json({ message: 'Ошибка при создании события', error: e.message });
     }
   }
@@ -121,7 +128,7 @@ class EventController {
     try {
       const { id } = req.params;
       const { 
-        title, contractorId, status, notes, location,
+        title, contractorId, status, notes, eventPlace,
         eventDate, startTime, endTime,
         startEvent, endEvent, 
         startTimeStartEvent, endTimeStartEvent, 
@@ -146,27 +153,29 @@ class EventController {
         return res.status(404).json({ message: 'Событие не найдено' });
       }
 
+      const normalizeTime = (v) => v === '' ? null : v;
+
       // Backward compatibility logic
       // Prefer new fields if provided; fallback to old fields; fallback to existing DB values
-      const finalStartEvent = startEvent || eventDate || event.startEvent || event.eventDate;
+      const finalStartEvent = normalizeTime(startEvent || eventDate || event.startEvent || event.eventDate);
       if (!finalStartEvent) {
         return res.status(400).json({ message: 'Дата события обязательна для заполнения' });
       }
       const finalEventDate = finalStartEvent;
-      const finalEndEvent = endEvent || finalStartEvent;
+      const finalEndEvent = normalizeTime(endEvent || finalStartEvent);
 
       const inputStartTimeStartEvent = startTimeStartEvent !== undefined ? startTimeStartEvent : startTime;
-      const finalStartTimeStartEvent = inputStartTimeStartEvent !== undefined ? inputStartTimeStartEvent : event.startTimeStartEvent;
+      const finalStartTimeStartEvent = normalizeTime(inputStartTimeStartEvent !== undefined ? inputStartTimeStartEvent : event.startTimeStartEvent);
       const finalStartTime = finalStartTimeStartEvent;
 
       const inputEndTimeEndEvent = endTimeEndEvent !== undefined ? endTimeEndEvent : endTime;
-      const finalEndTimeEndEvent = inputEndTimeEndEvent !== undefined ? inputEndTimeEndEvent : event.endTimeEndEvent;
+      const finalEndTimeEndEvent = normalizeTime(inputEndTimeEndEvent !== undefined ? inputEndTimeEndEvent : event.endTimeEndEvent);
       const finalEndTime = finalEndTimeEndEvent;
 
       await event.update({
         title,
         contractorId: contractorId !== undefined ? contractorId : event.contractorId,
-        location: location !== undefined ? location : event.location,
+        eventPlace: eventPlace !== undefined ? eventPlace : event.eventPlace,
         status: status !== undefined ? status : event.status,
         notes: notes !== undefined ? notes : event.notes,
 
@@ -174,8 +183,8 @@ class EventController {
         startEvent: finalStartEvent,
         endEvent: finalEndEvent,
         startTimeStartEvent: finalStartTimeStartEvent,
-        endTimeStartEvent: endTimeStartEvent !== undefined ? endTimeStartEvent : event.endTimeStartEvent,
-        startTimeEndEvent: startTimeEndEvent !== undefined ? startTimeEndEvent : event.startTimeEndEvent,
+        endTimeStartEvent: normalizeTime(endTimeStartEvent !== undefined ? endTimeStartEvent : event.endTimeStartEvent),
+        startTimeEndEvent: normalizeTime(startTimeEndEvent !== undefined ? startTimeEndEvent : event.startTimeEndEvent),
         endTimeEndEvent: finalEndTimeEndEvent,
         
         // Compatibility fields
@@ -191,6 +200,11 @@ class EventController {
       });
       return res.json(responseEvent);
     } catch (e) {
+      console.error(e);
+      console.error("error.message:", e.message);
+      console.error("error.errors:", e.errors);
+      console.error("error.parent:", e.parent);
+      console.error("error.original:", e.original);
       return res.status(500).json({ message: 'Ошибка при обновлении события', error: e.message });
     }
   }
@@ -216,7 +230,7 @@ class EventController {
         startEvent, endEvent, 
         startTimeStartEvent, endTimeStartEvent, 
         startTimeEndEvent, endTimeEndEvent, 
-        location 
+        eventPlace 
       } = req.body;
       
       const event = await Event.findByPk(id);
@@ -228,7 +242,7 @@ class EventController {
       await Kp.update({
         startEvent: startEvent || null,
         endEvent: endEvent || null,
-        eventPlace: location || null,
+        eventPlace: eventPlace || null,
       }, {
         where: { eventId: id }
       });
@@ -248,7 +262,7 @@ class EventController {
           endTimeStartEvent: endTimeStartEvent || null,
           startTimeEndEvent: startTimeEndEvent || null,
           endTimeEndEvent: endTimeEndEvent || null,
-          eventPlace: location || null
+          eventPlace: eventPlace || null
         }, {
           where: { kpId: kpIds }
         });
