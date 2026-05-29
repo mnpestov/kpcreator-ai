@@ -74,7 +74,7 @@ function App() {
   }, [initAuth]);
 
   useEffect(() => {
-    if (location.pathname === '/new') {
+    if (location.pathname === '/new' || location.pathname === '/new-legacy') {
       setIsNewKp(true);
       resetFormData();
       resetListsKp();
@@ -697,12 +697,20 @@ function App() {
             <Route path="/menu/:id" element={<MenuDetails />} />
             <Route path="/menu/:id/edit" element={<MenuForm />} />
 
-            {/* Страница экспериментального прототипа */}
-            <Route path="/prototype" element={<PrototypeKp />} />
+            {/* Страница экспериментального прототипа (теперь основная форма создания) */}
+            <Route 
+              path="/new" 
+              element={
+                <PrototypeKp 
+                  addToDb={addToDb} 
+                  isNewKp={isNewKp} 
+                />
+              } 
+            />
 
-            {/* Страница формы нового КП */}
+            {/* Старая страница формы нового КП (legacy) */}
             <Route
-              path="/new"
+              path="/new-legacy"
               element={
                 <Form
                   dateToISO={toISO}

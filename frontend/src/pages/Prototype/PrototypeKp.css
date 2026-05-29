@@ -580,6 +580,18 @@
 .proto-ac-meta {
   font-size: 14px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+/* Catalog dropdown inline expansion (Mobile-first fix) */
+.proto-quick-add .proto-autocomplete {
+  position: relative;
+  top: auto;
+  left: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Softer shadow for inline */
+  margin-top: 8px;
 }
 
 /* --- Presets --- */

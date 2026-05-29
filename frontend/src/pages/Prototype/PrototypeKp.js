@@ -3,82 +3,74 @@ import { useNavigate } from 'react-router-dom';
 import useKpStore from '../../hooks/useKpStore';
 import useIsMobile from '../../hooks/useIsMobile';
 import useDocumentAwareness from '../../hooks/useDocumentAwareness';
+import { MainApi } from '../../utils/MainApi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './PrototypeKp.css';
 
 // ------------------------------------------------------------------
 // MOCK DATA
 // ------------------------------------------------------------------
-const MOCK_CATALOG = [
-  { id: 1, product: 'Канапе с лососем', composition: 'Лосось с/с, сливочный сыр, укроп, багет', typeOfProduct: 'eat', priceOfProduct: 250, productWeight: 30 },
-  { id: 2, product: 'Брускетта с ростбифом', composition: 'Ростбиф, вяленые томаты, руккола, соус песто', typeOfProduct: 'eat', priceOfProduct: 320, productWeight: 45 },
-  { id: 3, product: 'Мини-бургер с говядиной', composition: 'Говяжья котлета, чеддер, томат, лист салата', typeOfProduct: 'eat', priceOfProduct: 450, productWeight: 80 },
-  { id: 4, product: 'Тарталетка с икрой', composition: 'Красная икра, масло сливочное, зелень', typeOfProduct: 'eat', priceOfProduct: 550, productWeight: 25 },
-  { id: 5, product: 'Ассорти сыров с медом', composition: 'Пармезан, дор блю, камамбер, мед, орехи', typeOfProduct: 'eat', priceOfProduct: 1200, productWeight: 300 },
-  { id: 6, product: 'Фруктовая тарелка', composition: 'Ананас, виноград, киви, клубника', typeOfProduct: 'eat', priceOfProduct: 900, productWeight: 500 },
-  { id: 7, product: 'Лимонад цитрусовый', composition: 'Апельсин, лимон, мята, сироп, содовая', typeOfProduct: 'drink', priceOfProduct: 300, productWeight: 1000 },
-  { id: 8, product: 'Кофе американо', composition: 'Свежесваренный кофе', typeOfProduct: 'drink', priceOfProduct: 150, productWeight: 200 },
-  { id: 9, product: 'Аренда бокалов', composition: 'Бокалы для вина', typeOfProduct: 'organisation', priceOfProduct: 50, productWeight: 0 },
-  { id: 10, product: 'Официант', composition: 'Обслуживание мероприятия (до 8 часов)', typeOfProduct: 'organisation', priceOfProduct: 5000, productWeight: 0 }
-];
 
 const SHOW_CALIBRATION_METRICS = true;
 
 const INITIAL_SHEETS = [
-  {
-    id: 's1',
-    title: '1. Без описаний (Baseline)',
-    rows: Array.from({ length: 8 }).map((_, i) => ({
-      id: `s1-r${i}`, product: `Короткая позиция ${i + 1}`, composition: '', countOfProduct: 10, priceOfProduct: 500, productWeight: 100, typeOfProduct: 'eat'
-    }))
-  },
-  {
-    id: 's2',
-    title: '2. Очень длинные описания',
-    rows: [
-      { id: 's2-r1', product: 'Сложное банкетное блюдо', composition: 'Нежнейшее филе фермерской говядины, маринованное в травах прованса на протяжении 24 часов, подается с муссом из белых грибов, трюфельным маслом, конфи из томатов черри и микрозеленью, сервируется на подушке из пюре батата с копченой паприкой. Идеальный выбор для гурманов.', countOfProduct: 1, priceOfProduct: 2500, productWeight: 350, typeOfProduct: 'eat' },
-      { id: 's2-r2', product: 'Эксклюзивный десерт', composition: 'Многослойный авторский торт: бисквит дакуаз на миндальной муке, хрустящий слой с пралине из фундука и молочного шоколада, конфи из манго и маракуйи с добавлением лайма, легкий мусс на основе белого бельгийского шоколада с натуральной ванилью Бурбон.', countOfProduct: 1, priceOfProduct: 1800, productWeight: 200, typeOfProduct: 'eat' }
-    ]
-  },
-  {
-    id: 's3',
-    title: '3. Длинные названия',
-    rows: [
-      { id: 's3-r1', product: 'Свежевыжатый сок из отборных сицилийских апельсинов прямого отжима без добавления сахара', composition: '200 мл', countOfProduct: 10, priceOfProduct: 300, productWeight: 200, typeOfProduct: 'drink' },
-      { id: 's3-r2', product: 'Мини-бургер с мраморной говядиной Black Angus, карамелизованным луком и соусом дор-блю', composition: 'Сытно', countOfProduct: 15, priceOfProduct: 550, productWeight: 150, typeOfProduct: 'eat' }
-    ]
-  },
-  {
-    id: 's4',
-    title: '4. Смешанная плотность (Overflow test)',
-    rows: [
-      { id: 's4-r1', product: 'Позиция 1', composition: 'Обычное описание средней длины для теста.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r2', product: 'Позиция 2', composition: 'Очень длинное описание для теста переполнения страницы, которое должно занять несколько строк и существенно повлиять на общую высоту блока в документе.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r3', product: 'Позиция 3', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r4', product: 'Позиция 4', composition: 'Коротко', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r5', product: 'Длинное название позиции для проверки того как оно переносится на новую строку без описания', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r6', product: 'Позиция 6', composition: 'Еще одно длинное описание для теста переполнения страницы, которое должно занять несколько строк и существенно повлиять на общую высоту.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r7', product: 'Позиция 7', composition: 'Обычное описание.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-      { id: 's4-r8', product: 'Позиция 8', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
-    ]
-  }
+  // {
+  //   id: 's1',
+  //   title: '1. Без описаний (Baseline)',
+  //   rows: Array.from({ length: 8 }).map((_, i) => ({
+  //     id: `s1-r${i}`, product: `Короткая позиция ${i + 1}`, composition: '', countOfProduct: 10, priceOfProduct: 500, productWeight: 100, typeOfProduct: 'eat'
+  //   }))
+  // },
+  // {
+  //   id: 's2',
+  //   title: '2. Очень длинные описания',
+  //   rows: [
+  //     { id: 's2-r1', product: 'Сложное банкетное блюдо', composition: 'Нежнейшее филе фермерской говядины, маринованное в травах прованса на протяжении 24 часов, подается с муссом из белых грибов, трюфельным маслом, конфи из томатов черри и микрозеленью, сервируется на подушке из пюре батата с копченой паприкой. Идеальный выбор для гурманов.', countOfProduct: 1, priceOfProduct: 2500, productWeight: 350, typeOfProduct: 'eat' },
+  //     { id: 's2-r2', product: 'Эксклюзивный десерт', composition: 'Многослойный авторский торт: бисквит дакуаз на миндальной муке, хрустящий слой с пралине из фундука и молочного шоколада, конфи из манго и маракуйи с добавлением лайма, легкий мусс на основе белого бельгийского шоколада с натуральной ванилью Бурбон.', countOfProduct: 1, priceOfProduct: 1800, productWeight: 200, typeOfProduct: 'eat' }
+  //   ]
+  // },
+  // {
+  //   id: 's3',
+  //   title: '3. Длинные названия',
+  //   rows: [
+  //     { id: 's3-r1', product: 'Свежевыжатый сок из отборных сицилийских апельсинов прямого отжима без добавления сахара', composition: '200 мл', countOfProduct: 10, priceOfProduct: 300, productWeight: 200, typeOfProduct: 'drink' },
+  //     { id: 's3-r2', product: 'Мини-бургер с мраморной говядиной Black Angus, карамелизованным луком и соусом дор-блю', composition: 'Сытно', countOfProduct: 15, priceOfProduct: 550, productWeight: 150, typeOfProduct: 'eat' }
+  //   ]
+  // },
+  // {
+  //   id: 's4',
+  //   title: '4. Смешанная плотность (Overflow test)',
+  //   rows: [
+  //     { id: 's4-r1', product: 'Позиция 1', composition: 'Обычное описание средней длины для теста.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r2', product: 'Позиция 2', composition: 'Очень длинное описание для теста переполнения страницы, которое должно занять несколько строк и существенно повлиять на общую высоту блока в документе.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r3', product: 'Позиция 3', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r4', product: 'Позиция 4', composition: 'Коротко', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r5', product: 'Длинное название позиции для проверки того как оно переносится на новую строку без описания', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r6', product: 'Позиция 6', composition: 'Еще одно длинное описание для теста переполнения страницы, которое должно занять несколько строк и существенно повлиять на общую высоту.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r7', product: 'Позиция 7', composition: 'Обычное описание.', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //     { id: 's4-r8', product: 'Позиция 8', composition: '', countOfProduct: 5, priceOfProduct: 300, productWeight: 100, typeOfProduct: 'eat' },
+  //   ]
+  // }
 ];
 
 // ------------------------------------------------------------------
 // COMPONENTS
 // ------------------------------------------------------------------
 
-function Autocomplete({ query, onSelect, activeIndex, onCreateCustom }) {
-  if (!query) return null;
-  const filtered = MOCK_CATALOG.filter(item => 
-    item.product.toLowerCase().includes(query.toLowerCase())
+function Autocomplete({ query, onSelect, activeIndex, onCreateCustom, catalog = [] }) {
+  const filtered = (query
+    ? catalog.filter(item => item.product.toLowerCase().includes(query.toLowerCase()))
+    : catalog
   ).slice(0, 5);
 
   if (filtered.length === 0) {
+    if (!query) return null; // Don't show "Create custom" if input is completely empty and catalog is empty
     return (
       <div className="proto-autocomplete">
         <div className="proto-ac-item active" onMouseDown={(e) => { e.preventDefault(); onCreateCustom(query); }}>
           <div className="proto-ac-info">
-            <div className="proto-ac-name" style={{color: '#1a4d9e'}}>+ Создать новую позицию</div>
+            <div className="proto-ac-name" style={{ color: '#1a4d9e' }}>+ Создать новую позицию</div>
             <div className="proto-ac-desc">"{query}"</div>
           </div>
         </div>
@@ -89,9 +81,9 @@ function Autocomplete({ query, onSelect, activeIndex, onCreateCustom }) {
   return (
     <div className="proto-autocomplete">
       {filtered.map((item, idx) => (
-        <div 
-          key={item.id} 
-          className={`proto-ac-item ${idx === activeIndex ? 'active' : ''}`} 
+        <div
+          key={item.id}
+          className={`proto-ac-item ${idx === activeIndex ? 'active' : ''}`}
           onMouseDown={(e) => { e.preventDefault(); onSelect(item); }}
         >
           <div className="proto-ac-info">
@@ -105,14 +97,15 @@ function Autocomplete({ query, onSelect, activeIndex, onCreateCustom }) {
   );
 }
 
-function QuickAddInput({ onAdd, autoFocusRef }) {
+function QuickAddInput({ onAdd, autoFocusRef, catalog = [] }) {
   const [value, setValue] = useState('');
   const [showAc, setShowAc] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const filtered = value ? MOCK_CATALOG.filter(item => 
-    item.product.toLowerCase().includes(value.toLowerCase())
-  ).slice(0, 5) : [];
+  const filtered = (value
+    ? catalog.filter(item => item.product.toLowerCase().includes(value.toLowerCase()))
+    : catalog
+  ).slice(0, 5);
 
   const handleSelect = (item) => {
     onAdd({
@@ -173,10 +166,10 @@ function QuickAddInput({ onAdd, autoFocusRef }) {
 
   return (
     <div className="proto-quick-add">
-      <input 
+      <input
         id="quick-add-input"
         ref={autoFocusRef}
-        type="text" 
+        type="text"
         className="proto-quick-input"
         placeholder="Введите позицию и нажмите Enter..."
         value={value}
@@ -189,12 +182,12 @@ function QuickAddInput({ onAdd, autoFocusRef }) {
         onBlur={() => setShowAc(false)}
         onKeyDown={handleKeyDown}
       />
-      {showAc && <Autocomplete query={value} onSelect={handleSelect} activeIndex={activeIndex} onCreateCustom={handleCreateCustom} />}
+      {showAc && <Autocomplete query={value} onSelect={handleSelect} activeIndex={activeIndex} onCreateCustom={handleCreateCustom} catalog={catalog} />}
     </div>
   );
 }
 
-function RowDisplay({ 
+function RowDisplay({
   row, isActiveQtyEdit, onQtyEditComplete, onStartQtyEdit, onUpdateRow, onDelete,
   index, onDragStart, onDragEnter, onDragEnd
 }) {
@@ -247,8 +240,8 @@ function RowDisplay({
   const total = data.countOfProduct * data.priceOfProduct;
 
   return (
-    <div 
-      className="proto-row" 
+    <div
+      className="proto-row"
       onClick={() => !isActiveQtyEdit && onStartQtyEdit()}
       draggable={isDraggable}
       onDragStart={(e) => onDragStart(e, index)}
@@ -259,11 +252,11 @@ function RowDisplay({
       <div className="proto-row-content">
         <div className="proto-row-title-block">
           {editField === 'title' ? (
-            <input 
+            <input
               autoFocus
               className="proto-native-input title"
               value={data.product}
-              onChange={(e) => setData({...data, product: e.target.value})}
+              onChange={(e) => setData({ ...data, product: e.target.value })}
               onBlur={() => { saveEdits(); setEditField(null); }}
               onKeyDown={handleInputKeyDown}
               onClick={(e) => e.stopPropagation()}
@@ -276,11 +269,11 @@ function RowDisplay({
 
           <div className="proto-row-desc-container" style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap' }}>
             {editField === 'desc' ? (
-              <textarea 
+              <textarea
                 autoFocus
                 className="proto-native-input desc textarea"
                 value={data.composition || ''}
-                onChange={(e) => setData({...data, composition: e.target.value})}
+                onChange={(e) => setData({ ...data, composition: e.target.value })}
                 onBlur={() => { saveEdits(); setEditField(null); }}
                 onKeyDown={handleInputKeyDown}
                 onClick={(e) => e.stopPropagation()}
@@ -297,19 +290,19 @@ function RowDisplay({
                 </div>
               )
             )}
-            
+
             {category !== 'organisation' && (
               <>
                 {(row.composition || editField === 'desc') && (row.productWeight > 0 || editField === 'weight') && <span className="proto-weight-separator">•</span>}
-                
+
                 {editField === 'weight' ? (
                   <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                    <input 
+                    <input
                       autoFocus
                       type="number"
                       className="proto-native-input weight"
                       value={data.productWeight || ''}
-                      onChange={(e) => setData({...data, productWeight: Number(e.target.value)})}
+                      onChange={(e) => setData({ ...data, productWeight: Number(e.target.value) })}
                       onBlur={() => { saveEdits(); setEditField(null); }}
                       onKeyDown={handleInputKeyDown}
                       onClick={(e) => e.stopPropagation()}
@@ -333,11 +326,11 @@ function RowDisplay({
             )}
           </div>
         </div>
-        
+
         <div className="proto-row-math">
           <div className="proto-row-calc">
-            <div 
-              className="proto-inline-category-wrapper" 
+            <div
+              className="proto-inline-category-wrapper"
               style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
               tabIndex={0}
               onBlur={(e) => {
@@ -346,8 +339,8 @@ function RowDisplay({
                 }
               }}
             >
-              <span 
-                className="proto-inline-category-label" 
+              <span
+                className="proto-inline-category-label"
                 onClick={(e) => { e.stopPropagation(); setEditField(editField === 'category' ? null : 'category'); }}
               >
                 {category === 'eat' ? 'еда' : category === 'drink' ? 'напитки' : 'организация'}
@@ -360,10 +353,10 @@ function RowDisplay({
                 </div>
               )}
             </div>
-            <span className="proto-multiply">·</span> 
-            
+            <span className="proto-multiply">·</span>
+
             {isActiveQtyEdit ? (
-              <input 
+              <input
                 autoFocus
                 type="number"
                 className="proto-inline-qty"
@@ -380,15 +373,15 @@ function RowDisplay({
             ) : (
               <span className="proto-qty-text">{data.countOfProduct} шт</span>
             )}
-            <span className="proto-multiply">×</span> 
-            
+            <span className="proto-multiply">×</span>
+
             {editField === 'price' ? (
-              <input 
+              <input
                 autoFocus
                 type="number"
                 className="proto-native-input price"
                 value={data.priceOfProduct}
-                onChange={(e) => setData({...data, priceOfProduct: Number(e.target.value)})}
+                onChange={(e) => setData({ ...data, priceOfProduct: Number(e.target.value) })}
                 onBlur={() => { saveEdits(); setEditField(null); }}
                 onKeyDown={handleInputKeyDown}
                 onClick={(e) => e.stopPropagation()}
@@ -404,9 +397,9 @@ function RowDisplay({
           <div className="proto-row-price">{total.toLocaleString('ru-RU')} ₽</div>
         </div>
       </div>
-      
+
       <div className="proto-row-actions" onClick={(e) => e.stopPropagation()}>
-        <span 
+        <span
           className="proto-drag-handle"
           onPointerDown={() => setIsDraggable(true)}
           onPointerUp={() => setIsDraggable(false)}
@@ -451,35 +444,162 @@ function MetaCard({ id, expandedId, onToggle, title, summary, children }) {
 // ------------------------------------------------------------------
 // MAIN PROTOTYPE APP
 // ------------------------------------------------------------------
-export default function PrototypeKp() {
+export default function PrototypeKp({ addToDb, isNewKp }) {
   const isMobile = useIsMobile();
-  
+  const navigate = useNavigate();
+  const setListsKp = useKpStore((state) => state.setListsKp);
+
   // Semantic State
   const todayIso = new Date().toISOString().split('T')[0];
 
-  const [kpMeta, setKpMeta] = useState({ 
-    kpNumber: '468', kpDate: todayIso,
-    contractNumber: '', contractDate: '',
+  const [kpMeta, setKpMeta] = useState({
+    kpNumber: '', kpDate: todayIso,
+    contractNumber: '', contractDate: todayIso,
     syncContractData: true
   });
-  
-  const [eventMeta, setEventMeta] = useState({ 
-    companyName: 'ООО Ромашка', contactPerson: '', phone: '', email: '',
-    eventName: 'Дикая Мята', eventPlace: 'Loft Hall', countOfPerson: '4000', 
+
+  const [eventMeta, setEventMeta] = useState({
+    contractorId: null, companyName: '', contactPerson: '', phone: '', email: '',
+    eventId: null, listTitle: '',
+    eventName: '', eventPlace: '', countOfPerson: '',
     startEvent: todayIso, startTimeStartEvent: '', endTimeStartEvent: '',
     isMultiDay: false, endEvent: '', startTimeEndEvent: '', endTimeEndEvent: ''
   });
 
+  const [events, setEvents] = useState([]);
+  const [contractors, setContractors] = useState([]);
+  const [menuCatalog, setMenuCatalog] = useState([]);
+  const [validationErrors, setValidationErrors] = useState([]);
+  const [showEventAc, setShowEventAc] = useState(false);
+  const [showContractorAc, setShowContractorAc] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    // Fetch KP Number
+    MainApi.getLastKpNumber()
+      .then((res) => {
+        if (cancelled) return;
+        const last = parseInt(String(res).trim(), 10);
+        const next = Number.isFinite(last) ? last + 1 : 1;
+        setKpMeta(prev => ({
+          ...prev,
+          kpNumber: String(next),
+          contractNumber: prev.syncContractData ? String(next) : prev.contractNumber
+        }));
+      })
+      .catch((err) => {
+        console.error('Ошибка получения следующего номера КП:', err);
+        setKpMeta(prev => ({
+          ...prev,
+          kpNumber: '1',
+          contractNumber: prev.syncContractData ? '1' : prev.contractNumber
+        }));
+      });
+
+    // Fetch Events
+    MainApi.getEvents()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          const upcoming = data.filter(e => !['Completed', 'Cancelled'].includes(e.status));
+          setEvents(upcoming);
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки событий:", err));
+
+    // Fetch Contractors
+    MainApi.getContractors()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          setContractors(data);
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки контрагентов:", err));
+
+    // Fetch Catalog
+    MainApi.getMenuItems()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          const activeItems = data.filter(item => item.active === true);
+          const normalized = activeItems.map(item => ({
+            id: item.id,
+            product: item.title || '',
+            composition: item.description || '',
+            typeOfProduct: item.category || 'eat',
+            priceOfProduct: item.price || 0,
+            productWeight: item.weight || 0
+          }));
+          setMenuCatalog(normalized);
+        }
+      })
+      .catch((err) => console.error("Ошибка загрузки каталога меню:", err));
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleKpMetaChange = (field, value) => {
+    setKpMeta(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'syncContractData' && value === true) {
+        next.contractNumber = next.kpNumber;
+        next.contractDate = next.kpDate;
+      }
+      if (field === 'kpNumber' && next.syncContractData) {
+        next.contractNumber = value;
+      }
+      if (field === 'kpDate' && next.syncContractData) {
+        next.contractDate = value;
+      }
+      return next;
+    });
+  };
+
+  const handleEventAcSelect = (selectedEvent) => {
+    setEventMeta(prev => {
+      let next = { ...prev, eventId: selectedEvent.id, eventName: selectedEvent.title };
+      if (selectedEvent.title) next.listTitle = selectedEvent.title;
+      next.startEvent = selectedEvent.startEvent || selectedEvent.eventDate || '';
+      next.endEvent = selectedEvent.endEvent || selectedEvent.eventDate || '';
+
+      if (next.startEvent && next.endEvent && next.startEvent !== next.endEvent) {
+        next.isMultiDay = true;
+      } else {
+        next.isMultiDay = false;
+      }
+
+      if (selectedEvent.startTimeStartEvent || selectedEvent.startTime) next.startTimeStartEvent = (selectedEvent.startTimeStartEvent || selectedEvent.startTime).slice(0, 5);
+      if (selectedEvent.endTimeStartEvent) next.endTimeStartEvent = selectedEvent.endTimeStartEvent.slice(0, 5);
+      if (selectedEvent.startTimeEndEvent) next.startTimeEndEvent = selectedEvent.startTimeEndEvent.slice(0, 5);
+      if (selectedEvent.endTimeEndEvent || selectedEvent.endTime) next.endTimeEndEvent = (selectedEvent.endTimeEndEvent || selectedEvent.endTime).slice(0, 5);
+      next.eventPlace = selectedEvent.eventPlace || '';
+      next.countOfPerson = selectedEvent.countOfPerson ? String(selectedEvent.countOfPerson) : '';
+      return next;
+    });
+    setShowEventAc(false);
+  };
+
+  const handleContractorAcSelect = (selectedContractor) => {
+    setEventMeta(prev => ({
+      ...prev,
+      contractorId: selectedContractor.id,
+      companyName: selectedContractor.companyName || '',
+      contactPerson: selectedContractor.contactPerson || '',
+      phone: selectedContractor.phone || '',
+      email: selectedContractor.email || ''
+    }));
+    setShowContractorAc(false);
+  };
+
   const handleEventMetaChange = (field, value) => {
     setEventMeta(prev => {
       let next = { ...prev, [field]: value };
-      
+
       if (field === 'startEvent') {
         if (next.isMultiDay && next.endEvent && next.endEvent < value) {
           next.endEvent = value;
         }
       }
-      
+
       if (field === 'endEvent') {
         if (value < next.startEvent) {
           next.endEvent = next.startEvent;
@@ -491,7 +611,7 @@ export default function PrototypeKp() {
       }
 
       const isSameDay = !next.isMultiDay || (next.startEvent === next.endEvent);
-      
+
       if (isSameDay) {
         if (field === 'startTimeStartEvent' && next.endTimeStartEvent && value > next.endTimeStartEvent) {
           next.endTimeStartEvent = value;
@@ -513,26 +633,26 @@ export default function PrototypeKp() {
     if (isNaN(date.getTime())) return dateStr;
     return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   };
-  
+
   const formatSummaryKpDate = (dateStr) => {
     if (!dateStr) return '';
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
     return `${parts[2]}.${parts[1]}.${parts[0]}`;
   };
-  
-  const [logisticsMeta, setLogisticsMeta] = useState({ 
-    hasMkad: true, logisticsCost: 5000 
+
+  const [logisticsMeta, setLogisticsMeta] = useState({
+    hasMkad: true, logisticsCost: 5000
   });
-  
+
   const [expandedCard, setExpandedCard] = useState(null);
-  
+
   const [sheets, setSheets] = useState(INITIAL_SHEETS);
   const [activeSheetId, setActiveSheetId] = useState('s1');
-  
+
   const [inlineEditQtyId, setInlineEditQtyId] = useState(null);
   const [draggingItem, setDraggingItem] = useState(null);
-  
+
   const quickAddRef = useRef(null);
 
   // Totals
@@ -555,14 +675,14 @@ export default function PrototypeKp() {
     const newId = Date.now().toString();
     setSheets(sheets.map(sheet => {
       if (sheet.id === sheetId) {
-        return { 
-          ...sheet, 
-          rows: [...sheet.rows, { 
-            id: newId, 
-            ...newRowData, 
+        return {
+          ...sheet,
+          rows: [...sheet.rows, {
+            id: newId,
+            ...newRowData,
             countOfProduct: 1,
-            productWeight: newRowData.productWeight || 0 
-          }] 
+            productWeight: newRowData.productWeight || 0
+          }]
         };
       }
       return sheet;
@@ -582,7 +702,7 @@ export default function PrototypeKp() {
       return sheet;
     }));
     setInlineEditQtyId(null);
-    
+
     // Return focus to QuickAdd
     setTimeout(() => {
       if (quickAddRef.current) quickAddRef.current.focus();
@@ -627,49 +747,122 @@ export default function PrototypeKp() {
     }
   };
 
-  const navigate = useNavigate();
-  const setListsKp = useKpStore((state) => state.setListsKp);
+  const validateDocument = () => {
+    const errors = [];
 
-  const handleSaveKp = () => {
-    // UI state is NOT sent. Only pure business data.
-    
-    // 1. Send production-ready sheets directly to legacy listsKp
-    setListsKp(sheets);
+    // Document Parameters
+    if (!kpMeta.kpNumber) errors.push('Номер КП');
+    if (!kpMeta.kpDate) errors.push('Дата КП');
+    if (!kpMeta.contractNumber) errors.push('Номер договора');
+    if (!kpMeta.contractDate) errors.push('Дата договора');
 
-    // 2. Send production-ready form data to legacy kpStore
-    const updateFields = useKpStore.getState().updateFields;
-    if (updateFields) {
-      updateFields({
-        kpNumber: kpMeta.kpNumber,
-        kpDate: kpMeta.kpDate,
-        contractNumber: kpMeta.contractNumber,
-        contractDate: kpMeta.contractDate,
-        
-        eventPlace: eventMeta.eventPlace,
-        countOfPerson: parseInt(eventMeta.countOfPerson, 10) || 0,
-        startEvent: eventMeta.startEvent,
-        endEvent: eventMeta.endEvent,
-        startTimeStartEvent: eventMeta.startTimeStartEvent,
-        endTimeStartEvent: eventMeta.endTimeStartEvent,
-        startTimeEndEvent: eventMeta.startTimeEndEvent,
-        endTimeEndEvent: eventMeta.endTimeEndEvent,
+    // Event Information
+    if (!eventMeta.eventName) errors.push('Название мероприятия');
+    if (!eventMeta.eventPlace) errors.push('Локация мероприятия');
+    if (!eventMeta.countOfPerson || parseInt(eventMeta.countOfPerson, 10) <= 0) errors.push('Количество гостей');
 
-        logisticsCost: parseInt(logisticsMeta.logisticsCost, 10) || 0,
-        isWithinMkad: logisticsMeta.hasMkad
-      });
+    // Event Dates
+    if (!eventMeta.startEvent) errors.push('Дата начала мероприятия');
+    if (!eventMeta.endEvent) errors.push('Дата окончания мероприятия');
+    if (!eventMeta.startTimeStartEvent) errors.push('Время начала (первый день)');
+    if (!eventMeta.endTimeStartEvent) errors.push('Время окончания (первый день)');
+    if (!eventMeta.startTimeEndEvent) errors.push('Время начала (последний день)');
+    if (!eventMeta.endTimeEndEvent) errors.push('Время окончания (последний день)');
+
+    // Logistics
+    if (logisticsMeta.logisticsCost === '' || logisticsMeta.logisticsCost === null || logisticsMeta.logisticsCost === undefined) errors.push('Стоимость логистики');
+    if (logisticsMeta.hasMkad === null || logisticsMeta.hasMkad === undefined) errors.push('Тип логистики (МКАД / За МКАД)');
+
+    // Document Content
+    if (!sheets || sheets.length === 0) {
+      errors.push('Документ не содержит блоков');
     } else {
-       // fallback if updateFields is not defined in useKpStore (older version maybe?)
-       const updateField = useKpStore.getState().updateField;
-       updateField('eventPlace', eventMeta.eventPlace);
-       updateField('countOfPerson', parseInt(eventMeta.countOfPerson, 10) || 0);
-       updateField('logisticsCost', parseInt(logisticsMeta.logisticsCost, 10) || 0);
-       updateField('isWithinMkad', logisticsMeta.hasMkad);
+      let hasRows = false;
+      sheets.forEach(sheet => {
+        if (sheet.rows && sheet.rows.length > 0) hasRows = true;
+      });
+      if (!hasRows) {
+        errors.push('Документ не содержит ни одной позиции меню');
+      }
     }
-    
-    console.log('[DEBUG] Strict Production Payload saved successfully.');
 
-    // 3. Navigate
-    navigate('/preview');
+    return errors;
+  };
+
+  const handleSaveKp = async () => {
+    const errors = validateDocument();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      
+      toast.dismiss(); // Prevent toast spam by clearing previous notifications
+      toast.warning(
+        <div style={{ padding: '2px' }}>
+          <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '15px' }}>
+            Не заполнены обязательные поля:
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '10px' }}>
+            {errors.map((err, idx) => (
+              <div key={idx} style={{ fontSize: '14px' }}>{err}</div>
+            ))}
+          </div>
+          <div style={{ fontSize: '13px', opacity: 0.85 }}>
+            Заполните обязательные поля и повторите сохранение.
+          </div>
+        </div>,
+        {
+          position: "bottom-right",
+          autoClose: 6000,
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: false,
+          theme: "light",
+          style: {
+            background: '#fffbeb',
+            color: '#451a03',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+          }
+        }
+      );
+      
+      return;
+    }
+    setValidationErrors([]);
+
+    const formDataPayload = {
+      kpNumber: kpMeta.kpNumber,
+      kpDate: kpMeta.kpDate,
+      contractNumber: kpMeta.contractNumber,
+      contractDate: kpMeta.contractDate,
+      
+      listTitle: eventMeta.eventName,
+      eventId: eventMeta.eventId,
+      contractorId: eventMeta.contractorId,
+      eventPlace: eventMeta.eventPlace,
+      countOfPerson: eventMeta.countOfPerson ? parseInt(eventMeta.countOfPerson, 10) : null,
+      startEvent: eventMeta.startEvent,
+      endEvent: eventMeta.endEvent,
+      startTimeStartEvent: eventMeta.startTimeStartEvent,
+      endTimeStartEvent: eventMeta.endTimeStartEvent,
+      startTimeEndEvent: eventMeta.startTimeEndEvent,
+      endTimeEndEvent: eventMeta.endTimeEndEvent,
+
+      logisticsCost: logisticsMeta.logisticsCost ? parseInt(logisticsMeta.logisticsCost, 10) : 0,
+      isWithinMkad: logisticsMeta.hasMkad
+    };
+
+    try {
+      if (addToDb) {
+        await addToDb(formDataPayload, sheets);
+      } else {
+        console.error('addToDb is not provided to PrototypeKp');
+        toast.error('Функция сохранения не настроена.');
+      }
+    } catch (err) {
+      console.error('Ошибка сохранения КП:', err);
+      toast.error('Произошла ошибка при сохранении КП в базу данных.');
+    }
   };
 
   const handleRenameSheet = (sheetId, currentTitle) => {
@@ -719,11 +912,11 @@ export default function PrototypeKp() {
   return (
     <div className="prototype-page">
       <div className="prototype-container">
-        
+
         {/* --- DOCUMENT PANELS (HEADER) --- */}
         <div className="proto-header">
           <div className="proto-meta-cards-container">
-            
+
             {/* 1. DOCUMENT CARD */}
             <MetaCard
               id="document"
@@ -740,32 +933,32 @@ export default function PrototypeKp() {
                 <div className="proto-grid">
                   <div className="proto-field">
                     <label>Номер КП</label>
-                    <input className="proto-input-clean" value={kpMeta.kpNumber} onChange={e => setKpMeta({...kpMeta, kpNumber: e.target.value})} />
+                    <input className="proto-input-clean" value={kpMeta.kpNumber} onChange={e => handleKpMetaChange('kpNumber', e.target.value)} />
                   </div>
                   <div className="proto-field">
                     <label>Дата КП</label>
-                    <input type="date" className="proto-input-clean" value={kpMeta.kpDate} onChange={e => setKpMeta({...kpMeta, kpDate: e.target.value})} />
+                    <input type="date" className="proto-input-clean" value={kpMeta.kpDate} onChange={e => handleKpMetaChange('kpDate', e.target.value)} />
                   </div>
                 </div>
-                
+
                 <label className="proto-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={kpMeta.syncContractData} 
-                    onChange={e => setKpMeta({...kpMeta, syncContractData: e.target.checked})} 
+                  <input
+                    type="checkbox"
+                    checked={kpMeta.syncContractData}
+                    onChange={e => handleKpMetaChange('syncContractData', e.target.checked)}
                   />
                   Данные договора совпадают с КП
                 </label>
-                
+
                 {!kpMeta.syncContractData && (
-                  <div className="proto-grid" style={{marginTop: '16px'}}>
+                  <div className="proto-grid" style={{ marginTop: '16px' }}>
                     <div className="proto-field">
                       <label>Номер договора</label>
-                      <input className="proto-input-clean" value={kpMeta.contractNumber} onChange={e => setKpMeta({...kpMeta, contractNumber: e.target.value})} placeholder="Оставьте пустым, если нет" />
+                      <input className="proto-input-clean" value={kpMeta.contractNumber} onChange={e => handleKpMetaChange('contractNumber', e.target.value)} placeholder="Оставьте пустым, если нет" />
                     </div>
                     <div className="proto-field">
                       <label>Дата договора</label>
-                      <input type="date" className="proto-input-clean" value={kpMeta.contractDate} onChange={e => setKpMeta({...kpMeta, contractDate: e.target.value})} />
+                      <input type="date" className="proto-input-clean" value={kpMeta.contractDate} onChange={e => handleKpMetaChange('contractDate', e.target.value)} />
                     </div>
                   </div>
                 )}
@@ -784,7 +977,7 @@ export default function PrototypeKp() {
                     {eventMeta.companyName || 'Без заказчика'} • {eventMeta.eventName || 'Без названия'}
                   </div>
                   <div className="proto-summary-line secondary">
-                    {eventMeta.location || 'Без локации'} • {formatSummaryDate(eventMeta.startDate)} • {eventMeta.guests || '0'} гостей
+                    {eventMeta.eventPlace || 'Без локации'} • {formatSummaryDate(eventMeta.startEvent)} • {eventMeta.countOfPerson || '0'} гостей
                   </div>
                 </div>
               }
@@ -792,7 +985,37 @@ export default function PrototypeKp() {
               <div className="proto-field-group">
                 <div className="proto-field-group-title">Заказчик</div>
                 <div className="proto-grid">
-                  <div className="proto-field"><label>Название компании</label><input className="proto-input-clean" value={eventMeta.companyName} onChange={e => handleEventMetaChange('companyName', e.target.value)} /></div>
+                  <div className="proto-field" style={{ position: 'relative' }}>
+                    <label>Название компании</label>
+                    <input
+                      className="proto-input-clean"
+                      value={eventMeta.companyName}
+                      onChange={e => {
+                        handleEventMetaChange('companyName', e.target.value);
+                        handleEventMetaChange('contractorId', null);
+                      }}
+                      onFocus={() => setShowContractorAc(true)}
+                      onBlur={() => setTimeout(() => setShowContractorAc(false), 150)}
+                    />
+                    {showContractorAc && (
+                      <div className="proto-autocomplete">
+                        {(eventMeta.companyName
+                          ? contractors.filter(c => c.companyName.toLowerCase().includes(eventMeta.companyName.toLowerCase()))
+                          : contractors
+                        ).slice(0, 5).map(c => (
+                          <div
+                            key={c.id}
+                            className="proto-ac-item"
+                            onMouseDown={(e) => { e.preventDefault(); handleContractorAcSelect(c); }}
+                          >
+                            <div className="proto-ac-info">
+                              <div className="proto-ac-name">{c.companyName}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div className="proto-field"><label>Контактное лицо</label><input className="proto-input-clean" value={eventMeta.contactPerson} onChange={e => handleEventMetaChange('contactPerson', e.target.value)} /></div>
                   <div className="proto-field"><label>Телефон</label><input className="proto-input-clean" value={eventMeta.phone} onChange={e => handleEventMetaChange('phone', e.target.value)} /></div>
                   <div className="proto-field"><label>Email / Telegram</label><input className="proto-input-clean" value={eventMeta.email} onChange={e => handleEventMetaChange('email', e.target.value)} /></div>
@@ -802,24 +1025,54 @@ export default function PrototypeKp() {
               <div className="proto-field-group">
                 <div className="proto-field-group-title">Мероприятие</div>
                 <div className="proto-grid">
-                  <div className="proto-field"><label>Название / Формат</label><input className="proto-input-clean" value={eventMeta.eventName} onChange={e => handleEventMetaChange('eventName', e.target.value)} /></div>
-                  <div className="proto-field"><label>Локация</label><input className="proto-input-clean" value={eventMeta.location} onChange={e => handleEventMetaChange('location', e.target.value)} /></div>
-                  <div className="proto-field"><label>Количество гостей</label><input className="proto-input-clean" value={eventMeta.guests} onChange={e => handleEventMetaChange('guests', e.target.value)} /></div>
-                  <div className="proto-field"><label>Дата начала</label><input type="date" min={todayIso} className="proto-input-clean" value={eventMeta.startDate} onChange={e => handleEventMetaChange('startDate', e.target.value)} /></div>
-                  <div className="proto-field"><label>Время начала</label><input type="time" className="proto-input-clean" value={eventMeta.firstDayStartTime} onChange={e => handleEventMetaChange('firstDayStartTime', e.target.value)} /></div>
-                  <div className="proto-field"><label>Время окончания</label><input type="time" className="proto-input-clean" value={eventMeta.firstDayEndTime} onChange={e => handleEventMetaChange('firstDayEndTime', e.target.value)} /></div>
+                  <div className="proto-field" style={{ position: 'relative' }}>
+                    <label>Название / Формат</label>
+                    <input
+                      className="proto-input-clean"
+                      value={eventMeta.eventName}
+                      onChange={e => {
+                        handleEventMetaChange('eventName', e.target.value);
+                        handleEventMetaChange('eventId', null);
+                      }}
+                      onFocus={() => setShowEventAc(true)}
+                      onBlur={() => setTimeout(() => setShowEventAc(false), 150)}
+                    />
+                    {showEventAc && (
+                      <div className="proto-autocomplete">
+                        {(eventMeta.eventName
+                          ? events.filter(ev => ev.title.toLowerCase().includes(eventMeta.eventName.toLowerCase()))
+                          : events
+                        ).slice(0, 5).map(ev => (
+                          <div
+                            key={ev.id}
+                            className="proto-ac-item"
+                            onMouseDown={(e) => { e.preventDefault(); handleEventAcSelect(ev); }}
+                          >
+                            <div className="proto-ac-info">
+                              <div className="proto-ac-name">{ev.title} ({ev.eventDate || ev.startEvent})</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="proto-field"><label>Локация</label><input className="proto-input-clean" value={eventMeta.eventPlace || ''} onChange={e => handleEventMetaChange('eventPlace', e.target.value)} /></div>
+                  <div className="proto-field"><label>Количество гостей</label><input className="proto-input-clean" value={eventMeta.countOfPerson || ''} onChange={e => handleEventMetaChange('countOfPerson', e.target.value)} /></div>
+                  <div className="proto-field"><label>Дата начала</label><input type="date" min={todayIso} className="proto-input-clean" value={eventMeta.startEvent || ''} onChange={e => handleEventMetaChange('startEvent', e.target.value)} /></div>
+                  <div className="proto-field"><label>Время начала</label><input type="time" className="proto-input-clean" value={eventMeta.startTimeStartEvent || ''} onChange={e => handleEventMetaChange('startTimeStartEvent', e.target.value)} /></div>
+                  <div className="proto-field"><label>Время окончания</label><input type="time" className="proto-input-clean" value={eventMeta.endTimeStartEvent || ''} onChange={e => handleEventMetaChange('endTimeStartEvent', e.target.value)} /></div>
                 </div>
-                
-                <label className="proto-checkbox" style={{marginTop: '16px'}}>
-                  <input type="checkbox" checked={eventMeta.isMultiDay} onChange={e => handleEventMetaChange('isMultiDay', e.target.checked)} /> 
+
+                <label className="proto-checkbox" style={{ marginTop: '16px' }}>
+                  <input type="checkbox" checked={eventMeta.isMultiDay} onChange={e => handleEventMetaChange('isMultiDay', e.target.checked)} />
                   Многодневное мероприятие
                 </label>
-                
+
                 {eventMeta.isMultiDay && (
-                  <div className="proto-grid" style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #eee'}}>
-                    <div className="proto-field"><label>Дата окончания</label><input type="date" min={eventMeta.startDate || todayIso} className="proto-input-clean" value={eventMeta.endDate} onChange={e => handleEventMetaChange('endDate', e.target.value)} /></div>
-                    <div className="proto-field"><label>Время начала (посл. день)</label><input type="time" className="proto-input-clean" value={eventMeta.lastDayStartTime} onChange={e => handleEventMetaChange('lastDayStartTime', e.target.value)} /></div>
-                    <div className="proto-field"><label>Время окончания (посл. день)</label><input type="time" className="proto-input-clean" value={eventMeta.lastDayEndTime} onChange={e => handleEventMetaChange('lastDayEndTime', e.target.value)} /></div>
+                  <div className="proto-grid" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #eee' }}>
+                    <div className="proto-field"><label>Дата окончания</label><input type="date" min={eventMeta.startEvent || todayIso} className="proto-input-clean" value={eventMeta.endEvent || ''} onChange={e => handleEventMetaChange('endEvent', e.target.value)} /></div>
+                    <div className="proto-field"><label>Время начала (посл. день)</label><input type="time" className="proto-input-clean" value={eventMeta.startTimeEndEvent || ''} onChange={e => handleEventMetaChange('startTimeEndEvent', e.target.value)} /></div>
+                    <div className="proto-field"><label>Время окончания (посл. день)</label><input type="time" className="proto-input-clean" value={eventMeta.endTimeEndEvent || ''} onChange={e => handleEventMetaChange('endTimeEndEvent', e.target.value)} /></div>
                   </div>
                 )}
               </div>
@@ -833,8 +1086,8 @@ export default function PrototypeKp() {
               title="Логистика"
               summary={
                 <div className="proto-summary-text">
-                  {logisticsMeta.logisticsCost > 0 
-                    ? <>{logisticsMeta.hasMkad ? 'За МКАД • ' : ''}Логистика {logisticsMeta.logisticsCost.toLocaleString('ru-RU')} ₽</> 
+                  {logisticsMeta.logisticsCost > 0
+                    ? <>{logisticsMeta.hasMkad ? 'За МКАД • ' : ''}Логистика {logisticsMeta.logisticsCost.toLocaleString('ru-RU')} ₽</>
                     : 'Логистика не требуется'}
                 </div>
               }
@@ -843,11 +1096,11 @@ export default function PrototypeKp() {
                 <div className="proto-grid">
                   <div className="proto-field">
                     <label>Стоимость логистики (₽)</label>
-                    <input className="proto-input-clean" type="number" value={logisticsMeta.logisticsCost} onChange={e => setLogisticsMeta({...logisticsMeta, logisticsCost: Number(e.target.value)})} />
+                    <input className="proto-input-clean" type="number" value={logisticsMeta.logisticsCost} onChange={e => setLogisticsMeta({ ...logisticsMeta, logisticsCost: Number(e.target.value) })} />
                   </div>
                 </div>
                 <label className="proto-checkbox">
-                  <input type="checkbox" checked={logisticsMeta.hasMkad} onChange={e => setLogisticsMeta({...logisticsMeta, hasMkad: e.target.checked})} />
+                  <input type="checkbox" checked={logisticsMeta.hasMkad} onChange={e => setLogisticsMeta({ ...logisticsMeta, hasMkad: e.target.checked })} />
                   Выезд за МКАД
                 </label>
               </div>
@@ -887,11 +1140,11 @@ export default function PrototypeKp() {
                   </h2>
                   <span className="proto-sheet-total active">{sheetTotal.toLocaleString('ru-RU')} ₽</span>
                 </div>
-                
+
                 <div className="proto-rows-container">
                   {sheet.rows.map((row, index) => (
-                    <RowDisplay 
-                      key={row.id} 
+                    <RowDisplay
+                      key={row.id}
                       row={row}
                       index={index}
                       isActiveQtyEdit={inlineEditQtyId === row.id}
@@ -906,9 +1159,10 @@ export default function PrototypeKp() {
                   ))}
                 </div>
 
-                <QuickAddInput 
+                <QuickAddInput
                   autoFocusRef={quickAddRef}
-                  onAdd={(newRow) => handleAddRow(sheet.id, newRow)} 
+                  onAdd={(newRow) => handleAddRow(sheet.id, newRow)}
+                  catalog={menuCatalog}
                 />
 
                 {awareness && awareness.hintText && (
@@ -943,11 +1197,12 @@ export default function PrototypeKp() {
             <span className="proto-status">Черновик сохранён</span>
             <span className="proto-grand-total">{grandTotal.toLocaleString('ru-RU')} ₽</span>
           </div>
-          <div className="proto-sticky-right">
+          <div className="proto-footer-actions">
             <button className="proto-btn proto-btn-primary" onClick={handleSaveKp}>Сохранить КП</button>
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
