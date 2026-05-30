@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Input, Textarea, Loader } from '@skbkontur/react-ui';
+import ProtoSwitch from '../../components/common/ProtoSwitch/ProtoSwitch';
+
 import './Events.css';
 
 const STATUS_OPTIONS = [
@@ -45,6 +46,7 @@ const EventForm = () => {
   const [fetching, setFetching] = useState(isEdit);
   const [initialForm, setInitialForm] = useState(null);
   const [linkedKpCount, setLinkedKpCount] = useState(0);
+  const [isMultiDay, setIsMultiDay] = useState(false);
 
   // Load contractors for dropdown
   useEffect(() => {
@@ -82,6 +84,9 @@ const EventForm = () => {
         if (res.kps) {
           setLinkedKpCount(res.kps.length);
         }
+        setIsMultiDay(
+          !!(res.startEvent && res.endEvent && res.startEvent !== res.endEvent)
+        );
       } catch (err) {
         console.error(err);
         alert('Не удалось загрузить данные события');
@@ -120,11 +125,11 @@ const EventForm = () => {
         startTime: form.startTime === '' ? null : form.startTime,
         endTime: form.endTime === '' ? null : form.endTime,
         startEvent: form.startEvent,
-        endEvent: form.endEvent,
+        endEvent: isMultiDay ? form.endEvent : form.startEvent,
         startTimeStartEvent: form.startTimeStartEvent === '' ? null : form.startTimeStartEvent,
         endTimeStartEvent: form.endTimeStartEvent === '' ? null : form.endTimeStartEvent,
-        startTimeEndEvent: form.startTimeEndEvent === '' ? null : form.startTimeEndEvent,
-        endTimeEndEvent: form.endTimeEndEvent === '' ? null : form.endTimeEndEvent,
+        startTimeEndEvent: isMultiDay ? (form.startTimeEndEvent === '' ? null : form.startTimeEndEvent) : (form.startTimeStartEvent === '' ? null : form.startTimeStartEvent),
+        endTimeEndEvent: isMultiDay ? (form.endTimeEndEvent === '' ? null : form.endTimeEndEvent) : (form.endTimeStartEvent === '' ? null : form.endTimeStartEvent),
         countOfPerson: form.countOfPerson === '' ? null : form.countOfPerson,
         eventPlace: form.eventPlace || null,
         status: form.status,
@@ -170,7 +175,8 @@ const EventForm = () => {
     return (
       <PageContainer maxWidth="800px">
         <div className="event-form__loader">
-          <Loader active type="big" caption="Загрузка данных..." />
+          <div className="proto-loader"></div>
+          <p style={{ marginTop: '16px', color: '#666' }}>Загрузка данных...</p>
         </div>
       </PageContainer>
     );
@@ -191,13 +197,12 @@ const EventForm = () => {
             {/* Название */}
             <div className="event-form__field event-form__field--full">
               <label className="event-form__label event-form__label--required">Название</label>
-              <Input
-                width="100%"
+              <input
+                className={`event-form__input ${errors.title ? 'event-form__input--error' : ''}`}
                 value={form.title}
                 data-testid="event-title"
                 placeholder="Корпоратив «Лето 2026»"
-                onValueChange={(val) => handleChange('title', val)}
-                error={!!errors.title}
+                onChange={(e) => handleChange('title', e.target.value)}
               />
               {errors.title && (
                 <span className="event-form__error-message">{errors.title}</span>
@@ -224,11 +229,11 @@ const EventForm = () => {
             {/* Количество гостей */}
             <div className="event-form__field event-form__field--full">
               <label className="event-form__label">Кол-во гостей</label>
-              <Input
-                width="100%"
+              <input
+                className="event-form__input"
                 type="number"
                 value={form.countOfPerson}
-                onValueChange={(val) => handleChange('countOfPerson', val)}
+                onChange={(e) => handleChange('countOfPerson', e.target.value)}
                 data-testid="event-count-of-person"
               />
             </div>
@@ -253,16 +258,16 @@ const EventForm = () => {
               <div className='event-form__date-time-group'>
                 <div>
                   <label className="event-form__label event-form__label--required">Дата</label>
-                  <Input
-                    width="100%"
+                  <input
+                    className={`event-form__input ${errors.startEvent ? 'event-form__input--error' : ''}`}
                     type="date"
                     value={form.startEvent || form.eventDate}
                     data-testid="event-date"
-                    onValueChange={(val) => {
+                    onChange={(e) => {
+                      const val = e.target.value;
                       handleChange('startEvent', val);
                       if (!form.endEvent) handleChange('endEvent', val);
                     }}
-                    error={!!errors.startEvent}
                   />
                   {errors.startEvent && (
                     <span className="event-form__error-message">{errors.startEvent}</span>
@@ -271,76 +276,87 @@ const EventForm = () => {
                 <div className='event-form__time-group'>
                   <div>
                     <label className="event-form__label">Время начала</label>
-                    <Input
-                      width="100%"
+                    <input
+                      className="event-form__input"
                       type="time"
                       data-testid="event-start-time-start"
                       value={form.startTimeStartEvent || form.startTime}
-                      onValueChange={(val) => handleChange('startTimeStartEvent', val)}
+                      onChange={(e) => handleChange('startTimeStartEvent', e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="event-form__label">Время окончания</label>
-                    <Input
-                      width="100%"
+                    <input
+                      className="event-form__input"
                       type="time"
                       data-testid="event-end-time-start"
                       value={form.endTimeStartEvent}
-                      onValueChange={(val) => handleChange('endTimeStartEvent', val)}
+                      onChange={(e) => handleChange('endTimeStartEvent', e.target.value)}
                     />
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* TOGGLE MULTI-DAY */}
+            <div className="event-form__field event-form__field--full" style={{ marginTop: '4px' }}>
+              <ProtoSwitch
+                checked={isMultiDay}
+                onChange={(checked) => setIsMultiDay(checked)}
+                label="Многодневное мероприятие"
+              />
+            </div>
+
             {/* LAST DAY SCHEDULE */}
-            <div className="event-form__field event-form__field--full">
-              <h4 style={{ margin: '10px 0 5px', fontSize: '14px', color: '#666' }}>Последний день</h4>
-              <div className='event-form__date-time-group'>
-                <div>
+            {isMultiDay && (
+              <div className="event-form__field event-form__field--full">
+                <h4 style={{ margin: '10px 0 5px', fontSize: '14px', color: '#666' }}>Последний день</h4>
+                <div className='event-form__date-time-group'>
+                  <div>
                   <label className="event-form__label">Дата</label>
-                  <Input
-                    width="100%"
+                  <input
+                    className="event-form__input"
                     type="date"
                     data-testid="event-end-date"
                     value={form.endEvent}
-                    onValueChange={(val) => handleChange('endEvent', val)}
+                    onChange={(e) => handleChange('endEvent', e.target.value)}
                   />
                 </div>
                 <div className='event-form__time-group'>
                   <div>
                     <label className="event-form__label">Время начала</label>
-                    <Input
-                      width="100%"
+                    <input
+                      className="event-form__input"
                       type="time"
                       data-testid="event-start-time-end"
                       value={form.startTimeEndEvent}
-                      onValueChange={(val) => handleChange('startTimeEndEvent', val)}
+                      onChange={(e) => handleChange('startTimeEndEvent', e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="event-form__label">Время окончания</label>
-                    <Input
-                      width="100%"
+                    <input
+                      className="event-form__input"
                       type="time"
                       data-testid="event-end-time-end"
                       value={form.endTimeEndEvent || form.endTime}
-                      onValueChange={(val) => handleChange('endTimeEndEvent', val)}
+                      onChange={(e) => handleChange('endTimeEndEvent', e.target.value)}
                     />
                   </div>
                 </div>
               </div>
             </div>
+            )}
 
             {/* Место */}
             <div className="event-form__field event-form__field--full">
               <label className="event-form__label">Место проведения</label>
-              <Input
-                width="100%"
+              <input
+                className="event-form__input"
                 value={form.eventPlace}
                 data-testid="event-eventPlace"
                 placeholder="Ресторан «Арбат», Москва"
-                onValueChange={(val) => handleChange('eventPlace', val)}
+                onChange={(e) => handleChange('eventPlace', e.target.value)}
               />
             </div>
           </div>
@@ -351,34 +367,34 @@ const EventForm = () => {
           <h3 className="event-form__card-title">Заметки</h3>
           <div className="event-form__field">
             <label className="event-form__label">Дополнительные сведения</label>
-            <Textarea
-              width="100%"
+            <textarea
+              className="event-form__textarea"
               rows={5}
               value={form.notes}
               placeholder="Особенности мероприятия, требования, контакты..."
-              onValueChange={(val) => handleChange('notes', val)}
+              onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
         </div>
 
         <div className="event-form__actions">
-          <Button
+          <button
+            type="button"
+            className="proto-btn proto-btn-secondary"
             onClick={() => navigate(isEdit ? `/events/${id}` : '/events')}
             disabled={loading}
-            use="default"
           >
             Отмена
-          </Button>
-          <Button
+          </button>
+          <button
             type="submit"
-            use="primary"
+            className="proto-btn proto-btn-primary"
             data-testid="event-save-button"
-            loading={loading}
             disabled={loading}
             onClick={handleSubmit}
           >
-            Сохранить
-          </Button>
+            {loading ? 'Сохранение...' : 'Сохранить'}
+          </button>
         </div>
       </form>
     </PageContainer>

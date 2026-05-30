@@ -81,16 +81,6 @@ const EventDetails = () => {
       <PageHeader
         title={event.title}
         subtitle="Детали мероприятия"
-        actions={
-          <div className="event-details__header-actions">
-            <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/events')}>
-              Назад
-            </button>
-            <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/events/${id}/edit`)}>
-              Редактировать
-            </button>
-          </div>
-        }
       />
 
       <div style={{ marginTop: '1.5rem' }}>
@@ -182,6 +172,16 @@ const EventDetails = () => {
               <p className="event-details__notes-placeholder">Нет связанных коммерческих предложений.</p>
             )}
           </div>
+        </div>
+      </div>
+
+      <div style={{ height: '80px' }} />
+
+      <div className="proto-sticky-bar">
+        <div className="proto-sticky-content">
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/events/${id}/edit`)}>
+            Изменить мероприятие
+          </button>
         </div>
       </div>
     </PageContainer>
