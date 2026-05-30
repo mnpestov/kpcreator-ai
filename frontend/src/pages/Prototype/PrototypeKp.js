@@ -472,6 +472,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
   const [validationErrors, setValidationErrors] = useState([]);
   const [showEventAc, setShowEventAc] = useState(false);
   const [showContractorAc, setShowContractorAc] = useState(false);
+  const [conflictModal, setConflictModal] = useState({ isOpen: false, oldContractorName: '', newContractorName: '' });
 
   useEffect(() => {
     let cancelled = false;
@@ -557,6 +558,8 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
   const handleEventAcSelect = (selectedEvent) => {
     setEventMeta(prev => {
       let next = { ...prev, eventId: selectedEvent.id, eventName: selectedEvent.title };
+      next.originalEventContractorId = selectedEvent.contractorId || null;
+      next.originalEventContractorName = selectedEvent.Contractor?.companyName || null;
       if (selectedEvent.title) next.listTitle = selectedEvent.title;
       next.startEvent = selectedEvent.startEvent || selectedEvent.eventDate || '';
       next.endEvent = selectedEvent.endEvent || selectedEvent.eventDate || '';
@@ -763,11 +766,14 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
 
     // Event Dates
     if (!eventMeta.startEvent) errors.push('Дата начала мероприятия');
-    if (!eventMeta.endEvent) errors.push('Дата окончания мероприятия');
     if (!eventMeta.startTimeStartEvent) errors.push('Время начала (первый день)');
     if (!eventMeta.endTimeStartEvent) errors.push('Время окончания (первый день)');
-    if (!eventMeta.startTimeEndEvent) errors.push('Время начала (последний день)');
-    if (!eventMeta.endTimeEndEvent) errors.push('Время окончания (последний день)');
+
+    if (eventMeta.isMultiDay) {
+      if (!eventMeta.endEvent) errors.push('Дата окончания мероприятия');
+      if (!eventMeta.startTimeEndEvent) errors.push('Время начала (последний день)');
+      if (!eventMeta.endTimeEndEvent) errors.push('Время окончания (последний день)');
+    }
 
     // Logistics
     if (logisticsMeta.logisticsCost === '' || logisticsMeta.logisticsCost === null || logisticsMeta.logisticsCost === undefined) errors.push('Стоимость логистики');
@@ -830,23 +836,60 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     }
     setValidationErrors([]);
 
+    // Conflict detection
+    if (eventMeta.eventId && eventMeta.originalEventContractorId) {
+      const originalId = eventMeta.originalEventContractorId;
+      const originalName = (eventMeta.originalEventContractorName || '').trim().toLowerCase();
+      
+      const selectedId = eventMeta.contractorId;
+      const enteredName = (eventMeta.companyName || '').trim().toLowerCase();
+      
+      let isConflict = false;
+      if (selectedId && selectedId !== originalId) {
+        isConflict = true;
+      } else if (!selectedId && enteredName && enteredName !== originalName) {
+        isConflict = true;
+      }
+      
+      if (isConflict) {
+        console.log('Conflict detected');
+        const newName = eventMeta.companyName || contractors.find(c => c.id === selectedId)?.companyName || 'Новый контрагент';
+        setConflictModal({
+          isOpen: true,
+          oldContractorName: eventMeta.originalEventContractorName,
+          newContractorName: newName
+        });
+        return; // STOP loop
+      }
+    }
+
+    const shouldUpdate = !eventMeta.eventId || (eventMeta.eventId && !eventMeta.originalEventContractorId);
+    proceedWithSave(shouldUpdate);
+  };
+
+  const proceedWithSave = async (updateEventContractor) => {
     const formDataPayload = {
       kpNumber: kpMeta.kpNumber,
       kpDate: kpMeta.kpDate,
       contractNumber: kpMeta.contractNumber,
       contractDate: kpMeta.contractDate,
+      updateEventContractor: updateEventContractor,
       
       listTitle: eventMeta.eventName,
       eventId: eventMeta.eventId,
       contractorId: eventMeta.contractorId,
+      companyName: eventMeta.companyName,
+      contactPerson: eventMeta.contactPerson,
+      phone: eventMeta.phone,
+      email: eventMeta.email,
       eventPlace: eventMeta.eventPlace,
       countOfPerson: eventMeta.countOfPerson ? parseInt(eventMeta.countOfPerson, 10) : null,
       startEvent: eventMeta.startEvent,
-      endEvent: eventMeta.endEvent,
+      endEvent: eventMeta.isMultiDay ? eventMeta.endEvent : eventMeta.startEvent,
       startTimeStartEvent: eventMeta.startTimeStartEvent,
       endTimeStartEvent: eventMeta.endTimeStartEvent,
-      startTimeEndEvent: eventMeta.startTimeEndEvent,
-      endTimeEndEvent: eventMeta.endTimeEndEvent,
+      startTimeEndEvent: eventMeta.isMultiDay ? eventMeta.startTimeEndEvent : eventMeta.startTimeStartEvent,
+      endTimeEndEvent: eventMeta.isMultiDay ? eventMeta.endTimeEndEvent : eventMeta.endTimeStartEvent,
 
       logisticsCost: logisticsMeta.logisticsCost ? parseInt(logisticsMeta.logisticsCost, 10) : 0,
       isWithinMkad: logisticsMeta.hasMkad
@@ -1202,6 +1245,44 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
           </div>
         </div>
       </div>
+
+      {conflictModal.isOpen && (
+        <div className="proto-modal-overlay" onMouseDown={() => setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' })}>
+          <div className="proto-modal-content" onMouseDown={e => e.stopPropagation()}>
+            <div className="proto-modal-header">
+              <h2>Внимание: Замена контрагента</h2>
+              <button className="proto-modal-close" onClick={() => setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' })}>&times;</button>
+            </div>
+            <div className="proto-modal-body">
+              <p>Событие уже привязано к контрагенту <strong>«{conflictModal.oldContractorName}»</strong>.</p>
+              <p style={{ marginTop: '12px' }}>Заменить связь на <strong>«{conflictModal.newContractorName}»</strong>?</p>
+            </div>
+            <div className="proto-modal-footer" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <button 
+                className="proto-btn proto-btn-secondary" 
+                onClick={() => {
+                  console.log('User selected keep existing');
+                  setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' });
+                  proceedWithSave(false);
+                }}
+              >
+                Оставить текущего
+              </button>
+              <button 
+                className="proto-btn proto-btn-primary"
+                onClick={() => {
+                  console.log('User selected replace contractor');
+                  setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' });
+                  proceedWithSave(true);
+                }}
+              >
+                Заменить контрагента
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );

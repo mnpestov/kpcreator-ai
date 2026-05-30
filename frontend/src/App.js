@@ -343,6 +343,50 @@ function App() {
     const updatedFormData = { ...formData, eventId: finalEventId };
     // --- END AUTO EVENT CREATION ---
 
+    // --- AUTO CONTRACTOR CREATION ---
+    let finalContractorId = formData.contractorId;
+    
+    // Auto-create Contractor ONLY when contractorId is missing AND companyName is present
+    if (!finalContractorId && formData.companyName) {
+      try {
+        console.log('Auto-creating contractor from KP data...');
+        const newContractorPayload = {
+          companyName: formData.companyName,
+          contactPerson: formData.contactPerson || null,
+          phone: formData.phone || null,
+          email: formData.email || null,
+        };
+        const createdContractor = await MainApi.createContractor(newContractorPayload);
+        finalContractorId = createdContractor.id;
+      } catch (err) {
+        console.error('Ошибка при автосоздании контрагента:', err);
+      }
+    }
+    
+    updatedFormData.contractorId = finalContractorId;
+    // --- END AUTO CONTRACTOR CREATION ---
+
+    // --- UPDATE EVENT CONTRACTOR ---
+    if (formData.updateEventContractor === true && finalEventId && finalContractorId) {
+      try {
+        console.log('Event contractor updated');
+        await MainApi.updateEvent(finalEventId, {
+          title: formData.listTitle,
+          contractorId: finalContractorId,
+          startEvent: formData.startEvent,
+          endEvent: formData.endEvent,
+          startTimeStartEvent: formData.startTimeStartEvent,
+          endTimeStartEvent: formData.endTimeStartEvent,
+          startTimeEndEvent: formData.startTimeEndEvent,
+          endTimeEndEvent: formData.endTimeEndEvent,
+          eventPlace: formData.eventPlace,
+          countOfPerson: formData.countOfPerson
+        });
+      } catch (err) {
+        console.error('Ошибка при обновлении привязки события:', err);
+      }
+    }
+    // --- END UPDATE EVENT CONTRACTOR ---
 
     if (isNewKp) {
       try {
