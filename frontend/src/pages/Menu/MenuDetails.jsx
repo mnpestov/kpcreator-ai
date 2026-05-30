@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button } from '@skbkontur/react-ui';
 import './Menu.css';
 
 const CATEGORY_LABELS = {
@@ -41,6 +40,18 @@ const MenuDetails = () => {
     fetchMenuItem();
   }, [id]);
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(`Вы уверены, что хотите удалить позицию "${menuItem.title}"?`);
+    if (!confirmed) return;
+    try {
+      await MainApi.deleteMenuItem(id);
+      navigate('/menu');
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка при удалении позиции меню');
+    }
+  };
+
   if (loading) return <PageContainer maxWidth="800px"><p>Загрузка...</p></PageContainer>;
   if (error) return <PageContainer maxWidth="800px"><p style={{ color: 'red' }}>{error}</p></PageContainer>;
   if (!menuItem) return null;
@@ -50,12 +61,6 @@ const MenuDetails = () => {
       <PageHeader
         title={menuItem.title}
         subtitle="Детальная информация о позиции меню"
-        onBack={() => navigate('/menu')}
-        actions={
-          <Button use="primary" onClick={() => navigate(`/menu/${menuItem.id}/edit`)}>
-            Редактировать
-          </Button>
-        }
       />
 
       <div className="menu-details">
@@ -100,6 +105,19 @@ const MenuDetails = () => {
               {menuItem.description || <span className="menu-details__empty">Нет описания</span>}
             </span>
           </div>
+        </div>
+      </div>
+
+      <div style={{ height: '80px' }} />
+
+      <div className="proto-sticky-bar">
+        <div className="proto-sticky-content">
+          <button className="proto-btn proto-btn-secondary" style={{ color: '#dc2626', borderColor: '#fecaca', backgroundColor: '#fef2f2' }} onClick={handleDelete}>
+            Удалить
+          </button>
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/menu/${menuItem.id}/edit`)}>
+            Изменить блюдо
+          </button>
         </div>
       </div>
     </PageContainer>

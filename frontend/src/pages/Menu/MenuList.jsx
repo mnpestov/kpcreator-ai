@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Input, Loader } from '@skbkontur/react-ui';
 import './Menu.css';
 
 const CATEGORY_LABELS = {
@@ -54,53 +53,42 @@ const MenuList = () => {
     fetchMenuItems('');
   };
 
-  const handleDelete = async (id, title) => {
-    const confirmed = window.confirm(`Вы уверены, что хотите удалить позицию "${title}"?`);
-    if (!confirmed) return;
-    try {
-      await MainApi.deleteMenuItem(id);
-      setMenuItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (err) {
-      console.error(err);
-      alert('Ошибка при удалении позиции меню');
-    }
-  };
-
   return (
     <PageContainer maxWidth="1200px">
       <PageHeader
         title="Меню / Блюда"
         subtitle="Справочник позиций для КП"
         actions={
-          <Button use="primary" onClick={() => navigate('/menu/new')}>
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate('/menu/new')}>
             Добавить позицию
-          </Button>
+          </button>
         }
       />
 
       <div className="menu-list__filter-bar">
         <form onSubmit={handleSearchSubmit} className="menu-list__search-form">
-          <Input
+          <input
+            className="menu-list__search-input"
             placeholder="Поиск по названию или категории..."
             value={search}
-            onValueChange={setSearch}
-            width="320px"
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <Button type="submit" use="default">Найти</Button>
+          <button type="submit" className="proto-btn proto-btn-secondary">Найти</button>
           {search && (
-            <Button onClick={handleResetSearch} use="text">Сбросить</Button>
+            <button type="button" className="proto-btn proto-ghost-btn" onClick={handleResetSearch}>Сбросить</button>
           )}
         </form>
       </div>
 
       {loading ? (
         <div className="menu-list__loader">
-          <Loader active type="big" caption="Загрузка меню..." />
+          <div className="proto-loader"></div>
+          <p style={{ marginTop: '16px', color: '#666' }}>Загрузка меню...</p>
         </div>
       ) : error ? (
         <div className="menu-list__error">
           <p>{error}</p>
-          <Button onClick={() => fetchMenuItems(search)} use="default">Повторить попытку</Button>
+          <button className="proto-btn proto-btn-secondary" onClick={() => fetchMenuItems(search)}>Повторить попытку</button>
         </div>
       ) : menuItems.length === 0 ? (
         <div className="menu-list__empty">
@@ -111,66 +99,38 @@ const MenuList = () => {
               : 'Добавьте первую позицию, нажав кнопку «Добавить позицию».'}
           </p>
           {search && (
-            <Button onClick={handleResetSearch} use="default">Показать все</Button>
+            <button className="proto-btn proto-btn-secondary" onClick={handleResetSearch}>Показать все</button>
           )}
         </div>
       ) : (
-        <div className="menu-table-wrapper">
-          <table className="menu-table">
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>Категория</th>
-                <th>Выход (вес/объем)</th>
-                <th>Цена, ₽</th>
-                <th>Статус</th>
-                <th style={{ width: '100px', textAlign: 'right' }}>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {menuItems.map((item) => (
-                <tr key={item.id}>
-                  <td
-                    className="menu-table__title"
-                    onClick={() => navigate(`/menu/${item.id}`)}
-                  >
-                    {item.title}
-                  </td>
-                  <td>{CATEGORY_LABELS[item.category] || item.category || '—'}</td>
-                  <td>{getWeightDisplay(item.weight, item.category)}</td>
-                  <td>{item.price !== null && item.price !== undefined ? item.price : '—'}</td>
-                  <td>
-                    <span className={`menu-status-badge menu-status-badge--${item.active}`}>
-                      {item.active ? 'Активен' : 'Архив'}
-                    </span>
-                  </td>
-                  <td className="menu-table__actions">
-                    <button
-                      className="menu-table__action-btn"
-                      onClick={() => navigate(`/menu/${item.id}`)}
-                      title="Просмотреть"
-                    >
-                      👁
-                    </button>
-                    <button
-                      className="menu-table__action-btn"
-                      onClick={() => navigate(`/menu/${item.id}/edit`)}
-                      title="Редактировать"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="menu-table__action-btn menu-table__action-btn--delete"
-                      onClick={() => handleDelete(item.id, item.title)}
-                      title="Удалить"
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="menu-stream">
+          {menuItems.map((item) => (
+            <div 
+              key={item.id}
+              className="menu-card"
+              onClick={() => navigate(`/menu/${item.id}`)}
+            >
+              <div className="menu-card__identity">
+                <div className="menu-card__title" title={item.title}>
+                  {item.title}
+                </div>
+                <div className="menu-card__category">
+                  {CATEGORY_LABELS[item.category] || item.category || '—'}
+                  <span className={`menu-status-badge menu-status-badge--${item.active}`}>
+                    {item.active ? 'Активен' : 'Архив'}
+                  </span>
+                </div>
+              </div>
+              <div className="menu-card__context">
+                <div className="menu-card__price">
+                  {item.price !== null && item.price !== undefined ? `${item.price} ₽` : '—'}
+                </div>
+                <div className="menu-card__weight">
+                  {getWeightDisplay(item.weight, item.category)}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </PageContainer>

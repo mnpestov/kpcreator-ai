@@ -7,8 +7,29 @@
 
 .menu-list__search-form {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.menu-list__search-input {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+.menu-list__search-input:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
 }
 
 .menu-list__loader {
@@ -33,56 +54,86 @@
   color: #666;
 }
 
-.menu-table-wrapper {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
+/* ---- Card Stream ---- */
+.menu-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
-.menu-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.menu-table th {
-  background-color: #f5f5f5;
-  padding: 12px 16px;
-  font-weight: 500;
-  color: #333;
-  border-bottom: 1px solid #eee;
-}
-
-.menu-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
-}
-
-.menu-table tbody tr:hover {
-  background-color: #fafafa;
-}
-
-.menu-table__title {
-  font-weight: 500;
-  color: #0070f3;
+.menu-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  gap: 12px;
   cursor: pointer;
 }
 
-.menu-table__title:hover {
-  text-decoration: underline;
+.menu-card:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
 }
 
-.menu-table__truncate {
-  max-width: 250px;
+.menu-card__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+}
+
+.menu-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 250px;
 }
 
-.menu-table__empty-cell {
-  color: #aaa;
+.menu-card__category {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.menu-card__context {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.menu-card__price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: block;
+  white-space: nowrap;
+}
+
+.menu-card__weight {
+  font-size: 12px;
+  color: #777;
+  display: block;
+  white-space: nowrap;
 }
 
 .menu-status-badge {
@@ -103,28 +154,29 @@
   color: #5f6368;
 }
 
-.menu-table__actions {
+.proto-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid #eaeaea;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+  padding: 16px 0;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+}
+
+.proto-sticky-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
   display: flex;
-  gap: 8px;
   justify-content: flex-end;
-}
-
-.menu-table__action-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 4px;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.menu-table__action-btn:hover {
-  opacity: 1;
-}
-
-.menu-table__action-btn--delete:hover {
-  color: #c00;
+  align-items: center;
+  gap: 12px;
 }
 
 .menu-form {
