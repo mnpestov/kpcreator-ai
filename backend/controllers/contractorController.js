@@ -1,5 +1,6 @@
 const { Contractor } = require('../models/models');
 const { Op } = require('sequelize');
+const sequelize = require('../db');
 
 class ContractorController {
   async getAll(req, res) {
@@ -9,8 +10,8 @@ class ContractorController {
       if (search) {
         where = {
           [Op.or]: [
-            { companyName: { [Op.iLike]: `%${search}%` } },
-            { contactPerson: { [Op.iLike]: `%${search}%` } }
+            sequelize.where(sequelize.literal(`"companyName" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`),
+            sequelize.where(sequelize.literal(`"contactPerson" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`)
           ]
         };
       }

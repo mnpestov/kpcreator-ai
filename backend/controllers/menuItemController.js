@@ -1,5 +1,6 @@
 const { MenuItem } = require('../models/models');
 const { Op } = require('sequelize');
+const sequelize = require('../db');
 
 class MenuItemController {
   async getAll(req, res) {
@@ -9,8 +10,8 @@ class MenuItemController {
       if (search) {
         where = {
           [Op.or]: [
-            { title: { [Op.iLike]: `%${search}%` } },
-            { category: { [Op.iLike]: `%${search}%` } }
+            sequelize.where(sequelize.literal(`"title" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`),
+            sequelize.where(sequelize.literal(`"category" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`)
           ]
         };
       }

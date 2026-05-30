@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Input, Loader } from '@skbkontur/react-ui';
+
 import './Events.css';
 
 const STATUS_LABELS = {
@@ -56,17 +56,7 @@ const EventsList = () => {
     fetchEvents('');
   };
 
-  const handleDelete = async (id, title) => {
-    const confirmed = window.confirm(`Вы уверены, что хотите удалить событие "${title}"?`);
-    if (!confirmed) return;
-    try {
-      await MainApi.deleteEvent(id);
-      setEvents((prev) => prev.filter((ev) => ev.id !== id));
-    } catch (err) {
-      console.error(err);
-      alert('Ошибка при удалении события');
-    }
-  };
+
 
   return (
     <PageContainer maxWidth="1200px">
@@ -74,35 +64,36 @@ const EventsList = () => {
         title="События"
         subtitle="Управление событиями и мероприятиями"
         actions={
-          <Button use="primary" onClick={() => navigate('/events/new')}>
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate('/events/new')}>
             Создать событие
-          </Button>
+          </button>
         }
       />
 
       <div className="events-list__filter-bar">
         <form onSubmit={handleSearchSubmit} className="events-list__search-form">
-          <Input
+          <input
+            className="events-list__search-input"
             placeholder="Поиск по названию или месту..."
             value={search}
-            onValueChange={setSearch}
-            width="320px"
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <Button type="submit" use="default">Найти</Button>
+          <button type="submit" className="proto-btn proto-btn-secondary">Найти</button>
           {search && (
-            <Button onClick={handleResetSearch} use="text">Сбросить</Button>
+            <button type="button" className="proto-btn proto-ghost-btn" onClick={handleResetSearch}>Сбросить</button>
           )}
         </form>
       </div>
 
       {loading ? (
         <div className="events-list__loader">
-          <Loader active type="big" caption="Загрузка событий..." />
+          <div className="proto-loader"></div>
+          <p style={{ marginTop: '16px', color: '#666' }}>Загрузка событий...</p>
         </div>
       ) : error ? (
         <div className="events-list__error">
           <p>{error}</p>
-          <Button onClick={() => fetchEvents(search)} use="default">Повторить попытку</Button>
+          <button className="proto-btn proto-btn-secondary" onClick={() => fetchEvents(search)}>Повторить попытку</button>
         </div>
       ) : events.length === 0 ? (
         <div className="events-list__empty">
@@ -113,7 +104,7 @@ const EventsList = () => {
               : 'Создайте первое событие, нажав кнопку «Создать событие».'}
           </p>
           {search && (
-            <Button onClick={handleResetSearch} use="default">Показать все</Button>
+            <button className="proto-btn proto-btn-secondary" onClick={handleResetSearch}>Показать все</button>
           )}
         </div>
       ) : (

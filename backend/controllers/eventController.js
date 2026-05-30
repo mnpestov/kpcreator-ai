@@ -12,8 +12,8 @@ class EventController {
       if (search) {
         where = {
           [Op.or]: [
-            { title: { [Op.iLike]: `%${search}%` } },
-            { eventPlace: { [Op.iLike]: `%${search}%` } }
+            sequelize.where(sequelize.literal(`"title" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`),
+            sequelize.where(sequelize.literal(`"eventPlace" COLLATE "und-x-icu"`), 'ILIKE', `%${search}%`)
           ]
         };
       }
