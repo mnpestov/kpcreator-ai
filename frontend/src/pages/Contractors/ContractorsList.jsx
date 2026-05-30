@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Input, Loader } from '@skbkontur/react-ui';
 import './Contractors.css';
 
 const ContractorsList = () => {
@@ -64,42 +63,43 @@ const ContractorsList = () => {
         title="Справочник контрагентов"
         subtitle="Управление базой деловых партнеров и клиентов"
         actions={
-          <Button use="primary" onClick={() => navigate('/contractors/new')}>
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate('/contractors/new')}>
             Добавить контрагента
-          </Button>
+          </button>
         }
       />
 
       <div className="contractors-list__filter-bar">
         <form onSubmit={handleSearchSubmit} className="contractors-list__search-form">
-          <Input
+          <input
+            className="contractors-list__search-input"
             placeholder="Поиск по компании или контактному лицу..."
             value={search}
-            onValueChange={handleSearchChange}
-            width="320px"
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
-          <Button type="submit" use="default">Найти</Button>
+          <button type="submit" className="proto-btn proto-btn-secondary">Найти</button>
           {search && (
-            <Button onClick={handleResetSearch} use="text">Сбросить</Button>
+            <button type="button" className="proto-btn proto-ghost-btn" onClick={handleResetSearch}>Сбросить</button>
           )}
         </form>
       </div>
 
       {loading ? (
         <div className="contractors-list__loader">
-          <Loader active type="big" caption="Загрузка данных..." />
+          <div className="proto-loader"></div>
+          <p style={{ marginTop: '16px', color: '#666' }}>Загрузка данных...</p>
         </div>
       ) : error ? (
         <div className="contractors-list__error">
           <p>{error}</p>
-          <Button onClick={() => fetchContractors(search)} use="default">Повторить попытку</Button>
+          <button className="proto-btn proto-btn-secondary" onClick={() => fetchContractors(search)}>Повторить попытку</button>
         </div>
       ) : contractors.length === 0 ? (
         <div className="contractors-list__empty">
           <h3>Контрагенты не найдены</h3>
           <p>Попробуйте изменить запрос или создайте нового контрагента.</p>
           {search && (
-            <Button onClick={handleResetSearch} use="default">Показать всех</Button>
+            <button className="proto-btn proto-btn-secondary" onClick={handleResetSearch}>Показать всех</button>
           )}
         </div>
       ) : (

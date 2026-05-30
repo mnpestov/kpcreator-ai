@@ -38,6 +38,10 @@
     align-items: flex-start;
   }
 
+  .page-header__subtitle {
+    display: none;
+  }
+
   .page-header__actions {
     width: 100%;
     justify-content: flex-start;

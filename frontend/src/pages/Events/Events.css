@@ -143,7 +143,7 @@
 .event-card__title {
   font-size: 15px;
   font-weight: 600;
-  color: #0070f3;
+  color: #1a1a1a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -176,7 +176,7 @@
 }
 
 .event-card__location {
-  font-size: 12px;
+  font-size: 14px;
   color: #777;
   display: block;
   white-space: nowrap;

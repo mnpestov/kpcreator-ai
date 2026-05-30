@@ -75,17 +75,7 @@ const ContractorDetails = () => {
     <PageContainer maxWidth="800px">
       <PageHeader
         title={contractor.companyName}
-        subtitle="Сведения о деловом партнере"
-        actions={
-          <div className="contractor-details__header-actions">
-            <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/contractors')}>
-              Назад
-            </button>
-            <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/contractors/${id}/edit`)}>
-              Редактировать
-            </button>
-          </div>
-        }
+        subtitle="Сведения о контрагенте"
       />
 
       <div className="contractor-details__content" style={{ marginTop: '1.5rem' }}>
@@ -162,6 +152,16 @@ const ContractorDetails = () => {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <div style={{ height: '80px' }} />
+
+      <div className="proto-sticky-bar">
+        <div className="proto-sticky-content">
+          <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/contractors/${id}/edit`)}>
+            Изменить контрагента
+          </button>
         </div>
       </div>
     </PageContainer>
