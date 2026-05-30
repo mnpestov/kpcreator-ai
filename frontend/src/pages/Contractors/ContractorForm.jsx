@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Input, Textarea, Loader } from '@skbkontur/react-ui';
+import { Loader } from '@skbkontur/react-ui';
 import './Contractors.css';
 
 const ContractorForm = () => {
@@ -104,19 +104,19 @@ const ContractorForm = () => {
       />
 
       <form className="contractor-form" onSubmit={handleSubmit} style={{ marginTop: '1.5rem' }}>
-        <div className="contractor-form__card">
-          <h3 className="contractor-form__card-title">Основная информация</h3>
-          <div className="contractor-form__grid">
+        <div className="proto-meta-card" style={{ padding: '12px 20px 20px 20px', marginBottom: '16px' }}>
+          <h3 className="proto-meta-title" style={{ textTransform: 'none' }}>Основная информация</h3>
+          <div className="contractor-form__grid" style={{ paddingTop: '8px' }}>
             <div className="contractor-form__field">
               <label className="contractor-form__label contractor-form__label--required">
                 Название компании
               </label>
-              <Input
-                width="100%"
+              <input
+                className="proto-input-clean"
                 value={form.companyName}
                 placeholder="ООО КатерингСервис"
-                onValueChange={(val) => handleChange('companyName', val)}
-                error={!!errors.companyName}
+                onChange={(e) => handleChange('companyName', e.target.value)}
+                style={{ border: errors.companyName ? '1px solid #dc2626' : undefined }}
               />
               {errors.companyName && (
                 <span className="contractor-form__error-message">{errors.companyName}</span>
@@ -127,11 +127,11 @@ const ContractorForm = () => {
               <label className="contractor-form__label">
                 Контактное лицо
               </label>
-              <Input
-                width="100%"
+              <input
+                className="proto-input-clean"
                 value={form.contactPerson}
                 placeholder="Иван Иванов"
-                onValueChange={(val) => handleChange('contactPerson', val)}
+                onChange={(e) => handleChange('contactPerson', e.target.value)}
               />
             </div>
 
@@ -139,11 +139,11 @@ const ContractorForm = () => {
               <label className="contractor-form__label">
                 Телефон
               </label>
-              <Input
-                width="100%"
+              <input
+                className="proto-input-clean"
                 value={form.phone}
                 placeholder="+7 (999) 123-45-67"
-                onValueChange={(val) => handleChange('phone', val)}
+                onChange={(e) => handleChange('phone', e.target.value)}
               />
             </div>
 
@@ -151,46 +151,47 @@ const ContractorForm = () => {
               <label className="contractor-form__label">
                 Email
               </label>
-              <Input
-                width="100%"
+              <input
+                className="proto-input-clean"
                 value={form.email}
                 placeholder="partner@example.com"
-                onValueChange={(val) => handleChange('email', val)}
+                onChange={(e) => handleChange('email', e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        <div className="contractor-form__card">
-          <h3 className="contractor-form__card-title">Дополнительно</h3>
-          <div className="contractor-form__field">
+        <div className="proto-meta-card" style={{ padding: '12px 20px 20px 20px', marginBottom: '16px' }}>
+          <h3 className="proto-meta-title" style={{ textTransform: 'none' }}>Дополнительно</h3>
+          <div className="contractor-form__field" style={{ paddingTop: '8px' }}>
             <label className="contractor-form__label">Заметки / Примечания</label>
-            <Textarea
-              width="100%"
+            <textarea
+              className="proto-input-clean"
               rows={5}
               value={form.notes}
               placeholder="Дополнительные сведения, реквизиты, особенности работы..."
-              onValueChange={(val) => handleChange('notes', val)}
+              onChange={(e) => handleChange('notes', e.target.value)}
+              style={{ resize: 'vertical' }}
             />
           </div>
         </div>
 
         <div className="contractor-form__actions">
-          <Button
+          <button
+            type="button"
+            className="proto-btn proto-btn-secondary"
             onClick={() => navigate(isEdit ? `/contractors/${id}` : '/contractors')}
             disabled={loading}
-            use="default"
           >
             Отмена
-          </Button>
-          <Button
+          </button>
+          <button
             type="submit"
-            use="primary"
-            loading={loading}
+            className="proto-btn proto-btn-primary"
             disabled={loading}
           >
-            Сохранить
-          </Button>
+            {loading ? 'Сохранение...' : 'Сохранить'}
+          </button>
         </div>
       </form>
     </PageContainer>

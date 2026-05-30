@@ -13,6 +13,8 @@ This document tracks upcoming engineering, UX, and technical debt tasks, strictl
   - *Context:* The legacy `@skbkontur/react-ui` Checkbox components used for boolean toggles (like `isMultiDay` and `hasMkad`) are visually inconsistent with the modern, mobile-first design language of `PrototypeKp`. Migrate these to a custom `<Switch />` toggle component for a native operational UX.
 - [x] **Zero weight category calculation bug**
   - *Context:* The `calculateKpTotal.js` ignores the entire row's price in category subtotals if the weight is missing or zero. This breaks PDF and Preview financial consistency while the total KP sum remains technically correct.
+- [ ] **Create KP from Existing KP**
+  - *Context:* Пользователь должен иметь возможность открыть существующее КП и создать новое на его основе с предзаполнением всех данных документа, позиций, логистики, контрагента и мероприятия. При создании копии должны быть сброшены: номер КП, дата КП, номер договора, дата договора, статус. Сохранение должно создавать новый документ, а не изменять существующий.
 
 ### P3 (Module Upgrades)
 - [ ] **Organisation directory redesign**
@@ -38,3 +40,8 @@ The following major architectural and UX milestones have already been successful
 - **Event Auto-Creation:** Engineered silent auto-generation of operational Events when a KP is saved without a pre-selected Event.
 - **Single-Day Event Fix:** Corrected validation payload synchronization so single-day events no longer require missing second-day fields.
 - **Sticky Footer & UX Layers:** Implemented `.proto-sticky-bar` and fixed z-index overlapping issues with dropdown autocomplete menus.
+
+## Future Product Ideas
+
+- **Event Calendar Dashboard**
+  - *Context:* В будущем Home может быть преобразован из списка последних КП в календарь мероприятий. Поиск КП по номеру должен сохраниться. Основание — обратная связь заказчика: список последних КП практически не используется, основной сценарий работы — поиск по номеру КП и работа через контрагентов.

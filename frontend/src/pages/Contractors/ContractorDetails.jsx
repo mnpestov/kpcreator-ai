@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Loader } from '@skbkontur/react-ui';
+import { Loader } from '@skbkontur/react-ui';
+import KpCard from '../../components/common/KpCard/KpCard';
 import './Contractors.css';
 
 const ContractorDetails = () => {
@@ -47,7 +48,7 @@ const ContractorDetails = () => {
         <div className="contractor-details__error">
           <h3>Ошибка</h3>
           <p>{error || 'Контрагент не найден'}</p>
-          <Button onClick={() => navigate('/contractors')} use="default">Вернуться к списку</Button>
+          <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/contractors')}>Вернуться к списку</button>
         </div>
       </PageContainer>
     );
@@ -60,12 +61,12 @@ const ContractorDetails = () => {
         subtitle="Сведения о деловом партнере"
         actions={
           <div className="contractor-details__header-actions">
-            <Button onClick={() => navigate('/contractors')} use="default">
+            <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/contractors')}>
               Назад
-            </Button>
-            <Button use="primary" onClick={() => navigate(`/contractors/${id}/edit`)}>
+            </button>
+            <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/contractors/${id}/edit`)}>
               Редактировать
-            </Button>
+            </button>
           </div>
         }
       />
@@ -128,41 +129,18 @@ const ContractorDetails = () => {
             {(!contractor.kps || contractor.kps.length === 0) ? (
               <p className="contractor-details__notes-placeholder">Нет связанных коммерческих предложений.</p>
             ) : (
-              <div className="contractors-table-wrapper">
-                <table className="contractors-table">
-                  <thead>
-                    <tr>
-                      <th>№ КП</th>
-                      <th>Название</th>
-                      <th>Статус</th>
-                      <th>Дата</th>
-                      <th style={{ textAlign: 'right' }}>Действие</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contractor.kps.map(kp => {
-                      const statusMap = {
-                        draft: 'Черновик',
-                        sent: 'Отправлено',
-                        approved: 'Согласовано',
-                        paid: 'Оплачено',
-                        completed: 'Завершено',
-                        cancelled: 'Отменено'
-                      };
-                      return (
-                        <tr key={kp.id}>
-                          <td>{kp.kpNumber}</td>
-                          <td>{kp.eventPlace || kp.listTitle || '—'}</td>
-                          <td>{statusMap[kp.status || 'draft'] || kp.status || 'Черновик'}</td>
-                          <td>{kp.createdAt ? new Date(kp.createdAt).toLocaleDateString('ru-RU') : '—'}</td>
-                          <td style={{ textAlign: 'right' }}>
-                            <Button size="small" onClick={() => navigate(`/kp/${kp.kpNumber}`)}>Открыть</Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div className="home__stream">
+                {contractor.kps.map(kp => (
+                  <KpCard 
+                    key={kp.id} 
+                    variant="contractor"
+                    kp={{
+                      ...kp,
+                      contractor: { companyName: contractor.companyName } 
+                    }} 
+                    onClick={() => navigate(`/kp/${kp.kpNumber}`)} 
+                  />
+                ))}
               </div>
             )}
           </div>

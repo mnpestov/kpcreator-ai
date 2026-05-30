@@ -6,6 +6,7 @@ import { MainApi } from "../../utils/MainApi";
 import useKpStore from '../../hooks/useKpStore';
 import PageContainer from "../../components/Layout/PageContainer";
 import PageHeader from "../../components/Layout/PageHeader";
+import KpCard from "../../components/common/KpCard/KpCard";
 
 function Home({ dispatch, setIsNewKp }) {
   const SearchIcon = () => (
@@ -20,17 +21,6 @@ function Home({ dispatch, setIsNewKp }) {
   const { resetFormData, resetListsKp } = useKpStore();
 
   const [visibleCount, setVisibleCount] = useState(10);
-
-  const getStatusObj = (status) => {
-    switch (status) {
-      case 'sent': return { label: 'Отправлено', className: 'sent' };
-      case 'approved': return { label: 'Согласовано', className: 'approved' };
-      case 'paid': return { label: 'Оплачено', className: 'paid' };
-      case 'draft':
-      default:
-        return { label: 'Черновик', className: 'draft' };
-    }
-  };
 
   useEffect(() => {
     MainApi.getLastKps()
@@ -92,58 +82,13 @@ function Home({ dispatch, setIsNewKp }) {
 
           {visibleKps.length > 0 ? (
             <div className="home__stream">
-              {visibleKps.map((kp) => {
-                const prettyDate = kp.startEvent
-                  ? new Date(kp.startEvent).toLocaleDateString('ru-RU', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                  })
-                  : '';
-                  
-                // Use mapped status and fallback for amount
-                const statusObj = getStatusObj(kp.status);
-                
-                const hasTotal = kp.totalAmount !== null && kp.totalAmount !== undefined;
-                const totalAmount = hasTotal ? `${kp.totalAmount.toLocaleString('ru-RU')} ₽` : '— ₽';
-
-                return (
-                  <div
-                    key={kp.id}
-                    className="kp-row-card"
-                    onClick={() => navigate(`/kp/${kp.kpNumber}`)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {/* 1. Identity Block */}
-                    <div className="kp-card-identity" title={`№ ${kp.kpNumber}`}>
-                      <div className="kp-number-text">№ {kp.kpNumber}</div>
-                      <div className="kp-identity-meta">
-                        <span className={`status-badge ${statusObj.className}`}>
-                          {statusObj.label}
-                        </span>
-                        <div className="kp-date">{prettyDate}</div>
-                      </div>
-                    </div>
-
-                    {/* 2. Context Block */}
-                    <div className="kp-card-context">
-                      <div className="contractor-name" title={kp.contractor?.companyName || '—'}>
-                        {kp.contractor?.companyName || '—'}
-                      </div>
-                      <div className="event-details" title={`${kp.event?.title || 'Без названия'} • ${kp.eventPlace || '—'}`}>
-                        {kp.event?.title || 'Без названия'} • {kp.eventPlace || '—'}
-                      </div>
-                    </div>
-
-                    {/* 3. Value Block */}
-                    <div className="kp-card-actions">
-                      <div className="kp-amount">
-                        {totalAmount}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {visibleKps.map((kp) => (
+                <KpCard 
+                  key={kp.id} 
+                  kp={kp} 
+                  onClick={() => navigate(`/kp/${kp.kpNumber}`)} 
+                />
+              ))}
             </div>
           ) : (
             <p className="home__no-kp">Нет данных для отображения.</p>

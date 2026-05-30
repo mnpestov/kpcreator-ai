@@ -30,8 +30,13 @@ class ContractorController {
       const contractor = await Contractor.findByPk(id, {
         include: [{
           model: require('../models/models').Kp,
-          as: 'kps', // Assumes Contractor.hasMany(Kp) aliases as 'kps' by default. If it uses different alias we might need to adjust, but typically default plural is used. Wait, in models.js: Contractor.hasMany(Kp, { foreignKey: 'contractorId' });
-          attributes: ['kpNumber', 'listTitle', 'eventPlace', 'status', 'createdAt']
+          as: 'kps',
+          attributes: ['kpNumber', 'listTitle', 'eventPlace', 'status', 'createdAt', 'totalAmount'],
+          include: [{
+            model: require('../models/models').Event,
+            as: 'event',
+            attributes: ['title']
+          }]
         }]
       });
       if (!contractor) {
