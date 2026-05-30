@@ -17,14 +17,18 @@ export const calculateKpTotal = (listsKp = [], formData = {}) => {
         totals.totalPrice += itemTotal;
 
         // Обработка для типов eat и drink
-        if (typeOfProduct === 'eat' && productWeight) {
-          const totalWeightForType = productWeight * countOfProduct;
-          totals.byType.eat.totalWeight += totalWeightForType;
+        if (typeOfProduct === 'eat') {
           totals.byType.eat.totalPrice += itemTotal;
-        } else if (typeOfProduct === 'drink' && productWeight) {
-          const totalWeightForType = productWeight * countOfProduct;
-          totals.byType.drink.totalWeight += totalWeightForType;
+          if (productWeight) {
+            const totalWeightForType = productWeight * countOfProduct;
+            totals.byType.eat.totalWeight += totalWeightForType;
+          }
+        } else if (typeOfProduct === 'drink') {
           totals.byType.drink.totalPrice += itemTotal;
+          if (productWeight) {
+            const totalWeightForType = productWeight * countOfProduct;
+            totals.byType.drink.totalWeight += totalWeightForType;
+          }
         } else if (typeOfProduct === 'organisation') {
           totals.byType.organisation.totalPrice += itemTotal;
         }

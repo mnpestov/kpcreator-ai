@@ -6,6 +6,7 @@ import useDocumentAwareness from '../../hooks/useDocumentAwareness';
 import { MainApi } from '../../utils/MainApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtoSwitch from '../../components/common/ProtoSwitch/ProtoSwitch';
 import './PrototypeKp.css';
 
 // ------------------------------------------------------------------
@@ -178,7 +179,7 @@ function QuickAddInput({ onAdd, autoFocusRef, catalog = [] }) {
           setShowAc(true);
           setActiveIndex(0);
         }}
-        onFocus={() => setShowAc(true)}
+        onClick={() => setShowAc(true)}
         onBlur={() => setShowAc(false)}
         onKeyDown={handleKeyDown}
       />
@@ -416,19 +417,21 @@ function RowDisplay({
 // ------------------------------------------------------------------
 // SEMANTIC META CARD COMPONENT
 // ------------------------------------------------------------------
-function MetaCard({ id, expandedId, onToggle, title, summary, children }) {
-  const isExpanded = expandedId === id;
+function MetaCard({ id, isExpanded, onToggle, title, summary, children }) {
   return (
     <div className={`proto-meta-card ${isExpanded ? 'expanded' : 'collapsed'}`}>
       <div className="proto-meta-header" onClick={() => onToggle(id)}>
         {isExpanded ? (
           <div className="proto-meta-title">
             <span>{title}</span>
-            <span className="proto-chevron">Свернуть ▲</span>
+            <span className="proto-chevron">▴</span>
           </div>
         ) : (
-          <div className="proto-meta-summary">
-            {summary}
+          <div className="proto-meta-title" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <div className="proto-meta-summary">
+              {summary}
+            </div>
+            <span className="proto-chevron">▾</span>
           </div>
         )}
       </div>
@@ -648,7 +651,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     hasMkad: true, logisticsCost: 5000
   });
 
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [expandedCards, setExpandedCards] = useState({});
 
   const [sheets, setSheets] = useState(INITIAL_SHEETS);
   const [activeSheetId, setActiveSheetId] = useState('s1');
@@ -671,7 +674,10 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
 
   // Handlers
   const handleToggleCard = (id) => {
-    setExpandedCard(prev => prev === id ? null : id);
+    setExpandedCards(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   const handleAddRow = (sheetId, newRowData) => {
@@ -892,7 +898,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       endTimeEndEvent: eventMeta.isMultiDay ? eventMeta.endTimeEndEvent : eventMeta.endTimeStartEvent,
 
       logisticsCost: logisticsMeta.logisticsCost ? parseInt(logisticsMeta.logisticsCost, 10) : 0,
-      isWithinMkad: logisticsMeta.hasMkad
+      isWithinMkad: !logisticsMeta.hasMkad
     };
 
     try {
@@ -963,7 +969,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
             {/* 1. DOCUMENT CARD */}
             <MetaCard
               id="document"
-              expandedId={expandedCard}
+              isExpanded={!!expandedCards['document']}
               onToggle={handleToggleCard}
               title="Параметры документа"
               summary={
@@ -984,14 +990,13 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
                   </div>
                 </div>
 
-                <label className="proto-checkbox">
-                  <input
-                    type="checkbox"
+                <div style={{ marginTop: '16px' }}>
+                  <ProtoSwitch
                     checked={kpMeta.syncContractData}
-                    onChange={e => handleKpMetaChange('syncContractData', e.target.checked)}
+                    onChange={(checked) => handleKpMetaChange('syncContractData', checked)}
+                    label="Данные договора совпадают с КП"
                   />
-                  Данные договора совпадают с КП
-                </label>
+                </div>
 
                 {!kpMeta.syncContractData && (
                   <div className="proto-grid" style={{ marginTop: '16px' }}>
@@ -1011,7 +1016,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
             {/* 2. EVENT CARD */}
             <MetaCard
               id="event"
-              expandedId={expandedCard}
+              isExpanded={!!expandedCards['event']}
               onToggle={handleToggleCard}
               title="Информация о мероприятии"
               summary={
@@ -1106,10 +1111,13 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
                   <div className="proto-field"><label>Время окончания</label><input type="time" className="proto-input-clean" value={eventMeta.endTimeStartEvent || ''} onChange={e => handleEventMetaChange('endTimeStartEvent', e.target.value)} /></div>
                 </div>
 
-                <label className="proto-checkbox" style={{ marginTop: '16px' }}>
-                  <input type="checkbox" checked={eventMeta.isMultiDay} onChange={e => handleEventMetaChange('isMultiDay', e.target.checked)} />
-                  Многодневное мероприятие
-                </label>
+                <div style={{ marginTop: '16px' }}>
+                  <ProtoSwitch
+                    checked={eventMeta.isMultiDay}
+                    onChange={(checked) => handleEventMetaChange('isMultiDay', checked)}
+                    label="Многодневное мероприятие"
+                  />
+                </div>
 
                 {eventMeta.isMultiDay && (
                   <div className="proto-grid" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #eee' }}>
@@ -1124,7 +1132,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
             {/* 3. LOGISTICS CARD */}
             <MetaCard
               id="logistics"
-              expandedId={expandedCard}
+              isExpanded={!!expandedCards['logistics']}
               onToggle={handleToggleCard}
               title="Логистика"
               summary={
@@ -1142,10 +1150,13 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
                     <input className="proto-input-clean" type="number" value={logisticsMeta.logisticsCost} onChange={e => setLogisticsMeta({ ...logisticsMeta, logisticsCost: Number(e.target.value) })} />
                   </div>
                 </div>
-                <label className="proto-checkbox">
-                  <input type="checkbox" checked={logisticsMeta.hasMkad} onChange={e => setLogisticsMeta({ ...logisticsMeta, hasMkad: e.target.checked })} />
-                  Выезд за МКАД
-                </label>
+                <div style={{ marginTop: '16px' }}>
+                  <ProtoSwitch
+                    checked={logisticsMeta.hasMkad}
+                    onChange={(checked) => setLogisticsMeta({ ...logisticsMeta, hasMkad: checked })}
+                    label="Выезд за МКАД"
+                  />
+                </div>
               </div>
             </MetaCard>
 
@@ -1249,15 +1260,12 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       {conflictModal.isOpen && (
         <div className="proto-modal-overlay" onMouseDown={() => setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' })}>
           <div className="proto-modal-content" onMouseDown={e => e.stopPropagation()}>
-            <div className="proto-modal-header">
-              <h2>Внимание: Замена контрагента</h2>
-              <button className="proto-modal-close" onClick={() => setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' })}>&times;</button>
-            </div>
+            <h3 className="proto-modal-title">Замена контрагента</h3>
             <div className="proto-modal-body">
-              <p>Событие уже привязано к контрагенту <strong>«{conflictModal.oldContractorName}»</strong>.</p>
-              <p style={{ marginTop: '12px' }}>Заменить связь на <strong>«{conflictModal.newContractorName}»</strong>?</p>
+              <p className="proto-modal-text">Событие уже привязано к контрагенту «{conflictModal.oldContractorName}».</p>
+              <p className="proto-modal-text">Заменить связь на «{conflictModal.newContractorName}»?</p>
             </div>
-            <div className="proto-modal-footer" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <div className="proto-modal-footer">
               <button 
                 className="proto-btn proto-btn-secondary" 
                 onClick={() => {
@@ -1276,7 +1284,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
                   proceedWithSave(true);
                 }}
               >
-                Заменить контрагента
+                Заменить
               </button>
             </div>
           </div>
