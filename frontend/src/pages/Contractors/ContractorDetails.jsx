@@ -7,12 +7,15 @@ import { Loader } from '@skbkontur/react-ui';
 import KpCard from '../../components/common/KpCard/KpCard';
 import './Contractors.css';
 
+import { prepareCloneData } from '../../utils/cloneHelper';
+
 const ContractorDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [contractor, setContractor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cloningKp, setCloningKp] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -32,7 +35,21 @@ const ContractorDetails = () => {
     fetchDetails();
   }, [id]);
 
-  if (loading) {
+  const handleQuickClone = async (kpNumber) => {
+    try {
+      setCloningKp(true);
+      const res = await MainApi.getKp(kpNumber);
+      const cloneData = prepareCloneData(res.formData, res.listsKp);
+      navigate('/new', { state: { cloneData } });
+    } catch (err) {
+      console.error('Ошибка клонирования КП:', err);
+      alert('Не удалось клонировать КП');
+    } finally {
+      setCloningKp(false);
+    }
+  };
+
+  if (loading || cloningKp) {
     return (
       <PageContainer maxWidth="800px">
         <div className="contractor-details__loader">
@@ -139,6 +156,7 @@ const ContractorDetails = () => {
                       contractor: { companyName: contractor.companyName } 
                     }} 
                     onClick={() => navigate(`/kp/${kp.kpNumber}`)} 
+                    onClone={handleQuickClone}
                   />
                 ))}
               </div>

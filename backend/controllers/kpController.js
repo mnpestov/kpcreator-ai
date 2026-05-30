@@ -66,8 +66,7 @@ class KpController {
                 include: [
                     {
                         model: Contractor,
-                        as: 'contractor',
-                        attributes: ['id', 'companyName']
+                        as: 'contractor'
                     },
                     {
                         model: Event,

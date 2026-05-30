@@ -1,4 +1,5 @@
 import React from 'react';
+import { Copy } from '@skbkontur/react-icons';
 
 export const getStatusObj = (status) => {
   switch (status) {
@@ -11,7 +12,7 @@ export const getStatusObj = (status) => {
   }
 };
 
-const KpCard = ({ kp, onClick, variant = 'home' }) => {
+const KpCard = ({ kp, onClick, onClone, variant = 'home' }) => {
   const prettyDate = kp.startEvent
     ? new Date(kp.startEvent).toLocaleDateString('ru-RU', {
       year: 'numeric',
@@ -63,6 +64,29 @@ const KpCard = ({ kp, onClick, variant = 'home' }) => {
         <div className="kp-amount">
           {totalAmount}
         </div>
+        {onClone && (
+          <div 
+            className="kp-card-clone-btn"
+            title="Создать на основе"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClone(kp.kpNumber);
+            }}
+            style={{ 
+              marginLeft: '12px', 
+              color: '#888', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              padding: '4px',
+              borderRadius: '4px'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <Copy size={18} />
+          </div>
+        )}
       </div>
     </div>
   );

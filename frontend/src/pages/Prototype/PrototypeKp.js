@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useKpStore from '../../hooks/useKpStore';
 import useIsMobile from '../../hooks/useIsMobile';
 import useDocumentAwareness from '../../hooks/useDocumentAwareness';
@@ -450,6 +450,7 @@ function MetaCard({ id, isExpanded, onToggle, title, summary, children }) {
 export default function PrototypeKp({ addToDb, isNewKp }) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const location = useLocation();
   const setListsKp = useKpStore((state) => state.setListsKp);
 
   // Semantic State
@@ -480,7 +481,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
   useEffect(() => {
     let cancelled = false;
 
-    // Fetch KP Number
+    // Fetch KP Number (if cloning, it will still fetch and assign a new number)
     MainApi.getLastKpNumber()
       .then((res) => {
         if (cancelled) return;
@@ -500,6 +501,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
           contractNumber: prev.syncContractData ? '1' : prev.contractNumber
         }));
       });
+
 
     // Fetch Events
     MainApi.getEvents()
@@ -540,6 +542,23 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
 
     return () => { cancelled = true; };
   }, []);
+
+  // ------------------------------------------------------------------
+  // CLONE INITIALIZATION
+  // ------------------------------------------------------------------
+  useEffect(() => {
+    if (isNewKp && location.state && location.state.cloneData) {
+      const { cloneData } = location.state;
+      setEventMeta(cloneData.eventMeta);
+      setLogisticsMeta(cloneData.logisticsMeta);
+      setSheets(cloneData.sheets);
+      
+      setKpMeta(prev => ({
+        ...prev,
+        syncContractData: cloneData.kpMeta.syncContractData
+      }));
+    }
+  }, [isNewKp, location.state]);
 
   const handleKpMetaChange = (field, value) => {
     setKpMeta(prev => {

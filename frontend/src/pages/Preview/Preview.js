@@ -14,6 +14,7 @@ import useKpStore from '../../hooks/useKpStore';
 import { API_BASE_URL } from '../../utils/const';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
+import { prepareCloneData } from '../../utils/cloneHelper';
 
 // Подключаем LastList лениво (lazy), как это было сделано в App.js
 const LastList = lazy(() => import('../../components/LastList/LastList'));
@@ -42,6 +43,7 @@ function Preview({
 
     const compactPdfRef = useRef(null);
     const hiddenPrintRef = useRef(null);
+    const navigate = useNavigate();
 
 
     const updateField = useKpStore((s) => s.updateField);
@@ -90,6 +92,15 @@ function Preview({
                 title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
                 actions={
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <Button
+                            use="default"
+                            onClick={() => {
+                                const cloneData = prepareCloneData(formData, listsKp);
+                                navigate('/new', { state: { cloneData } });
+                            }}
+                        >
+                            Создать на основе
+                        </Button>
                         <Button
                             use="primary"
                             icon={<Download />}
