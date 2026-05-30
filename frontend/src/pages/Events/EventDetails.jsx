@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import { Button, Loader } from '@skbkontur/react-ui';
+
 import './Events.css';
 
 const STATUS_LABELS = {
@@ -51,7 +51,8 @@ const EventDetails = () => {
     return (
       <PageContainer maxWidth="800px">
         <div className="event-details__loader">
-          <Loader active type="big" caption="Загрузка данных события..." />
+          <div className="proto-loader"></div>
+          <p style={{ marginTop: '16px', color: '#666' }}>Загрузка данных события...</p>
         </div>
       </PageContainer>
     );
@@ -63,7 +64,7 @@ const EventDetails = () => {
         <div className="event-details__error">
           <h3>Ошибка</h3>
           <p>{error || 'Событие не найдено'}</p>
-          <Button onClick={() => navigate('/events')} use="default">Вернуться к списку</Button>
+          <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/events')}>Вернуться к списку</button>
         </div>
       </PageContainer>
     );
@@ -82,12 +83,12 @@ const EventDetails = () => {
         subtitle="Детали мероприятия"
         actions={
           <div className="event-details__header-actions">
-            <Button onClick={() => navigate('/events')} use="default">
+            <button className="proto-btn proto-btn-secondary" onClick={() => navigate('/events')}>
               Назад
-            </Button>
-            <Button use="primary" onClick={() => navigate(`/events/${id}/edit`)}>
+            </button>
+            <button className="proto-btn proto-btn-primary" onClick={() => navigate(`/events/${id}/edit`)}>
               Редактировать
-            </Button>
+            </button>
           </div>
         }
       />
