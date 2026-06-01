@@ -97,6 +97,24 @@
   border: 1px solid #ebebeb;
 }
 
+.status-badge.sent {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
+}
+
+.status-badge.approved {
+  background-color: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fef3c7;
+}
+
+.status-badge.paid {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #dcfce7;
+}
+
 /* Context Block: Contractor, Event, Place */
 .kp-card-context {
   display: flex;
@@ -158,7 +176,8 @@
   .kp-card-context {
     order: 1;
     flex-direction: column;
-    align-items: stretch; /* Prevents shrink-to-fit width bug in column flex */
+    align-items: stretch;
+    /* Prevents shrink-to-fit width bug in column flex */
     min-width: 100%;
     gap: 4px;
     overflow: hidden;

@@ -329,6 +329,69 @@ class Api {
             .then(this._checkResponse);
     }
 
+    // ORGANISATIONS
+    getOrganisations(search = '') {
+        const token = localStorage.getItem('authToken');
+        const url = search
+            ? `${this._baseUrl}/organisation?search=${encodeURIComponent(search)}`
+            : `${this._baseUrl}/organisation`;
+        return fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    getOneOrganisation(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/organisation/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(this._checkResponse);
+    }
+
+    createOrganisation(orgData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/organisation`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orgData)
+        })
+            .then(this._checkResponse);
+    }
+
+    updateOrganisation(id, orgData) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/organisation/${id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orgData)
+        })
+            .then(this._checkResponse);
+    }
+
+    deleteOrganisation(id) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/organisation/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(this._checkResponse);
+    }
+
 }
 // const API_BASE =
 //   (process.env.REACT_APP_API_BASE && process.env.REACT_APP_API_BASE.replace(/\/$/, ''))

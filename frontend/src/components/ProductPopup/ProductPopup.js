@@ -24,7 +24,17 @@ function ProductPopup({ onClose, onSave, productId, productToEdit }) {
     useEffect(() => {
         const fetchMenu = async () => {
             try {
-                const items = await MainApi.getMenuItems();
+                const [menuData, orgData] = await Promise.all([
+                    MainApi.getMenuItems(),
+                    MainApi.getOrganisations()
+                ]);
+                let items = [];
+                if (Array.isArray(menuData)) {
+                    items = items.concat(menuData.map(item => ({...item, category: item.category || 'eat'})));
+                }
+                if (Array.isArray(orgData)) {
+                    items = items.concat(orgData.map(item => ({...item, category: 'organisation'})));
+                }
                 // Only use active items for selection
                 setMenuItems(items.filter(item => item.active));
             } catch (err) {

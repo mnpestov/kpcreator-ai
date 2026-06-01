@@ -8,7 +8,6 @@ import './Menu.css';
 const CATEGORY_LABELS = {
   eat: 'Еда',
   drink: 'Напитки',
-  organisation: 'Организация',
 };
 
 const getWeightDisplay = (weight, category) => {
@@ -116,9 +115,6 @@ const MenuList = () => {
                 </div>
                 <div className="menu-card__category">
                   {CATEGORY_LABELS[item.category] || item.category || '—'}
-                  <span className={`menu-status-badge menu-status-badge--${item.active}`}>
-                    {item.active ? 'Активен' : 'Архив'}
-                  </span>
                 </div>
               </div>
               <div className="menu-card__context">

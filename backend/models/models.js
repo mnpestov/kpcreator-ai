@@ -5,6 +5,7 @@ const User = require('./User');
 const Contractor = require('./Contractor');
 const Event = require('./Event');
 const MenuItem = require('./MenuItem');
+const Organisation = require('./Organisation');
 
 const Kp = sequelize.define('kp', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -100,5 +101,5 @@ Kp.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
 Event.hasMany(Kp, { foreignKey: 'eventId' });
 
 module.exports = {
-    Kp, List, Row, User, Contractor, Event, MenuItem
+    Kp, List, Row, User, Contractor, Event, MenuItem, Organisation
 }

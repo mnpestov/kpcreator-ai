@@ -8,7 +8,6 @@ import './Menu.css';
 const CATEGORY_LABELS = {
   eat: 'Еда',
   drink: 'Напитки',
-  organisation: 'Организация',
 };
 
 const getWeightDisplay = (weight, category) => {
@@ -71,12 +70,7 @@ const MenuDetails = () => {
               <span className="menu-details__label">Название</span>
               <span className="menu-details__value">{menuItem.title}</span>
             </div>
-            <div className="menu-details__field">
-              <span className="menu-details__label">Статус</span>
-              <span className={`menu-status-badge menu-status-badge--${menuItem.active}`}>
-                {menuItem.active ? 'Активен' : 'Архив'}
-              </span>
-            </div>
+
             <div className="menu-details__field">
               <span className="menu-details__label">Категория</span>
               <span className="menu-details__value">

@@ -1,4 +1,4 @@
-.menu-list__filter-bar {
+.org-list__filter-bar {
   margin-bottom: 1.25rem;
   margin-top: 1.5rem;
   display: flex;
@@ -10,7 +10,7 @@
   border: 1px solid #e2e8f0;
 }
 
-.menu-list__search-form {
+.org-list__search-form {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -18,7 +18,7 @@
   width: 100%;
 }
 
-.menu-list__search-input {
+.org-list__search-input {
   flex: 1;
   min-width: 200px;
   max-width: 320px;
@@ -31,19 +31,19 @@
   box-sizing: border-box;
 }
 
-.menu-list__search-input:focus {
+.org-list__search-input:focus {
   outline: none;
   border-color: #0070f3;
   box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
 }
 
-.menu-list__loader {
+.org-list__loader {
   display: flex;
   justify-content: center;
   padding: 60px 0;
 }
 
-.menu-list__error {
+.org-list__error {
   text-align: center;
   padding: 40px;
   background-color: #fee;
@@ -51,7 +51,7 @@
   color: #c00;
 }
 
-.menu-list__empty {
+.org-list__empty {
   text-align: center;
   padding: 60px 20px;
   background-color: #f9f9f9;
@@ -60,13 +60,13 @@
 }
 
 /* ---- Card Stream ---- */
-.menu-stream {
+.org-stream {
   display: flex;
   flex-direction: column;
   gap: 7px;
 }
 
-.menu-card {
+.org-card {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -81,19 +81,19 @@
   cursor: pointer;
 }
 
-.menu-card:hover {
+.org-card:hover {
   background-color: #f8fafc;
   border-color: #cbd5e1;
 }
 
-.menu-card__identity {
+.org-card__identity {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 180px;
 }
 
-.menu-card__title {
+.org-card__title {
   font-size: 15px;
   font-weight: 600;
   color: #1a1a1a;
@@ -103,7 +103,17 @@
   max-width: 250px;
 }
 
-.menu-card__category {
+.org-card__description {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  margin-top: 2px;
+}
+
+.org-card__category {
   font-size: 14px;
   font-weight: 500;
   color: #333;
@@ -116,7 +126,7 @@
   min-width: 0;
 }
 
-.menu-card__context {
+.org-card__context {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -126,7 +136,7 @@
   overflow: hidden;
 }
 
-.menu-card__price {
+.org-card__price {
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
@@ -134,14 +144,14 @@
   white-space: nowrap;
 }
 
-.menu-card__weight {
+.org-card__weight {
   font-size: 12px;
   color: #777;
   display: block;
   white-space: nowrap;
 }
 
-.menu-status-badge {
+.org-status-badge {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 12px;
@@ -149,12 +159,12 @@
   font-weight: 500;
 }
 
-.menu-status-badge--true {
+.org-status-badge--true {
   background-color: #e6f4ea;
   color: #1e8e3e;
 }
 
-.menu-status-badge--false {
+.org-status-badge--false {
   background-color: #f1f3f4;
   color: #5f6368;
 }
@@ -184,18 +194,18 @@
   gap: 12px;
 }
 
-.menu-form {
+.org-form {
   background: white;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 24px;
 }
 
-.menu-form__row {
+.org-form__row {
   margin-bottom: 20px;
 }
 
-.menu-form__label {
+.org-form__label {
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
@@ -203,7 +213,7 @@
   color: #333;
 }
 
-.menu-form__input {
+.org-form__input {
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
@@ -215,23 +225,23 @@
   font-family: inherit;
 }
 
-.menu-form__input:focus {
+.org-form__input:focus {
   outline: none;
   border-color: #0070f3;
   box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
 }
 
-textarea.menu-form__input {
+textarea.org-form__input {
   resize: vertical;
   min-height: 80px;
 }
 
-.menu-form__input-wrapper {
+.org-form__input-wrapper {
   position: relative;
   width: 100%;
 }
 
-.menu-form__input-suffix {
+.org-form__input-suffix {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -241,7 +251,7 @@ textarea.menu-form__input {
   font-size: 14px;
 }
 
-.menu-form__grid {
+.org-form__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -249,40 +259,40 @@ textarea.menu-form__input {
 
 
 
-.menu-details {
+.org-details {
   background: white;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 24px;
 }
 
-.menu-details__section {
+.org-details__section {
   margin-bottom: 24px;
 }
 
-.menu-details__section h3 {
+.org-details__section h3 {
   margin-top: 0;
   margin-bottom: 16px;
   font-size: 18px;
   color: #333;
 }
 
-.menu-details__field {
+.org-details__field {
   margin-bottom: 12px;
 }
 
-.menu-details__label {
+.org-details__label {
   display: block;
   font-size: 12px;
   color: #666;
   margin-bottom: 4px;
 }
 
-.menu-details__value {
+.org-details__value {
   font-size: 14px;
   color: #333;
 }
 
-.menu-details__empty {
+.org-details__empty {
   color: #aaa;
 }

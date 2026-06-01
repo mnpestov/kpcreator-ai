@@ -14,6 +14,9 @@ import LoginPage from './pages/LoginPage/LoginPage.js';
 import Profile from './pages/Profile/Profile.jsx';
 import ContractorsList from './pages/Contractors/ContractorsList.jsx';
 import ContractorDetails from './pages/Contractors/ContractorDetails.jsx';
+import OrganisationList from './pages/Organisation/OrganisationList.jsx';
+import OrganisationForm from './pages/Organisation/OrganisationForm.jsx';
+import OrganisationDetails from './pages/Organisation/OrganisationDetails.jsx';
 import ContractorForm from './pages/Contractors/ContractorForm.jsx';
 import EventsList from './pages/Events/EventsList.jsx';
 import EventDetails from './pages/Events/EventDetails.jsx';
@@ -740,6 +743,10 @@ function App() {
             <Route path="/menu/new" element={<MenuForm />} />
             <Route path="/menu/:id" element={<MenuDetails />} />
             <Route path="/menu/:id/edit" element={<MenuForm />} />
+            <Route path="/organisation" element={<OrganisationList />} />
+            <Route path="/organisation/new" element={<OrganisationForm />} />
+            <Route path="/organisation/:id" element={<OrganisationDetails />} />
+            <Route path="/organisation/:id/edit" element={<OrganisationForm />} />
 
             {/* Страница экспериментального прототипа (теперь основная форма создания) */}
             <Route 

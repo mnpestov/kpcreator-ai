@@ -3,15 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
-import Switcher from '../../components/Switcher/Switcher';
-import './Menu.css';
+import './Organisation.css';
 
-const TYPE_OPTIONS = [
-  { value: 'eat', label: 'Еда' },
-  { value: 'drink', label: 'Напитки' },
-];
-
-const MenuForm = () => {
+const OrganisationForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -19,8 +13,7 @@ const MenuForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'eat',
-    weight: '',
+    category: 'organisation',
     price: '',
     active: true,
   });
@@ -31,25 +24,24 @@ const MenuForm = () => {
 
   useEffect(() => {
     if (isEdit) {
-      const fetchMenuItem = async () => {
+      const fetchItem = async () => {
         try {
-          const data = await MainApi.getOneMenuItem(id);
+          const data = await MainApi.getOneOrganisation(id);
           setFormData({
             title: data.title || '',
             description: data.description || '',
-            category: data.category || 'eat',
-            weight: data.weight !== null ? data.weight.toString() : '',
+            category: 'organisation',
             price: data.price !== null ? data.price.toString() : '',
             active: data.active,
           });
         } catch (err) {
           console.error(err);
-          setError('Не удалось загрузить данные позиции');
+          setError('Не удалось загрузить данные услуги');
         } finally {
           setLoading(false);
         }
       };
-      fetchMenuItem();
+      fetchItem();
     }
   }, [id, isEdit]);
 
@@ -70,21 +62,20 @@ const MenuForm = () => {
       const payload = {
         title: formData.title.trim(),
         description: formData.description.trim() || null,
-        category: formData.category || null,
-        weight: formData.weight ? parseInt(formData.weight, 10) : null,
+        category: 'organisation',
         price: formData.price ? parseInt(formData.price, 10) : null,
         active: formData.active,
       };
 
       if (isEdit) {
-        await MainApi.updateMenuItem(id, payload);
+        await MainApi.updateOrganisation(id, payload);
       } else {
-        await MainApi.createMenuItem(payload);
+        await MainApi.createOrganisation(payload);
       }
-      navigate('/menu');
+      navigate('/organisation');
     } catch (err) {
       console.error(err);
-      setError(isEdit ? 'Ошибка при обновлении позиции' : 'Ошибка при создании позиции');
+      setError(isEdit ? 'Ошибка при обновлении услуги' : 'Ошибка при создании услуги');
       setSaving(false);
     }
   };
@@ -92,9 +83,9 @@ const MenuForm = () => {
   return (
     <PageContainer maxWidth="800px">
       <PageHeader
-        title={isEdit ? 'Редактирование позиции' : 'Новая позиция меню'}
-        subtitle="Заполните информацию о позиции"
-        onBack={() => navigate('/menu')}
+        title={isEdit ? 'Редактирование услуги' : 'Новая услуга'}
+        subtitle="Заполните информацию об услуге"
+        onBack={() => navigate('/organisation')}
       />
 
       {error && (
@@ -128,17 +119,8 @@ const MenuForm = () => {
             />
           </div>
 
-          <div className="menu-form__row">
-            <label className="menu-form__label">Категория</label>
-            <Switcher
-              options={TYPE_OPTIONS}
-              value={formData.category}
-              onChange={(val) => handleChange('category', val)}
-            />
-          </div>
-
           <div className="menu-form__row menu-form__grid">
-            <div>
+            <div style={{ gridColumn: 'span 2' }}>
               <label className="menu-form__label">Цена (₽)</label>
               <input
                 className="menu-form__input"
@@ -147,24 +129,6 @@ const MenuForm = () => {
                 onChange={(e) => handleChange('price', e.target.value)}
                 placeholder="0"
               />
-            </div>
-            <div>
-              <label className="menu-form__label">Выход (вес/объем)</label>
-              <div className="menu-form__input-wrapper">
-                <input
-                  className="menu-form__input"
-                  type="number"
-                  value={formData.weight}
-                  onChange={(e) => handleChange('weight', e.target.value)}
-                  placeholder="Укажите число"
-                  style={{ paddingRight: '32px' }}
-                />
-                {(formData.category === 'eat' || formData.category === 'drink') && (
-                  <span className="menu-form__input-suffix">
-                    {formData.category === 'eat' ? 'г' : 'мл'}
-                  </span>
-                )}
-              </div>
             </div>
           </div>
 
@@ -177,7 +141,7 @@ const MenuForm = () => {
                 className="proto-btn proto-btn-primary"
                 disabled={saving}
               >
-                {saving ? 'Сохранение...' : (isEdit ? 'Сохранить изменения' : 'Создать позицию')}
+                {saving ? 'Сохранение...' : (isEdit ? 'Сохранить изменения' : 'Создать услугу')}
               </button>
             </div>
           </div>
@@ -187,4 +151,4 @@ const MenuForm = () => {
   );
 };
 
-export default MenuForm;
+export default OrganisationForm;

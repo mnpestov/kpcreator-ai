@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { label: 'Контрагенты', path: '/contractors', isPlaceholder: false },
     { label: 'События', path: '/events', isPlaceholder: false },
     { label: 'Меню', path: '/menu', isPlaceholder: false },
+    { label: 'Услуги (Организация)', path: '/organisation', isPlaceholder: false },
     { label: 'Личный кабинет', path: '/profile', isPlaceholder: false },
     { label: 'Справочники', path: '/directories', isPlaceholder: true },
   ];

@@ -9,6 +9,7 @@ const user = require('./user')
 const contractor = require('./contractor')
 const event = require('./event')
 const menuItem = require('./menuItemRouter')
+const organisationRouter = require('./organisationRouter')
 
 router.use('/kp',kp)
 router.use('/list', list)
@@ -18,5 +19,6 @@ router.use('/profile', user)
 router.use('/contractors', contractor)
 router.use('/events', event)
 router.use('/menu', menuItem)
+router.use('/organisation', organisationRouter)
 
 module.exports = router

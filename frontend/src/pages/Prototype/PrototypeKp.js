@@ -523,18 +523,32 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       .catch((err) => console.error("Ошибка загрузки контрагентов:", err));
 
     // Fetch Catalog
-    MainApi.getMenuItems()
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) {
-          const activeItems = data.filter(item => item.active === true);
-          const normalized = activeItems.map(item => ({
-            id: item.id,
-            product: item.title || '',
-            composition: item.description || '',
-            typeOfProduct: item.category || 'eat',
-            priceOfProduct: item.price || 0,
-            productWeight: item.weight || 0
-          }));
+    Promise.all([MainApi.getMenuItems(), MainApi.getOrganisations()])
+      .then(([menuData, orgData]) => {
+        if (!cancelled) {
+          let normalized = [];
+          if (Array.isArray(menuData)) {
+            const activeItems = menuData.filter(item => item.active === true);
+            normalized = normalized.concat(activeItems.map(item => ({
+              id: item.id,
+              product: item.title || '',
+              composition: item.description || '',
+              typeOfProduct: item.category || 'eat',
+              priceOfProduct: item.price || 0,
+              productWeight: item.weight || 0
+            })));
+          }
+          if (Array.isArray(orgData)) {
+            const activeOrgs = orgData.filter(item => item.active === true);
+            normalized = normalized.concat(activeOrgs.map(item => ({
+              id: item.id, // Or handle id collision? Usually it's fine for autocomplete if we just need fields.
+              product: item.title || '',
+              composition: item.description || '',
+              typeOfProduct: 'organisation',
+              priceOfProduct: item.price || 0,
+              productWeight: 0
+            })));
+          }
           setMenuCatalog(normalized);
         }
       })
