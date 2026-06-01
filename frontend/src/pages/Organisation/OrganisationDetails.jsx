@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
+import { toast } from 'react-toastify';
 import './Organisation.css';
 
 
@@ -36,7 +37,7 @@ const OrganisationDetails = () => {
         navigate('/organisation');
       } catch (err) {
         console.error(err);
-        alert('Ошибка при удалении услуги');
+        toast.error('Ошибка при удалении услуги');
       }
     }
   };

@@ -4,6 +4,7 @@ import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
 import { Loader } from '@skbkontur/react-ui';
+import { toast } from 'react-toastify';
 import './Contractors.css';
 
 const ContractorForm = () => {
@@ -39,7 +40,7 @@ const ContractorForm = () => {
         });
       } catch (err) {
         console.error(err);
-        alert('Не удалось загрузить данные контрагента для редактирования');
+        toast.error('Не удалось загрузить данные контрагента для редактирования');
         navigate('/contractors');
       } finally {
         setFetching(false);
@@ -80,7 +81,7 @@ const ContractorForm = () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Ошибка при сохранении данных контрагента');
+      toast.error('Ошибка при сохранении данных контрагента');
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,8 @@ import { MainApi } from '../../utils/MainApi';
 import FirstList from '../../components/FirstList/FirstList';
 import Kp from '../../components/KP/Kp';
 import KpCompact from '../../components/KpCompact/KpCompact';
+import KpCard from '../../components/common/KpCard/KpCard';
+import { toast } from 'react-toastify';
 import "./Preview.css";
 import HiddenPrint from "../../components/HiddenPrint/HiddenPrint";
 import "./PreviewHidden.css";
@@ -53,8 +55,8 @@ function Preview({
             await MainApi.updateKpStatus(formData.kpNumber, newStatus);
             updateField('status', newStatus);
         } catch (e) {
-            console.error('Failed to update status', e);
-            alert('Ошибка при обновлении статуса');
+            console.error('Ошибка при обновлении статуса:', e);
+            toast.error('Ошибка при обновлении статуса');
         }
     };
 

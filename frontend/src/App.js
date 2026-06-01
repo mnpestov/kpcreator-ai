@@ -1,5 +1,7 @@
 import './App.css';
 import React, { useReducer, useCallback, useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -497,8 +499,8 @@ function App() {
       await MainApi.deleteRow(rowId);
       console.log('Строка удалена из БД');
     } catch (err) {
-      console.error('Ошибка при удалении строки из БД:', err);
-      alert('Ошибка при удалении строки из базы данных.');
+      console.error(err);
+      toast.error('Ошибка при удалении строки из базы данных.');
     }
   };
 
@@ -507,8 +509,8 @@ function App() {
       await MainApi.updateRow(updatedRow);
       console.log('✅ Строка обновлена в БД');
     } catch (err) {
-      console.error('Ошибка при обновлении строки в БД:', err);
-      alert('Ошибка при обновлении строки в базе данных.');
+      console.error(err);
+      toast.error('Ошибка при обновлении строки в базе данных.');
     }
   };
 
@@ -517,8 +519,8 @@ function App() {
       await MainApi.deleteList(listId);
       console.log('✅ Список удалён из БД');
     } catch (err) {
-      console.error('Ошибка при удалении списка из БД:', err);
-      alert('Ошибка при удалении списка из базы данных.');
+      console.error(err);
+      toast.error('Ошибка при удалении списка из базы данных.');
     }
   };
 
@@ -818,6 +820,7 @@ function App() {
           </Routes>
         </AppLayout>
       )}
+      <ToastContainer />
     </>
   );
 }

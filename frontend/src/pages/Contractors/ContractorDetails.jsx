@@ -4,6 +4,7 @@ import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
 import { Loader } from '@skbkontur/react-ui';
+import { toast } from 'react-toastify';
 import KpCard from '../../components/common/KpCard/KpCard';
 import './Contractors.css';
 
@@ -43,7 +44,7 @@ const ContractorDetails = () => {
       navigate('/new', { state: { cloneData } });
     } catch (err) {
       console.error('Ошибка клонирования КП:', err);
-      alert('Не удалось клонировать КП');
+      toast.error('Не удалось клонировать КП');
     } finally {
       setCloningKp(false);
     }

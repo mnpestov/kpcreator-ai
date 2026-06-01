@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import Cropper from 'react-easy-crop';
+import { toast } from 'react-toastify';
 import './Profile.css';
 
 // import { AuthContext } from '../../context/AuthContext';
@@ -126,8 +127,8 @@ function Profile() {
       const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
       await handleAvatarUpload(croppedFile);
     } catch (e) {
-      console.error('Error cropping image:', e);
-      alert('Ошибка при обрезке изображения');
+      console.error(e);
+      toast.error('Ошибка при обрезке изображения');
     } finally {
       setImageSrc(null);
     }
@@ -156,7 +157,7 @@ function Profile() {
       }));
     } catch (e) {
       console.error(e);
-      alert('Ошибка при загрузке аватара');
+      toast.error('Ошибка при загрузке аватара');
     }
   };
 
@@ -180,10 +181,10 @@ function Profile() {
         setUser(updatedUser.user);
       }
 
-      alert('Профиль обновлён');
+      toast.success('Профиль обновлён');
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || 'Ошибка при обновлении');
+      toast.error(e.response?.data?.message || 'Ошибка при обновлении');
     }
   };
 

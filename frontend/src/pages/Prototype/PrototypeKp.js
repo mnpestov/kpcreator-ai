@@ -4,8 +4,7 @@ import useKpStore from '../../hooks/useKpStore';
 import useIsMobile from '../../hooks/useIsMobile';
 import useDocumentAwareness from '../../hooks/useDocumentAwareness';
 import { MainApi } from '../../utils/MainApi';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import ProtoSwitch from '../../components/common/ProtoSwitch/ProtoSwitch';
 import './PrototypeKp.css';
 
@@ -1323,8 +1322,6 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
           </div>
         </div>
       )}
-
-      <ToastContainer />
     </div>
   );
 }

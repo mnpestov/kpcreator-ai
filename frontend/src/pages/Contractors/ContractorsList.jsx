@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
+import { toast } from 'react-toastify';
 import './Contractors.css';
 
 const ContractorsList = () => {
@@ -53,7 +54,7 @@ const ContractorsList = () => {
       setContractors((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       console.error(err);
-      alert('Ошибка при удалении контрагента');
+      toast.error('Ошибка при удалении контрагента');
     }
   };
 

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
+import { toast } from 'react-toastify';
 import './Menu.css';
 
 const CATEGORY_LABELS = {
@@ -47,7 +48,7 @@ const MenuDetails = () => {
       navigate('/menu');
     } catch (err) {
       console.error(err);
-      alert('Ошибка при удалении позиции меню');
+      toast.error('Ошибка при удалении позиции меню');
     }
   };
 

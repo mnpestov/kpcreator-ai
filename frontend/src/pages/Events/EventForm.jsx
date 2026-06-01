@@ -4,6 +4,7 @@ import PageContainer from '../../components/Layout/PageContainer';
 import PageHeader from '../../components/Layout/PageHeader';
 import { MainApi } from '../../utils/MainApi';
 import ProtoSwitch from '../../components/common/ProtoSwitch/ProtoSwitch';
+import { toast } from 'react-toastify';
 
 import './Events.css';
 
@@ -89,7 +90,7 @@ const EventForm = () => {
         );
       } catch (err) {
         console.error(err);
-        alert('Не удалось загрузить данные события');
+        toast.error('Не удалось загрузить данные события');
         navigate('/events');
       } finally {
         setFetching(false);
@@ -165,7 +166,7 @@ const EventForm = () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Ошибка при сохранении события');
+      toast.error('Ошибка при сохранении события');
     } finally {
       setLoading(false);
     }

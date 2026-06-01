@@ -5,7 +5,8 @@ import logo from '../../images/logo.png';
 import Row from '../Row/Row';
 import ProductPopup from '../ProductPopup/ProductPopup';
 import useKpStore from '../../hooks/useKpStore';
-import { MainApi } from '../../utils/MainApi'
+import { MainApi } from '../../utils/MainApi';
+import { toast } from 'react-toastify';
 
 function Kp({
     startEvent,
@@ -62,7 +63,7 @@ function Kp({
             console.log('✅ Список удалён из БД');
           } catch (err) {
             console.error('Ошибка при удалении списка из БД:', err);
-            alert('Ошибка при удалении списка из базы данных.');
+            toast.error('Ошибка при удалении списка из базы данных.');
           }
         }
         deleteList(id)

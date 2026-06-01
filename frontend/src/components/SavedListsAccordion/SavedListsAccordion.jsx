@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Button } from '@skbkontur/react-ui';
 import { Add, Edit, Trash } from '@skbkontur/react-icons';
+import { toast } from 'react-toastify';
 import ProductPopup from '../ProductPopup/ProductPopup';
 import './SavedListsAccordion.css';
 import useKpStore from '../../hooks/useKpStore';
@@ -90,7 +91,7 @@ function SavedListsAccordion({
         console.log('✅ Список удалён из БД');
       } catch (err) {
         console.error('Ошибка при удалении списка из БД:', err);
-        alert('Ошибка при удалении списка из базы данных.');
+        toast.error('Ошибка при удалении списка из базы данных.');
       }
     }
     deleteList(listId)
