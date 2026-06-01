@@ -2,6 +2,7 @@ const { User } = require('../models/models');
 const bcrypt = require('bcrypt');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 
 class UserController {
 
@@ -65,11 +66,30 @@ class UserController {
 
             if (!req.file) return res.status(400).json({ message: 'Файл не загружен' });
 
-            user.photo = req.file.filename;
-            // user.photo = filename;
+            // Extract the timestamp part from multer's generated filename
+            const timestamp = req.file.filename.split('-')[0];
+            const newFilename = `${timestamp}-avatar.webp`;
+            const newPath = path.resolve(req.file.destination, newFilename);
+
+            // Process image with sharp
+            await sharp(req.file.path)
+                .resize({
+                    width: 300,
+                    height: 300,
+                    fit: 'inside',
+                    withoutEnlargement: true
+                })
+                .webp({ quality: 80 })
+                .toFile(newPath);
+
+            // Remove the original file
+            fs.unlinkSync(req.file.path);
+
+            // Update user record
+            user.photo = newFilename;
             await user.save();
 
-            return res.json({ message: 'Фото обновлено', filename: req.file.filename });
+            return res.json({ message: 'Фото обновлено', filename: newFilename });
         } catch (e) {
             next(e);
         }
