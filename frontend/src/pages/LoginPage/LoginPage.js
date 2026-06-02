@@ -10,7 +10,7 @@ const LoginPage = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ tel: '', password: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +20,12 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
+      // Очищаем телефон от маски перед отправкой (оставляем только цифры)
+      const cleanTel = form.tel.replace(/\D/g, '');
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ tel: cleanTel, password: form.password }),
       });
 
       const data = await response.json();
@@ -51,18 +53,20 @@ const LoginPage = () => {
         {/* Форма авторизации */}
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-field">
-            <label className="auth-label" htmlFor="email">Email</label>
+            <label className="auth-label" htmlFor="tel">Телефон</label>
             <Input
               width="100%"
-              type="email"
-              id="email"
-              name="email"
-              data-testid="login-email"
-              placeholder="name@example.com"
-              value={form.email}
+              type="tel"
+              id="tel"
+              name="tel"
+              data-testid="login-tel"
+              placeholder="+7 (999) 123-45-67"
               disabled={loading}
-              onValueChange={(val) => setForm((prev) => ({ ...prev, email: val }))}
               required
+              mask="+7 (999) 999-99-99"
+              maskChar="_"
+              value={form.tel}
+              onValueChange={(val) => setForm((prev) => ({ ...prev, tel: val }))}
             />
           </div>
 

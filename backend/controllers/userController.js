@@ -48,7 +48,18 @@ class UserController {
             user.name = name !== undefined ? name : user.name;
             user.email = email !== undefined ? email : user.email;
             user.job = job !== undefined ? job : user.job;
-            user.tel = tel !== undefined ? tel : user.tel;
+            
+            if (tel !== undefined) {
+                const cleanTel = tel.replace(/\D/g, '');
+                if (cleanTel !== user.tel) {
+                    const existingTel = await User.findOne({ where: { tel: cleanTel } });
+                    if (existingTel) {
+                        return res.status(400).json({ message: 'Этот номер телефона уже используется' });
+                    }
+                    user.tel = cleanTel;
+                }
+            }
+            
             user.photo = photo !== undefined ? photo : user.photo;
 
             await user.save();

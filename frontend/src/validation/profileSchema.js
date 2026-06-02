@@ -5,9 +5,10 @@ export const profileSchema = yup.object({
   email: yup
     .string()
     .email('Некорректный email')
-    .required('Email обязателен'),
+    .nullable()
+    .transform((value) => (value === '' ? null : value)),
   job: yup.string().nullable(),
-  tel: yup.string().nullable(),
+  tel: yup.string().required('Телефон обязателен'),
   password: yup
     .string()
     .nullable()

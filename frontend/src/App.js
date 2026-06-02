@@ -210,7 +210,7 @@ function App() {
   // }, [state.listsKp]);
   useEffect(() => {
     if (!isNewKp) return;
-    if (!user || !user.email) return;
+    if (!user || !user.tel) return;
 
     const initialData = getEmptyFormData();
     // dispatch({

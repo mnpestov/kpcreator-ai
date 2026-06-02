@@ -12,11 +12,12 @@ class AuthController {
   async register(req, res, next) {
     try {
       const { email, password, name, job, tel, photo } = req.body;
-      if (!email || !password || !name) {
-        return res.status(400).json({ message: 'Email, name и password обязательны' });
+      if (!tel || !password || !name) {
+        return res.status(400).json({ message: 'Телефон, имя и пароль обязательны' });
       }
 
-      const existingUser = await User.findOne({ where: { email } });
+      const cleanTel = tel.replace(/\D/g, '');
+      const existingUser = await User.findOne({ where: { tel: cleanTel } });
       if (existingUser) {
         return res.status(400).json({ message: 'Пользователь уже существует' });
       }
@@ -27,7 +28,7 @@ class AuthController {
         password: hashPassword,
         name,
         job,
-        tel,
+        tel: cleanTel,
         photo
       });
 
@@ -40,10 +41,11 @@ class AuthController {
 
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const user = await User.findOne({ where: { email } });
+      const { tel, password } = req.body;
+      const cleanTel = tel.replace(/\D/g, '');
+      const user = await User.findOne({ where: { tel: cleanTel } });
       if (!user) {
-        return res.status(401).json({ message: 'Неверный логин или пароль' });
+        return res.status(401).json({ message: 'Неверный телефон или пароль' });
       }
 
       const isPasswordCorrect = await bcrypt.compare(password, user.password);

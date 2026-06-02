@@ -250,6 +250,7 @@ function Profile() {
             <div className="form__field">
               <label className="form__label">Телефон</label>
               <input className='form__input' {...register('tel')} placeholder="Телефон" />
+              {errors.tel && <span className="form__error">{errors.tel.message}</span>}
             </div>
           </div>
         </div>

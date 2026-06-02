@@ -4,8 +4,7 @@ const sequelize = require('../db');
 const User = sequelize.define('User', {
   email: {
     type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
+    allowNull: true,
     validate: { isEmail: true }
   },
   password: {
@@ -22,7 +21,8 @@ const User = sequelize.define('User', {
   },
   tel: {
     type: DataTypes.STRING,
-    allowNull: true
+    unique: true,
+    allowNull: false
   },
   photo: {
     type: DataTypes.STRING,
