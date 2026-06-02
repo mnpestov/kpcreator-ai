@@ -26,7 +26,7 @@ const Header = ({ onBurgerClick }) => {
       </div>
 
       <div className="header__actions">
-        <div className="header__operator">
+        <div className="header__operator" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="header__avatar">
             {user.photo ? (
               <img src={`${API_BASE_URL}/static/${user.photo}`} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
