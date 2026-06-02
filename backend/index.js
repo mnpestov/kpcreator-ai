@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
 const start = async () => {
     try {
         await sequelize.authenticate()
-        await sequelize.sync()
         app.listen(PORT, () => console.log(`server started on port ${PORT}`))
     } catch (err) {
         console.log('Ошибка подключения к БД ' + err);
