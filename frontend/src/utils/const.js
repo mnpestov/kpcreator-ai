@@ -102,4 +102,4 @@ export const kpPrintSelectors = {
 }
 
 // API configuration – single source of truth for the backend base URL
-export const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';

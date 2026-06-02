@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json())
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
-app.use('/static', express.static(path.resolve(__dirname, 'static')));
+app.use('/api/static', express.static(path.resolve(__dirname, 'static')));
 app.use('/', router)
 app.get('/', (req, res) => {
     res.send("Сервер запущен");

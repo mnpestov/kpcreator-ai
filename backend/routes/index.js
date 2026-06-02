@@ -11,14 +11,14 @@ const event = require('./event')
 const menuItem = require('./menuItemRouter')
 const organisationRouter = require('./organisationRouter')
 
-router.use('/kp',kp)
-router.use('/list', list)
-router.use('/row', row)
-router.use('/auth', authRouter);
-router.use('/profile', user)
-router.use('/contractors', contractor)
-router.use('/events', event)
-router.use('/menu', menuItem)
-router.use('/organisation', organisationRouter)
+router.use('/api/kp', kp)
+router.use('/api/list', list)
+router.use('/api/row', row)
+router.use('/api/auth', authRouter)
+router.use('/api/profile', user)
+router.use('/api/contractors', contractor)
+router.use('/api/events', event)
+router.use('/api/menu', menuItem)
+router.use('/api/organisation', organisationRouter)
 
 module.exports = router
