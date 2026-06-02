@@ -565,7 +565,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       setEventMeta(cloneData.eventMeta);
       setLogisticsMeta(cloneData.logisticsMeta);
       setSheets(cloneData.sheets);
-      
+
       setKpMeta(prev => ({
         ...prev,
         syncContractData: cloneData.kpMeta.syncContractData
@@ -680,7 +680,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
   };
 
   const [logisticsMeta, setLogisticsMeta] = useState({
-    hasMkad: true, logisticsCost: 5000
+    hasMkad: false, logisticsCost: 5000
   });
 
   const [expandedCards, setExpandedCards] = useState({});
@@ -815,7 +815,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
 
     // Logistics
     if (logisticsMeta.logisticsCost === '' || logisticsMeta.logisticsCost === null || logisticsMeta.logisticsCost === undefined) errors.push('Стоимость логистики');
-    if (logisticsMeta.hasMkad === null || logisticsMeta.hasMkad === undefined) errors.push('Тип логистики (МКАД / За МКАД)');
+    if (logisticsMeta.hasMkad === null || logisticsMeta.hasMkad === undefined) errors.push('Тип логистики (Внутри МКАД / За МКАД)');
 
     // Document Content
     if (!sheets || sheets.length === 0) {
@@ -837,7 +837,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     const errors = validateDocument();
     if (errors.length > 0) {
       setValidationErrors(errors);
-      
+
       toast.dismiss(); // Prevent toast spam by clearing previous notifications
       toast.warning(
         <div style={{ padding: '2px' }}>
@@ -869,7 +869,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
           }
         }
       );
-      
+
       return;
     }
     setValidationErrors([]);
@@ -878,17 +878,17 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     if (eventMeta.eventId && eventMeta.originalEventContractorId) {
       const originalId = eventMeta.originalEventContractorId;
       const originalName = (eventMeta.originalEventContractorName || '').trim().toLowerCase();
-      
+
       const selectedId = eventMeta.contractorId;
       const enteredName = (eventMeta.companyName || '').trim().toLowerCase();
-      
+
       let isConflict = false;
       if (selectedId && selectedId !== originalId) {
         isConflict = true;
       } else if (!selectedId && enteredName && enteredName !== originalName) {
         isConflict = true;
       }
-      
+
       if (isConflict) {
         console.log('Conflict detected');
         const newName = eventMeta.companyName || contractors.find(c => c.id === selectedId)?.companyName || 'Новый контрагент';
@@ -912,7 +912,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       contractNumber: kpMeta.contractNumber,
       contractDate: kpMeta.contractDate,
       updateEventContractor: updateEventContractor,
-      
+
       listTitle: eventMeta.eventName,
       eventId: eventMeta.eventId,
       contractorId: eventMeta.contractorId,
@@ -1298,8 +1298,8 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
               <p className="proto-modal-text">Заменить связь на «{conflictModal.newContractorName}»?</p>
             </div>
             <div className="proto-modal-footer">
-              <button 
-                className="proto-btn proto-btn-secondary" 
+              <button
+                className="proto-btn proto-btn-secondary"
                 onClick={() => {
                   console.log('User selected keep existing');
                   setConflictModal({ isOpen: false, oldContractorName: '', newContractorName: '' });
@@ -1308,7 +1308,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
               >
                 Оставить текущего
               </button>
-              <button 
+              <button
                 className="proto-btn proto-btn-primary"
                 onClick={() => {
                   console.log('User selected replace contractor');

@@ -399,6 +399,24 @@
   font-style: italic;
 }
 
+.event-details__kp-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.event-details__kp-item:last-child {
+  border-bottom: none;
+}
+
+.event-details__kp-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
 

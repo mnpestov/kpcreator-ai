@@ -153,12 +153,16 @@ const EventDetails = () => {
             {event.kps && event.kps.length > 0 ? (
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {event.kps.map(kp => (
-                  <li key={kp.id} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>
+                  <li 
+                    key={kp.id} 
+                    className="event-details__kp-item"
+                    onClick={() => navigate(`/kp/${kp.kpNumber}`)}
+                  >
                     <div style={{ fontWeight: '500' }}>
                       <a
-                        href={`/preview/${kp.kpNumber}`}
-                        onClick={(e) => { e.preventDefault(); navigate(`/preview/${kp.kpNumber}`); }}
-                        style={{ color: '#0070fb', textDecoration: 'none', cursor: 'pointer' }}
+                        href={`/kp/${kp.kpNumber}`}
+                        onClick={(e) => { e.preventDefault(); }}
+                        style={{ color: '#0070fb', textDecoration: 'none' }}
                       >
                         КП № {kp.kpNumber}
                       </a>
