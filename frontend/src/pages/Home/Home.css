@@ -201,3 +201,53 @@
   font-style: italic;
   color: #777;
 }
+
+/* Десктопное выравнивание полей карточки КП */
+@media (min-width: 901px) {
+  .kp-card-identity {
+    width: 260px;
+    flex: 0 0 260px;
+    justify-content: flex-start;
+    gap: 0;
+  }
+  .kp-number-text {
+    width: 60px;
+    flex-shrink: 0;
+  }
+  .kp-identity-meta {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-badge {
+    width: 86px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .kp-date {
+    width: 75px;
+    text-align: right;
+  }
+  .kp-card-context {
+    flex: 1;
+    gap: 16px;
+  }
+  .contractor-name {
+    flex: 1;
+    flex-basis: 40%;
+  }
+  .event-details {
+    flex: 1;
+    flex-basis: 60%;
+  }
+  .kp-card-actions {
+    width: 120px;
+    flex: 0 0 120px;
+    justify-content: flex-end;
+  }
+  .kp-amount {
+    width: 100%;
+    text-align: right;
+  }
+}
