@@ -794,7 +794,7 @@ function App() {
 
             {/* Страница превью КП */}
             <Route
-              path="/preview"
+              path="/preview/:kpNumber"
               element={
                 <Preview
                   formData={formData}

@@ -35,10 +35,12 @@ export default function KpLoader({ dispatch, setIsNewKp }) {
         if (typeof setIsNewKp === 'function') setIsNewKp(false);
 
         // на предпросмотр
-        navigate('/preview', { replace: true });
+        navigate(`/preview/${kpNumber}`, { replace: true });
       } catch (e) {
         console.error('Не удалось загрузить КП:', e);
-        // по желанию: navigate('/') или показать уведомление
+        // При ошибке всё равно перенаправляем на /preview,
+        // где отработает логика Preview.js и покажется красивый экран ошибки
+        navigate(`/preview/${kpNumber}`, { replace: true });
       }
     }
 

@@ -1,12 +1,12 @@
-import React, { useRef, Suspense, lazy, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef, Suspense, lazy, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Download } from '@skbkontur/react-icons';
-import { Button, Select } from '@skbkontur/react-ui';
+import { Button, Select, Loader } from '@skbkontur/react-ui';
 import { MainApi } from '../../utils/MainApi';
 import FirstList from '../../components/FirstList/FirstList';
 import Kp from '../../components/KP/Kp';
 import KpCompact from '../../components/KpCompact/KpCompact';
-import KpCard from '../../components/common/KpCard/KpCard';
+
 import { toast } from 'react-toastify';
 import "./Preview.css";
 import HiddenPrint from "../../components/HiddenPrint/HiddenPrint";
@@ -43,12 +43,69 @@ function Preview({
     console.log(user);
     console.log(listsKp);
 
+    const setFormData = useKpStore((s) => s.setFormData);
+    const setListsKp = useKpStore((s) => s.setListsKp);
+
     const compactPdfRef = useRef(null);
     const hiddenPrintRef = useRef(null);
     const navigate = useNavigate();
-
+    const { kpNumber } = useParams();
+    const [isLoading, setIsLoading] = useState(false);
+    const [fetchError, setFetchError] = useState(null);
 
     const updateField = useKpStore((s) => s.updateField);
+
+    useEffect(() => {
+        if (!kpNumber) return;
+        if (String(formData?.kpNumber) === String(kpNumber)) {
+            return;
+        }
+
+        let aborted = false;
+        const loadKp = async () => {
+            setIsLoading(true);
+            setFetchError(null);
+            try {
+                const data = await MainApi.getKp(kpNumber);
+                if (!aborted) {
+                    if (data?.formData) setFormData(data.formData);
+                    if (Array.isArray(data?.listsKp)) setListsKp(data.listsKp);
+                }
+            } catch (err) {
+                console.error('Ошибка восстановления КП:', err);
+                if (!aborted) setFetchError('Не удалось загрузить коммерческое предложение');
+            } finally {
+                if (!aborted) setIsLoading(false);
+            }
+        };
+
+        loadKp();
+        return () => { aborted = true; };
+    }, [kpNumber, formData?.kpNumber, setFormData, setListsKp]);
+
+    const needsFetch = kpNumber && String(formData?.kpNumber) !== String(kpNumber);
+
+    if (isLoading || (needsFetch && !fetchError)) {
+        return (
+            <PageContainer maxWidth="1200px">
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '100px 0' }}>
+                    <Loader active type="big" caption="Загрузка коммерческого предложения..." />
+                </div>
+            </PageContainer>
+        );
+    }
+
+    if (fetchError || !formData?.kpNumber) {
+        return (
+            <PageContainer maxWidth="1200px">
+                <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '16px', color: '#333' }}>Ошибка</h3>
+                    <p style={{ color: '#666', marginBottom: '24px' }}>{fetchError || 'Коммерческое предложение не найдено'}</p>
+                    <Button use="primary" onClick={() => navigate('/')}>Вернуться на главную</Button>
+                </div>
+            </PageContainer>
+        );
+    }
 
     const handleStatusChange = async (newStatus) => {
         try {
