@@ -33,6 +33,7 @@ import useKpStore from './hooks/useKpStore';
 import { kpPreviewSelectors, kpPrintSelectors } from './utils/const.js'
 import { calculateKpTotal } from './utils/calculateKpTotal';
 import PrototypeKp from './pages/Prototype/PrototypeKp';
+import { downloadFile } from './utils/downloadFile';
 
 function App() {
   const [isNewKp, setIsNewKp] = useState(true)
@@ -642,6 +643,16 @@ function App() {
     compactPdf.save(`Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
   }, [formData, listsKp]);
 
+  const downloadKpXlsx = useCallback(async () => {
+    try {
+      const { blob, fileName } = await MainApi.downloadKpXlsx(formData.kpNumber);
+      downloadFile(blob, fileName);
+    } catch (err) {
+      console.error('Ошибка при скачивании XLSX:', err);
+      toast.error(`Ошибка при скачивании XLSX: ${err}`);
+    }
+  }, [formData.kpNumber]);
+
 
 
   const deleteRow = useCallback((listId, rowIndex) => {
@@ -809,6 +820,7 @@ function App() {
                   GetPrice={GetPrice}
                   // downloadPDF={exportPDF}
                   downloadSpec={downloadSpec}
+                  downloadKpXlsx={downloadKpXlsx}
                   getProductWeightWithMeasure={getProductWeightWithMeasure}
                   getDeclination={getDeclination}
                   exportHiddenPDF={exportHiddenPDF}

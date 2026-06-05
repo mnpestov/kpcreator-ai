@@ -1,5 +1,6 @@
 const { Kp, Manager, List, Row, Contractor, Event } = require('../models/models')
 const ApiError = require('../errors/ApiError')
+const kpService = require('../services/kpService')
 const { log } = require('console')
 const { literal } = require('sequelize');
 
@@ -61,51 +62,7 @@ class KpController {
         const safeDate = (d) => d || null;
 
         try {
-            const kp = await Kp.findOne({
-                where: { kpNumber: id },
-                include: [
-                    {
-                        model: Contractor,
-                        as: 'contractor'
-                    },
-                    {
-                        model: Event,
-                        as: 'event',
-                        attributes: ['id', 'title']
-                    },
-                    {
-                        model: List,
-                        attributes: [
-                            'id',
-                            'startEvent', 'endEvent',
-                            'startTimeStartEvent', 'endTimeStartEvent',
-                            'startTimeEndEvent', 'endTimeEndEvent',
-                            'eventPlace', 'countOfPerson', 'listTitle'
-                        ],
-                        include: [
-                            {
-                                model: Row,
-                                attributes: [
-                                    'id',
-                                    'countOfProduct', 'priceOfProduct',
-                                    'product', 'composition', 'productWeight',
-                                    'typeOfProduct', 'order'
-                                ],
-                                separate: true,
-                                order: [['order', 'ASC'], ['id', 'ASC']],
-                            }
-                        ]
-                    },
-                    // Если хочешь получить job/email/tel с бэка — раскомментируй include Manager:
-                    // { model: Manager, attributes: ['role', 'email', 'tel'] }
-                ],
-                // фиксируем порядок списков и строк:
-                order: [
-                    [{ model: List, as: 'lists' }, 'id', 'ASC'],
-                    // [{ model: List, as: 'lists' }, { model: Row, as: 'rows' }, 'order', 'ASC'],
-                    // [{ model: List, as: 'lists' }, { model: Row, as: 'rows' }, 'id', 'ASC'],
-                ],
-            });
+            const kp = await kpService.loadKpByNumber(id);
 
             if (!kp) {
                 return res.status(404).json({ message: 'KP not found' });
@@ -123,8 +80,9 @@ class KpController {
                 formData: {
                     id: kp.id,
                     managerName: kp.managerName,
-                    // Если включишь include Manager выше — эти поля придут; иначе на фронте бери из constants/managers
-                    managerJobTitle: kp.manager?.role || '',
+                    // Используем данные из привязанного User (manager)
+                    // Fallback: job (новое) -> role (старое) -> empty
+                    managerJobTitle: kp.manager?.job || kp.manager?.role || '',
                     managerEmail: kp.manager?.email || '',
                     managerTel: kp.manager?.tel || '',
                     managerPhoto: '',

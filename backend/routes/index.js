@@ -2,6 +2,7 @@ const Router = require('express')
 const router = new Router()
 
 const kp = require('./kp')
+const xlsx = require('./xlsx')
 const list = require('./list')
 const row = require('./row')
 const authRouter = require('./authRouter');
@@ -12,6 +13,7 @@ const menuItem = require('./menuItemRouter')
 const organisationRouter = require('./organisationRouter')
 
 router.use('/api/kp', kp)
+router.use('/api/kp', xlsx)
 router.use('/api/list', list)
 router.use('/api/row', row)
 router.use('/api/auth', authRouter)

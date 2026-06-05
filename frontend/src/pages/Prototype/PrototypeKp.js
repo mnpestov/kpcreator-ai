@@ -611,6 +611,20 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       if (selectedEvent.endTimeEndEvent || selectedEvent.endTime) next.endTimeEndEvent = (selectedEvent.endTimeEndEvent || selectedEvent.endTime).slice(0, 5);
       next.eventPlace = selectedEvent.eventPlace || '';
       next.countOfPerson = selectedEvent.countOfPerson ? String(selectedEvent.countOfPerson) : '';
+
+      // Сохраняем слепок исходных значений события для сравнения при сохранении КП
+      next.originalEventSnapshot = {
+        title: selectedEvent.title || '',
+        eventPlace: selectedEvent.eventPlace || '',
+        startEvent: selectedEvent.startEvent || selectedEvent.eventDate || '',
+        endEvent: selectedEvent.endEvent || selectedEvent.eventDate || '',
+        startTimeStartEvent: (selectedEvent.startTimeStartEvent || selectedEvent.startTime || '').slice(0, 5),
+        endTimeStartEvent: (selectedEvent.endTimeStartEvent || '').slice(0, 5),
+        startTimeEndEvent: (selectedEvent.startTimeEndEvent || '').slice(0, 5),
+        endTimeEndEvent: (selectedEvent.endTimeEndEvent || selectedEvent.endTime || '').slice(0, 5),
+        countOfPerson: selectedEvent.countOfPerson ? String(selectedEvent.countOfPerson) : '',
+      };
+
       return next;
     });
     setShowEventAc(false);
@@ -902,10 +916,34 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     }
 
     const shouldUpdate = !eventMeta.eventId || (eventMeta.eventId && !eventMeta.originalEventContractorId);
-    proceedWithSave(shouldUpdate);
+
+    // Определяем, изменились ли данные события относительно выбранного
+    let eventChanged = false;
+    if (eventMeta.eventId && eventMeta.originalEventSnapshot) {
+      const snap = eventMeta.originalEventSnapshot;
+      // endEvent при однодневном событии равен startEvent (аналогично proceedWithSave строка 926)
+      const currentEndEvent = eventMeta.isMultiDay ? (eventMeta.endEvent || '') : (eventMeta.startEvent || '');
+      eventChanged = (
+        (eventMeta.eventName || '') !== (snap.title || '') ||
+        (eventMeta.eventPlace || '') !== (snap.eventPlace || '') ||
+        (eventMeta.startEvent || '') !== (snap.startEvent || '') ||
+        currentEndEvent !== (snap.endEvent || '') ||
+        (eventMeta.startTimeStartEvent || '') !== (snap.startTimeStartEvent || '') ||
+        (eventMeta.endTimeStartEvent || '') !== (snap.endTimeStartEvent || '') ||
+        (eventMeta.startTimeEndEvent || '') !== (snap.startTimeEndEvent || '') ||
+        (eventMeta.endTimeEndEvent || '') !== (snap.endTimeEndEvent || '') ||
+        String(eventMeta.countOfPerson || '') !== String(snap.countOfPerson || '')
+      );
+    }
+
+    // Если данные события изменились — передаём null, addToDb создаст новый Event
+    // Если не изменились — передаём существующий eventId
+    const resolvedEventId = eventChanged ? null : eventMeta.eventId;
+
+    proceedWithSave(shouldUpdate, resolvedEventId);
   };
 
-  const proceedWithSave = async (updateEventContractor) => {
+  const proceedWithSave = async (updateEventContractor, resolvedEventId) => {
     const formDataPayload = {
       kpNumber: kpMeta.kpNumber,
       kpDate: kpMeta.kpDate,
@@ -914,7 +952,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       updateEventContractor: updateEventContractor,
 
       listTitle: eventMeta.eventName,
-      eventId: eventMeta.eventId,
+      eventId: resolvedEventId !== undefined ? resolvedEventId : eventMeta.eventId,
       contractorId: eventMeta.contractorId,
       companyName: eventMeta.companyName,
       contactPerson: eventMeta.contactPerson,

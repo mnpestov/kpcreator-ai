@@ -32,6 +32,7 @@ function Preview({
     addRowOnList,
     GetPrice,
     downloadSpec,
+    downloadKpXlsx,
     getProductWeightWithMeasure,
     getDeclination,
     exportHiddenPDF,
@@ -127,6 +128,16 @@ function Preview({
         }
     };
 
+    const handleDownloadXlsx = async () => {
+        // 1. Download XLSX
+        await downloadKpXlsx();
+
+        // 2. Transition if draft (same as PDF)
+        if (formData.status === 'draft') {
+            await handleStatusChange('sent');
+        }
+    };
+
     // Форматирование даты (ожидаем ISO)
     const formatDate = (value) => {
         if (!value) return '';
@@ -167,6 +178,13 @@ function Preview({
                         >
                             Скачать PDF
                         </Button>
+                        {/* <Button
+                            use="success"
+                            icon={<Download />}
+                            onClick={handleDownloadXlsx}
+                        >
+                            Скачать XLSX
+                        </Button> */}
                         <Button
                             use="success"
                             icon={<Download />}

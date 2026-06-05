@@ -392,6 +392,26 @@ class Api {
             .then(this._checkResponse);
     }
 
+    downloadKpXlsx(kpNumber) {
+        const token = localStorage.getItem('authToken');
+        return fetch(`${this._baseUrl}/kp/${kpNumber}/export/xlsx`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(res => {
+            if (res.ok) {
+                const contentDisposition = res.headers.get('Content-Disposition');
+                let fileName = `KP_${kpNumber}.xlsx`;
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename=(.+)/);
+                    if (match) fileName = match[1];
+                }
+                return res.blob().then(blob => ({ blob, fileName }));
+            }
+            return res.json().then(err => Promise.reject(err.message || `Ошибка: ${res.status}`));
+        });
+    }
+
 }
 // const API_BASE =
 //   (process.env.REACT_APP_API_BASE && process.env.REACT_APP_API_BASE.replace(/\/$/, ''))
