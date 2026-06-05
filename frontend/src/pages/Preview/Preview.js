@@ -1,7 +1,6 @@
 import React, { useRef, Suspense, lazy, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Download } from '@skbkontur/react-icons';
-import { Button, Select, Loader } from '@skbkontur/react-ui';
+import { Select, Loader } from '@skbkontur/react-ui';
 import { MainApi } from '../../utils/MainApi';
 import FirstList from '../../components/FirstList/FirstList';
 import Kp from '../../components/KP/Kp';
@@ -53,8 +52,20 @@ function Preview({
     const { kpNumber } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState(null);
+    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+    const downloadRef = useRef(null);
 
     const updateField = useKpStore((s) => s.updateField);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (downloadRef.current && !downloadRef.current.contains(e.target)) {
+                setIsDownloadOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     useEffect(() => {
         if (!kpNumber) return;
@@ -102,7 +113,7 @@ function Preview({
                 <div style={{ textAlign: 'center', padding: '100px 0' }}>
                     <h3 style={{ fontSize: '1.5rem', marginBottom: '16px', color: '#333' }}>Ошибка</h3>
                     <p style={{ color: '#666', marginBottom: '24px' }}>{fetchError || 'Коммерческое предложение не найдено'}</p>
-                    <Button use="primary" onClick={() => navigate('/')}>Вернуться на главную</Button>
+                    <button className="proto-btn proto-btn-primary" onClick={() => navigate('/')}>Вернуться на главную</button>
                 </div>
             </PageContainer>
         );
@@ -161,41 +172,50 @@ function Preview({
             <PageHeader
                 title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
                 actions={
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <Button
-                            use="default"
+                    <>
+                        <button
+                            className="proto-btn proto-btn-secondary"
                             onClick={() => {
                                 const cloneData = prepareCloneData(formData, listsKp);
                                 navigate('/new', { state: { cloneData } });
                             }}
                         >
                             Создать на основе
-                        </Button>
-                        <Button
-                            use="primary"
-                            icon={<Download />}
-                            onClick={handleExportPDF}
-                        >
-                            Скачать PDF
-                        </Button>
-                        {/* <Button
-                            use="success"
-                            icon={<Download />}
-                            onClick={handleDownloadXlsx}
-                        >
-                            Скачать XLSX
-                        </Button> */}
-                        <Button
-                            use="success"
-                            icon={<Download />}
-                            onClick={downloadSpec}
-                        >
-                            Скачать спецификацию
-                        </Button>
-                    </div>
+                        </button>
+                        <div className="preview-download-wrapper" ref={downloadRef}>
+                            <button
+                                className="proto-btn proto-btn-primary"
+                                onClick={() => setIsDownloadOpen((v) => !v)}
+                            >
+                                Скачать ▾
+                            </button>
+                            {isDownloadOpen && (
+                                <div className="preview-download-menu">
+                                    <button
+                                        className="preview-download-item"
+                                        onClick={() => { setIsDownloadOpen(false); handleExportPDF(); }}
+                                    >
+                                        PDF
+                                    </button>
+                                    <button
+                                        className="preview-download-item"
+                                        onClick={() => { setIsDownloadOpen(false); handleDownloadXlsx(); }}
+                                    >
+                                        XLSX
+                                    </button>
+                                    <button
+                                        className="preview-download-item"
+                                        onClick={() => { setIsDownloadOpen(false); downloadSpec(); }}
+                                    >
+                                        Спецификация
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </>
                 }
             />
-            <div className="preview-page">
+            <div className="preview-page" style={{ marginTop: '1rem' }}>
                 <div className="preview-meta-bar">
                     <div className="preview-meta-status">
                         <span className="preview-meta-label">Статус:</span>

@@ -25,3 +25,62 @@
     color: #64748b;
     font-weight: 500;
 }
+
+/* Buttons — same style as PrototypeKp */
+.proto-btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+.proto-btn-primary {
+    background: #1a1a1a;
+    color: #fff;
+}
+.proto-btn-primary:hover {
+    background: #333;
+}
+.proto-btn-secondary {
+    background: #f0f0f0;
+    color: #1a1a1a;
+}
+.proto-btn-secondary:hover {
+    background: #e4e4e4;
+}
+
+/* Download dropdown */
+.preview-download-wrapper {
+    position: relative;
+}
+
+.preview-download-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 200;
+    min-width: 160px;
+    overflow: hidden;
+}
+
+.preview-download-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+}
+
+.preview-download-item:hover {
+    background: #f4f5f7;
+}

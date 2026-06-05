@@ -28,8 +28,9 @@
 
 .page-header__actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 600px) {

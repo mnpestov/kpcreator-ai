@@ -209,10 +209,10 @@ function RowDisplay({
   const handleQtyKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onQtyEditComplete(tempQty);
+      onQtyEditComplete(tempQty, true);
       onUpdateRow({ ...data, countOfProduct: tempQty });
     } else if (e.key === 'Escape') {
-      onQtyEditComplete(row.countOfProduct);
+      onQtyEditComplete(row.countOfProduct, true);
     }
   };
 
@@ -364,7 +364,7 @@ function RowDisplay({
                 onChange={(e) => setTempQty(Number(e.target.value))}
                 onKeyDown={handleQtyKeyDown}
                 onBlur={() => {
-                  onQtyEditComplete(tempQty);
+                  onQtyEditComplete(tempQty, false);
                   onUpdateRow({ ...data, countOfProduct: tempQty });
                 }}
                 onClick={(e) => e.stopPropagation()}
@@ -746,7 +746,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     setInlineEditQtyId(newId);
   };
 
-  const handleQtyComplete = (sheetId, rowId, newQty) => {
+  const handleQtyComplete = (sheetId, rowId, newQty, shouldRefocus = false) => {
     setSheets(sheets.map(sheet => {
       if (sheet.id === sheetId) {
         return {
@@ -758,14 +758,16 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     }));
     setInlineEditQtyId(null);
 
-    // Return focus to QuickAdd
-    setTimeout(() => {
-      if (quickAddRef.current) quickAddRef.current.focus();
-      else {
-        const input = document.getElementById('quick-add-input');
-        if (input) input.focus();
-      }
-    }, 0);
+    // Return focus to QuickAdd only when completed via keyboard (Enter/Escape)
+    if (shouldRefocus) {
+      setTimeout(() => {
+        if (quickAddRef.current) quickAddRef.current.focus();
+        else {
+          const input = document.getElementById('quick-add-input');
+          if (input) input.focus();
+        }
+      }, 0);
+    }
   };
 
   const handleUpdateRow = (sheetId, updatedRow) => {
@@ -1273,7 +1275,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
                       index={index}
                       isActiveQtyEdit={inlineEditQtyId === row.id}
                       onStartQtyEdit={() => { setInlineEditQtyId(row.id); }}
-                      onQtyEditComplete={(newQty) => handleQtyComplete(sheet.id, row.id, newQty)}
+                      onQtyEditComplete={(newQty, shouldRefocus) => handleQtyComplete(sheet.id, row.id, newQty, shouldRefocus)}
                       onUpdateRow={(updatedData) => handleUpdateRow(sheet.id, updatedData)}
                       onDelete={() => handleDeleteRow(sheet.id, row.id)}
                       onDragStart={(e, idx) => handleDragStart(e, sheet.id, idx)}
