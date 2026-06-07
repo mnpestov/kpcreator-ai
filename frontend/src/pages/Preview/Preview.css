@@ -84,3 +84,103 @@
 .preview-download-item:hover {
     background: #f4f5f7;
 }
+
+/* Delete button in meta-bar */
+.preview-delete-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #fca5a5;
+    background: transparent;
+    color: #dc2626;
+    cursor: pointer;
+    margin-left: auto;
+    transition: background 0.15s, color 0.15s;
+}
+
+.preview-delete-btn:hover {
+    background: #fef2f2;
+}
+
+/* Danger button inside modal */
+.preview-delete-btn--danger {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    background: #dc2626;
+    color: #fff;
+}
+
+.preview-delete-btn--danger:hover {
+    background: #b91c1c;
+}
+
+.preview-delete-btn--danger:disabled,
+.proto-btn-secondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Warning text in modal */
+.preview-delete-warning {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Modal overlay & content — same pattern as PrototypeKp */
+.proto-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.proto-modal-content {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 90vw;
+    max-width: 480px;
+    padding: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.proto-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.proto-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.proto-modal-text {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.proto-modal-footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}

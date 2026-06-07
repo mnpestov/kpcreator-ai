@@ -53,6 +53,8 @@ function Preview({
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState(null);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const downloadRef = useRef(null);
 
     const updateField = useKpStore((s) => s.updateField);
@@ -129,6 +131,21 @@ function Preview({
         }
     };
 
+    const handleDeleteKp = async () => {
+        setIsDeleting(true);
+        try {
+            await MainApi.deleteKp(formData.id);
+            toast.success('КП удалено');
+            navigate('/');
+        } catch (e) {
+            console.error('Ошибка при удалении КП:', e);
+            toast.error('Не удалось удалить КП');
+        } finally {
+            setIsDeleting(false);
+            setIsDeleteOpen(false);
+        }
+    };
+
     const handleExportPDF = async () => {
         // 1. Start PDF generation
         await exportHiddenPDF();
@@ -168,6 +185,7 @@ function Preview({
     // const m = MANAGERS[managerKey];
 
     return (
+        <>
         <PageContainer maxWidth="1200px">
             <PageHeader
                 title={`Предпросмотр КП № ${formData.kpNumber || ''}`}
@@ -236,6 +254,12 @@ function Preview({
                             width="140px"
                         />
                     </div>
+                    <button
+                        className="preview-delete-btn"
+                        onClick={() => setIsDeleteOpen(true)}
+                    >
+                        Удалить
+                    </button>
                 </div>
                 <div className="preview">
                     {/* Шапка КП */}
@@ -363,6 +387,35 @@ function Preview({
                 </div>
             </div>
         </PageContainer>
+
+        {isDeleteOpen && (
+            <div className="proto-modal-overlay" onMouseDown={() => !isDeleting && setIsDeleteOpen(false)}>
+                <div className="proto-modal-content" onMouseDown={e => e.stopPropagation()}>
+                    <h3 className="proto-modal-title">Удалить коммерческое предложение</h3>
+                    <div className="proto-modal-body">
+                        <p className="proto-modal-text">Вы уверены, что хотите удалить <strong>КП&nbsp;№&nbsp;{formData.kpNumber}</strong>?</p>
+                        <p className="proto-modal-text preview-delete-warning">Это действие нельзя отменить.</p>
+                    </div>
+                    <div className="proto-modal-footer">
+                        <button
+                            className="proto-btn proto-btn-secondary"
+                            onClick={() => setIsDeleteOpen(false)}
+                            disabled={isDeleting}
+                        >
+                            Отмена
+                        </button>
+                        <button
+                            className="proto-btn preview-delete-btn--danger"
+                            onClick={handleDeleteKp}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Удаляю...' : 'Удалить'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }
 
