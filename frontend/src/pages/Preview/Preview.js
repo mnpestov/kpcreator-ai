@@ -323,7 +323,7 @@ function Preview({
                     >
                         {listsKp.map((list, idx) => (
                             <KpCompact
-                                key={`compact-${list.id}-${Date.now()}`}
+                                key={`compact-${list.id || idx}`}
                                 // key={`compact-${idx}`}
                                 list={list}
                                 listTitle={formData.listTitle}
@@ -369,7 +369,7 @@ function Preview({
                 >
 
                     <HiddenPrint
-                        key={`hidden-${Date.now()}`}
+                        key={`hidden-${formData.kpNumber || 'new'}`}
                         formData={formData}
                         listsKp={listsKp}
                         isNewKp={isNewKp}
