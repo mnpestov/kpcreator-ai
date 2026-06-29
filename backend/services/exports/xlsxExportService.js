@@ -15,7 +15,7 @@ const generateKpXlsx = async (kpNumber) => {
 
     // 2. If manager is missing, try to find a fallback (e.g. Mikhail Pestov)
     if (!kp.managerId) {
-        const fallbackManager = await User.findOne({ order: [['id', 'ASC']] });
+        const fallbackManager = await User.findOne({ where: { name: kp.managerName } });
         if (fallbackManager) {
             kp.manager = fallbackManager;
         }

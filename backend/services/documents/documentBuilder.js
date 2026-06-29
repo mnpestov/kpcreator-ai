@@ -77,8 +77,8 @@ const buildDocumentModel = (kp) => {
     // 4. Event Info
     const eventStartDate = formatDate(kp.startEvent);
     const eventEndDate = formatDate(kp.endEvent);
-    const eventDateRange = kp.startEvent === kp.endEvent 
-        ? eventStartDate 
+    const eventDateRange = kp.startEvent === kp.endEvent
+        ? eventStartDate
         : eventStartDate + " — " + eventEndDate;
 
     const eventData = {
@@ -96,16 +96,16 @@ const buildDocumentModel = (kp) => {
     let serviceTotalNum = 0;
     let foodWeightTotalNum = 0;
     let drinkWeightTotalNum = 0;
-    
+
     const printableRows = [];
 
     const listsData = (kp.lists || []).map((list, lIdx) => {
         let listSubtotal = 0;
-        
+
         const listStartDate = formatDate(list.startEvent);
         const listEndDate = formatDate(list.endEvent);
-        const listDateRange = list.startEvent === list.endEvent 
-            ? listStartDate 
+        const listDateRange = list.startEvent === list.endEvent
+            ? listStartDate
             : listStartDate + " — " + listEndDate;
 
         const rowsData = (list.rows || []).map((row, rIdx) => {
@@ -127,7 +127,7 @@ const buildDocumentModel = (kp) => {
 
             let details = weightFormatted || "";
             if (row.composition) {
-                details += (details ? "\n" : "") + "(" + row.composition + ")";
+                details += (details ? "\n" : "") + row.composition;
             }
 
             const rowData = {
@@ -146,8 +146,8 @@ const buildDocumentModel = (kp) => {
                 title: row.product || "",
                 details: details,
                 qty: rowData.qty,
-                price: formatMoney(rowData.price),
-                total: formatMoney(rowData.total),
+                price: rowData.price,
+                total: rowData.total,
                 type: rowData.type
             });
 
@@ -184,26 +184,26 @@ const buildDocumentModel = (kp) => {
             title: logisticsLabel,
             details: "",
             qty: 1,
-            price: formatMoney(logisticsCostNum),
-            total: formatMoney(logisticsCostNum),
+            price: logisticsCostNum,
+            total: logisticsCostNum,
             type: "logistics"
         });
     }
 
     const totalsData = {
-        foodTotal: formatMoney(foodTotalNum),
-        drinkTotal: formatMoney(drinkTotalNum),
-        serviceTotal: formatMoney(serviceTotalNum),
+        foodTotal: foodTotalNum,
+        drinkTotal: drinkTotalNum,
+        serviceTotal: serviceTotalNum,
         foodWeightTotal: foodWeightTotalNum,
         foodWeightPerPerson,
         drinkWeightTotal: drinkWeightTotalNum,
         drinkWeightPerPerson,
-        subtotalBeforeLogistics: formatMoney(foodTotalNum + drinkTotalNum + serviceTotalNum),
-        logisticsCost: formatMoney(logisticsCostNum),
+        subtotalBeforeLogistics: foodTotalNum + drinkTotalNum + serviceTotalNum,
+        logisticsCost: logisticsCostNum,
         isWithinMkad: kp.isWithinMkad,
         logisticsLabel,
-        grandTotal: formatMoney(grandTotalNum),
-        nonCashTotal: formatMoney(nonCashTotalNum)
+        grandTotal: grandTotalNum,
+        nonCashTotal: nonCashTotalNum
     };
 
     // 7. Meta

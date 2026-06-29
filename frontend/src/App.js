@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
 import Form from './pages/Form/Form.js';
 import { MainApi } from './utils/MainApi'
 import Home from './pages/Home/Home.js';
@@ -589,7 +590,7 @@ function App() {
       hidenPdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, Math.min(imgHeightMm, A4_HEIGHT_MM));
     }
 
-    hidenPdf.save(`КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
+    saveAs(hidenPdf.output('blob'), `КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
   }, [formData, listsKp]);
 
   const downloadSpec = useCallback(async () => {
@@ -640,7 +641,7 @@ function App() {
       compactPdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, Math.min(imgHeightMm, A4_HEIGHT_MM));
     }
 
-    compactPdf.save(`Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
+    saveAs(compactPdf.output('blob'), `Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
   }, [formData, listsKp]);
 
   const downloadKpXlsx = useCallback(async () => {
