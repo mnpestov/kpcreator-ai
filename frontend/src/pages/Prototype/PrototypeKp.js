@@ -217,7 +217,7 @@ function RowDisplay({
   };
 
   const saveEdits = () => {
-    if (data.product !== row.product || data.composition !== row.composition || data.priceOfProduct !== row.priceOfProduct || data.productWeight !== row.productWeight || data.category !== row.category) {
+    if (data.product !== row.product || data.composition !== row.composition || data.priceOfProduct !== row.priceOfProduct || data.productWeight !== row.productWeight || data.category !== row.category || data.typeOfProduct !== row.typeOfProduct) {
       onUpdateRow(data);
     }
   };
@@ -225,7 +225,7 @@ function RowDisplay({
   const category = data.category || data.typeOfProduct || 'eat';
 
   const setCategory = (newCat) => {
-    const newData = { ...data, category: newCat };
+    const newData = { ...data, category: newCat, typeOfProduct: newCat };
     setData(newData);
     onUpdateRow(newData);
   };
