@@ -36,3 +36,10 @@
     display: none !important;
   }
 }
+
+/* Уменьшаем плотность конфетти на мобильных экранах */
+@media (max-width: 768px) {
+  .confetti-piece:nth-child(even) {
+    display: none !important;
+  }
+}
