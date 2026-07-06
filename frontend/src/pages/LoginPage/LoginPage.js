@@ -7,7 +7,7 @@ import logo from '../../images/logo.png';
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const { login } = useContext(AuthContext);
+  const { login, tgNeedsBind, tgInitDataRaw, setTgNeedsBind, setTgInitDataRaw } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ tel: '', password: '' });
@@ -22,14 +22,24 @@ const LoginPage = () => {
     try {
       // Очищаем телефон от маски перед отправкой (оставляем только цифры)
       const cleanTel = form.tel.replace(/\D/g, '');
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const endpoint = tgNeedsBind ? '/auth/telegram/bind' : '/auth/login';
+      const payload = { tel: cleanTel, password: form.password };
+      if (tgNeedsBind && tgInitDataRaw) payload.initData = tgInitDataRaw;
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tel: cleanTel, password: form.password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Ошибка авторизации');
+
+      // Очищаем временные состояния при успешной авторизации/привязке
+      if (tgNeedsBind) {
+        setTgNeedsBind(false);
+        setTgInitDataRaw(null);
+      }
 
       login(data.token);
       navigate('/');

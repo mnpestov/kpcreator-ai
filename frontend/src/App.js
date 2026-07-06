@@ -35,6 +35,7 @@ import { kpPreviewSelectors, kpPrintSelectors } from './utils/const.js'
 import { calculateKpTotal } from './utils/calculateKpTotal';
 import PrototypeKp from './pages/Prototype/PrototypeKp';
 import { downloadFile } from './utils/downloadFile';
+import TelegramAuthProvider from './components/Telegram/TelegramAuthProvider';
 
 function App() {
   const [isNewKp, setIsNewKp] = useState(true)
@@ -724,7 +725,7 @@ function App() {
   if (!authReady) return null;
 
   return (
-    <>
+    <TelegramAuthProvider>
       {!isAuth ? (
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -834,7 +835,7 @@ function App() {
         </AppLayout>
       )}
       <ToastContainer />
-    </>
+    </TelegramAuthProvider>
   );
 }
 

@@ -10,11 +10,17 @@ export const AuthContext = createContext({
   login: () => { },
   logout: () => { },
   setUser: () => { },
+  tgNeedsBind: false,
+  setTgNeedsBind: () => { },
+  tgInitDataRaw: null,
+  setTgInitDataRaw: () => { }
 });
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(getUserFromToken());
   const [isAuth, setIsAuth] = useState(!!getToken());
+  const [tgNeedsBind, setTgNeedsBind] = useState(false);
+  const [tgInitDataRaw, setTgInitDataRaw] = useState(null);
 
   useEffect(() => {
     const token = getToken();
@@ -78,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuth, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, isAuth, login, logout, setUser, tgNeedsBind, setTgNeedsBind, tgInitDataRaw, setTgInitDataRaw }}>
       {children}
     </AuthContext.Provider>
   );

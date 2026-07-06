@@ -5,7 +5,7 @@ import Confetti from '../Festive/Confetti';
 import './AppLayout.css';
 
 const AppLayout = ({ children }) => {
-  const isFestive = process.env.REACT_APP_FESTIVE_MODE === 'true';
+  const isFestive = process.env.REACT_APP_FESTIVE_MODE === 'false';
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
