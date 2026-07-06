@@ -10,10 +10,14 @@ class PdfDeliveryController {
                 return next(ApiError.badRequest('Файл PDF не передан'));
             }
 
+            // multer/busboy декодируют filename из multipart как latin1 (RFC 2388),
+            // хотя браузер шлёт UTF-8 — возвращаем исходные байты.
+            const fileName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+
             await pdfDeliveryService.sendPdf({
                 kpNumber,
                 buffer: req.file.buffer,
-                fileName: req.file.originalname,
+                fileName,
                 userId: req.user.id
             });
 

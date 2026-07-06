@@ -25,6 +25,9 @@ async function sendPdf({ kpNumber, buffer, fileName, userId }) {
     const form = new FormData();
     form.append('chatId', user.telegramId);
     form.append('caption', `КП № ${kpNumber}`);
+    // Gateway используется несколькими проектами с разными ботами;
+    // 'kpcreator' указывает, каким токеном отправлять сообщение.
+    form.append('bot', 'kpcreator');
     form.append('document', new Blob([buffer], { type: 'application/pdf' }), fileName);
 
     let response;
