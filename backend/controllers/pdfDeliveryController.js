@@ -7,7 +7,7 @@ class PdfDeliveryController {
             const { kpNumber } = req.params;
 
             if (!req.file) {
-                return next(ApiError.badRequest('Файл PDF не передан'));
+                return next(ApiError.badRequest('Файл не передан'));
             }
 
             // multer/busboy декодируют filename из multipart как latin1 (RFC 2388),
@@ -18,15 +18,17 @@ class PdfDeliveryController {
                 kpNumber,
                 buffer: req.file.buffer,
                 fileName,
+                mimeType: req.file.mimetype,
+                caption: req.body.caption,
                 userId: req.user.id
             });
 
-            return res.json({ message: 'PDF отправлен' });
+            return res.json({ message: 'Файл отправлен' });
         } catch (err) {
             if (err instanceof pdfDeliveryService.PdfDeliveryError) {
                 return res.status(err.status).json({ message: err.message });
             }
-            next(ApiError.internal('Ошибка при отправке PDF'));
+            next(ApiError.internal('Ошибка при отправке файла'));
         }
     }
 }

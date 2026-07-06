@@ -596,7 +596,7 @@ function App() {
 
     if (await isTMA()) {
       try {
-        await MainApi.sendPdfToBot(formData.kpNumber, hidenPdf.output('blob'), fileName);
+        await MainApi.sendFileToBot(formData.kpNumber, hidenPdf.output('blob'), fileName, `КП № ${formData.kpNumber} от ${formData.kpDate}`);
         toast.success('PDF отправлен ботом вам в чат в Telegram');
       } catch (err) {
         console.error('Ошибка при отправке PDF в Telegram:', err);
@@ -656,12 +656,37 @@ function App() {
       compactPdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, Math.min(imgHeightMm, A4_HEIGHT_MM));
     }
 
-    saveAs(compactPdf.output('blob'), `Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
+    const specFileName = `Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`;
+
+    if (await isTMA()) {
+      try {
+        await MainApi.sendFileToBot(formData.kpNumber, compactPdf.output('blob'), specFileName, `Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}`);
+        toast.success('Спецификация отправлена ботом вам в чат в Telegram');
+      } catch (err) {
+        console.error('Ошибка при отправке спецификации в Telegram:', err);
+        toast.error('Не удалось отправить спецификацию в Telegram');
+      }
+      return;
+    }
+
+    saveAs(compactPdf.output('blob'), specFileName);
   }, [formData, listsKp]);
 
   const downloadKpXlsx = useCallback(async () => {
     try {
       const { blob, fileName } = await MainApi.downloadKpXlsx(formData.kpNumber);
+
+      if (await isTMA()) {
+        try {
+          await MainApi.sendFileToBot(formData.kpNumber, blob, fileName, `Смета к КП № ${formData.kpNumber}`);
+          toast.success('Смета отправлена ботом вам в чат в Telegram');
+        } catch (err) {
+          console.error('Ошибка при отправке XLSX в Telegram:', err);
+          toast.error('Не удалось отправить смету в Telegram');
+        }
+        return;
+      }
+
       downloadFile(blob, fileName);
     } catch (err) {
       console.error('Ошибка при скачивании XLSX:', err);

@@ -392,10 +392,11 @@ class Api {
             .then(this._checkResponse);
     }
 
-    sendPdfToBot(kpNumber, blob, fileName) {
+    sendFileToBot(kpNumber, blob, fileName, caption) {
         const token = localStorage.getItem('authToken');
         const formData = new FormData();
         formData.append('pdf', blob, fileName);
+        if (caption) formData.append('caption', caption);
         return fetch(`${this._baseUrl}/kp/${kpNumber}/send-pdf`, {
             method: 'POST',
             headers: {

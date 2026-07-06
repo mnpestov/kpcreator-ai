@@ -12,7 +12,7 @@ const GATEWAY_API_KEY = process.env.TELEGRAM_GATEWAY_API_KEY;
 
 // Единственная точка интеграции с Telegram Gateway.
 // Backend не обращается к Telegram Bot API напрямую — только к Gateway.
-async function sendPdf({ kpNumber, buffer, fileName, userId }) {
+async function sendPdf({ kpNumber, buffer, fileName, mimeType, caption, userId }) {
     if (!GATEWAY_BASE_URL || !GATEWAY_API_KEY) {
         throw new PdfDeliveryError(500, 'Telegram Gateway не сконфигурирован');
     }
@@ -24,11 +24,11 @@ async function sendPdf({ kpNumber, buffer, fileName, userId }) {
 
     const form = new FormData();
     form.append('chatId', user.telegramId);
-    form.append('caption', `КП № ${kpNumber}`);
+    form.append('caption', caption || `КП № ${kpNumber}`);
     // Gateway используется несколькими проектами с разными ботами;
     // 'kpcreator' указывает, каким токеном отправлять сообщение.
     form.append('bot', 'kpcreator');
-    form.append('document', new Blob([buffer], { type: 'application/pdf' }), fileName);
+    form.append('document', new Blob([buffer], { type: mimeType || 'application/octet-stream' }), fileName);
 
     let response;
     try {
