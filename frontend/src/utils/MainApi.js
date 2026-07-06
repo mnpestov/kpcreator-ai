@@ -392,6 +392,20 @@ class Api {
             .then(this._checkResponse);
     }
 
+    sendPdfToBot(kpNumber, blob, fileName) {
+        const token = localStorage.getItem('authToken');
+        const formData = new FormData();
+        formData.append('pdf', blob, fileName);
+        return fetch(`${this._baseUrl}/kp/${kpNumber}/send-pdf`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: formData
+        })
+            .then(this._checkResponse);
+    }
+
     downloadKpXlsx(kpNumber) {
         const token = localStorage.getItem('authToken');
         return fetch(`${this._baseUrl}/kp/${kpNumber}/export/xlsx`, {

@@ -36,6 +36,7 @@ import { calculateKpTotal } from './utils/calculateKpTotal';
 import PrototypeKp from './pages/Prototype/PrototypeKp';
 import { downloadFile } from './utils/downloadFile';
 import TelegramAuthProvider from './components/Telegram/TelegramAuthProvider';
+import { isTMA } from '@telegram-apps/sdk';
 
 function App() {
   const [isNewKp, setIsNewKp] = useState(true)
@@ -591,7 +592,20 @@ function App() {
       hidenPdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, Math.min(imgHeightMm, A4_HEIGHT_MM));
     }
 
-    saveAs(hidenPdf.output('blob'), `КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`);
+    const fileName = `КП № ${formData.kpNumber} от ${formData.kpDate}.pdf`;
+
+    if (await isTMA()) {
+      try {
+        await MainApi.sendPdfToBot(formData.kpNumber, hidenPdf.output('blob'), fileName);
+        toast.success('PDF отправлен ботом вам в чат в Telegram');
+      } catch (err) {
+        console.error('Ошибка при отправке PDF в Telegram:', err);
+        toast.error('Не удалось отправить PDF в Telegram');
+      }
+      return;
+    }
+
+    saveAs(hidenPdf.output('blob'), fileName);
   }, [formData, listsKp]);
 
   const downloadSpec = useCallback(async () => {
