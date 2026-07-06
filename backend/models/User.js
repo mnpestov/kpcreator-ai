@@ -24,6 +24,11 @@ const User = sequelize.define('User', {
     unique: true,
     allowNull: false
   },
+  telegramId: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: true
+  },
   photo: {
     type: DataTypes.STRING,
     allowNull: true // путь до изображения или ссылка

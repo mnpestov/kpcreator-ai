@@ -18,6 +18,9 @@ app.get('/', (req, res) => {
     res.send("Сервер запущен");
 });
 const start = async () => {
+    if (!process.env.TELEGRAM_BOT_TOKEN) {
+        console.warn('[STARTUP] TELEGRAM_BOT_TOKEN не задан — вход через Telegram Mini App будет недоступен');
+    }
     try {
         await sequelize.authenticate()
         app.listen(PORT, () => console.log(`server started on port ${PORT}`))

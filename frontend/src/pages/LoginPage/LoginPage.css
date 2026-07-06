@@ -75,6 +75,18 @@
   text-align: left;
 }
 
+.auth-tg-bind-hint {
+  font-size: 0.75rem;
+  color: #1d4ed8;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: -8px 0 0 0;
+  line-height: 1.4;
+  text-align: left;
+}
+
 .auth-error {
   font-size: 0.75rem;
   color: #dc2626;

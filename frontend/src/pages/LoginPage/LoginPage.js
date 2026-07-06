@@ -57,8 +57,18 @@ const LoginPage = () => {
         <div className="auth-branding">
           <img className="auth-logo" src={logo} alt="KpCreator" />
           <h2 className="auth-brand-name">KpCreator</h2>
-          <span className="auth-subtitle">Вход в систему</span>
+          <span className="auth-subtitle">
+            {tgNeedsBind
+              ? 'Этот Telegram-аккаунт ещё не привязан'
+              : 'Вход в систему'}
+          </span>
         </div>
+
+        {tgNeedsBind && (
+          <p className="auth-tg-bind-hint">
+            Войдите телефоном и паролем, чтобы привязать этот Telegram-аккаунт к своему профилю
+          </p>
+        )}
 
         {/* Форма авторизации */}
         <form className="auth-form" onSubmit={handleSubmit}>

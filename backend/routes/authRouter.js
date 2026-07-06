@@ -7,5 +7,7 @@ const router = new Router();
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/check', authMiddleware, authController.check);
+router.post('/telegram', authController.telegramAuth);
+router.post('/telegram/bind', authController.telegramBind);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { init, retrieveLaunchParams, isTMA } from '@telegram-apps/sdk';
 import { AuthContext } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../utils/const';
@@ -8,6 +8,7 @@ const TelegramAuthProvider = ({ children }) => {
   const { login, isAuth, setTgNeedsBind, setTgInitDataRaw } = useContext(AuthContext);
   const [isInitializing, setIsInitializing] = useState(true);
   const [errorStatus, setErrorStatus] = useState(null);
+  const initStartedRef = useRef(false);
 
   useEffect(() => {
     const initializeTMA = async () => {
@@ -52,6 +53,8 @@ const TelegramAuthProvider = ({ children }) => {
     };
 
     if (!isAuth) {
+      if (initStartedRef.current) return;
+      initStartedRef.current = true;
       initializeTMA();
     } else {
       setIsInitializing(false);

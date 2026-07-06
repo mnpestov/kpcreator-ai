@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { getUserFromToken, getToken, saveToken, removeToken } from '../utils/auth';
 import { MainApi } from '../utils/MainApi';
 import { API_BASE_URL } from '../utils/const';
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
 
-  const login = (token) => {
+  const login = useCallback((token) => {
     localStorage.setItem('authToken', token);
     const decodedUser = getUserFromToken();
     setUser(decodedUser);
@@ -73,18 +73,23 @@ export const AuthProvider = ({ children }) => {
     useAuthStore.setState({ user: decodedUser, isAuth: true });
     // Run async fetch to populate full user info
     useAuthStore.getState().initAuth();
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('authToken');
     setUser(null);
     setIsAuth(false);
     // Sync with Zustand store
     useAuthStore.setState({ user: null, isAuth: false });
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, isAuth, login, logout, setUser, tgNeedsBind, setTgNeedsBind, tgInitDataRaw, setTgInitDataRaw }),
+    [user, isAuth, login, logout, tgNeedsBind, tgInitDataRaw, setUser, setTgNeedsBind, setTgInitDataRaw]
+  );
 
   return (
-    <AuthContext.Provider value={{ user, isAuth, login, logout, setUser, tgNeedsBind, setTgNeedsBind, tgInitDataRaw, setTgInitDataRaw }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
