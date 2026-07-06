@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { init, retrieveLaunchParams, isTMA } from '@telegram-apps/sdk';
+import { init, retrieveRawInitData, isTMA } from '@telegram-apps/sdk';
 import { AuthContext } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../utils/const';
 import { Spinner } from '@skbkontur/react-ui';
@@ -20,7 +20,7 @@ const TelegramAuthProvider = ({ children }) => {
         }
 
         init();
-        const { initDataRaw } = retrieveLaunchParams();
+        const initDataRaw = retrieveRawInitData();
         setTgInitDataRaw(initDataRaw);
 
         const res = await fetch(`${API_BASE_URL}/auth/telegram`, {
