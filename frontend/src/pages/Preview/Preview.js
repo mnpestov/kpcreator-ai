@@ -20,6 +20,10 @@ import { prepareCloneData } from '../../utils/cloneHelper';
 // Подключаем LastList лениво (lazy), как это было сделано в App.js
 const LastList = lazy(() => import('../../components/LastList/LastList'));
 
+// Экспорт XLSX временно нестабилен — скрыт из интерфейса до фикса.
+// Вся логика (downloadKpXlsx, handleDownloadXlsx) сохранена, чтобы вернуть в один шаг.
+const XLSX_EXPORT_ENABLED = false;
+
 function Preview({
     formData,
     isNewKp,
@@ -53,6 +57,7 @@ function Preview({
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState(null);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const downloadRef = useRef(null);
@@ -147,22 +152,41 @@ function Preview({
     };
 
     const handleExportPDF = async () => {
-        // 1. Start PDF generation
-        await exportHiddenPDF();
+        setIsDownloading(true);
+        try {
+            // 1. Start PDF generation
+            await exportHiddenPDF();
 
-        // 2. Transition if draft
-        if (formData.status === 'draft') {
-            await handleStatusChange('sent');
+            // 2. Transition if draft
+            if (formData.status === 'draft') {
+                await handleStatusChange('sent');
+            }
+        } finally {
+            setIsDownloading(false);
         }
     };
 
     const handleDownloadXlsx = async () => {
-        // 1. Download XLSX
-        await downloadKpXlsx();
+        setIsDownloading(true);
+        try {
+            // 1. Download XLSX
+            await downloadKpXlsx();
 
-        // 2. Transition if draft (same as PDF)
-        if (formData.status === 'draft') {
-            await handleStatusChange('sent');
+            // 2. Transition if draft (same as PDF)
+            if (formData.status === 'draft') {
+                await handleStatusChange('sent');
+            }
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    const handleDownloadSpec = async () => {
+        setIsDownloading(true);
+        try {
+            await downloadSpec();
+        } finally {
+            setIsDownloading(false);
         }
     };
 
@@ -200,36 +224,41 @@ function Preview({
                         >
                             Создать на основе
                         </button>
-                        <div className="preview-download-wrapper" ref={downloadRef}>
-                            <button
-                                className="proto-btn proto-btn-primary"
-                                onClick={() => setIsDownloadOpen((v) => !v)}
-                            >
-                                Скачать ▾
-                            </button>
-                            {isDownloadOpen && (
-                                <div className="preview-download-menu">
-                                    <button
-                                        className="preview-download-item"
-                                        onClick={() => { setIsDownloadOpen(false); handleExportPDF(); }}
-                                    >
-                                        PDF
-                                    </button>
-                                    <button
-                                        className="preview-download-item"
-                                        onClick={() => { setIsDownloadOpen(false); handleDownloadXlsx(); }}
-                                    >
-                                        XLSX
-                                    </button>
-                                    <button
-                                        className="preview-download-item"
-                                        onClick={() => { setIsDownloadOpen(false); downloadSpec(); }}
-                                    >
-                                        Спецификация
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                        <Loader active={isDownloading} type="mini" style={{ width: 'auto' }}>
+                            <div className="preview-download-wrapper" ref={downloadRef}>
+                                <button
+                                    className="proto-btn proto-btn-primary"
+                                    onClick={() => setIsDownloadOpen((v) => !v)}
+                                    disabled={isDownloading}
+                                >
+                                    Скачать ▾
+                                </button>
+                                {isDownloadOpen && (
+                                    <div className="preview-download-menu">
+                                        <button
+                                            className="preview-download-item"
+                                            onClick={() => { setIsDownloadOpen(false); handleExportPDF(); }}
+                                        >
+                                            PDF
+                                        </button>
+                                        {XLSX_EXPORT_ENABLED && (
+                                            <button
+                                                className="preview-download-item"
+                                                onClick={() => { setIsDownloadOpen(false); handleDownloadXlsx(); }}
+                                            >
+                                                XLSX
+                                            </button>
+                                        )}
+                                        <button
+                                            className="preview-download-item"
+                                            onClick={() => { setIsDownloadOpen(false); handleDownloadSpec(); }}
+                                        >
+                                            Спецификация
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </Loader>
                     </>
                 }
             />
