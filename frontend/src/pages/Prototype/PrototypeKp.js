@@ -213,6 +213,7 @@ function RowDisplay({
   const [tempQty, setTempQty] = useState(row.countOfProduct);
   const [editField, setEditField] = useState(null);
   const [isDraggable, setIsDraggable] = useState(false);
+  const qtyInputRef = useRef(null);
 
   useEffect(() => {
     setData({ ...row });
@@ -223,6 +224,28 @@ function RowDisplay({
       setTempQty(row.countOfProduct);
     }
   }, [isActiveQtyEdit, row.countOfProduct]);
+
+  useEffect(() => {
+    if (!isActiveQtyEdit) return;
+    const input = qtyInputRef.current;
+    if (!input) return;
+
+    // Скроллим так, чтобы верхний край инпута оказался у верхней границы
+    // видимой области — дефолтный scroll-into-view браузера центрирует
+    // элемент и конфликтует с анимацией открытия клавиатуры (особенно в TG Mini App).
+    const scrollInputToTop = () => {
+      input.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    };
+
+    if (window.visualViewport) {
+      // Ждём, пока клавиатура фактически откроется и уменьшит видимую
+      // область — иначе scrollIntoView сработает по старым размерам вьюпорта.
+      window.visualViewport.addEventListener('resize', scrollInputToTop, { once: true });
+      return () => window.visualViewport.removeEventListener('resize', scrollInputToTop);
+    }
+
+    scrollInputToTop();
+  }, [isActiveQtyEdit]);
 
   const handleQtyKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -375,6 +398,7 @@ function RowDisplay({
 
             {isActiveQtyEdit ? (
               <input
+                ref={qtyInputRef}
                 autoFocus
                 type="number"
                 className="proto-inline-qty"
@@ -467,6 +491,26 @@ function MetaCard({ id, isExpanded, onToggle, title, summary, children }) {
 export default function PrototypeKp({ addToDb, isNewKp }) {
   useEffect(() => {
     applyDragDropPolyfillOnce();
+  }, []);
+
+  // На мобильных (в т.ч. Telegram Mini App) открытая экранная клавиатура
+  // не сжимает layout-viewport, из-за чего прото-sticky-bar с fixed
+  // позиционированием "всплывает" поверх рабочей области над клавиатурой.
+  // Прячем его, пока видимая область (visualViewport) заметно меньше окна.
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleViewportResize = () => {
+      setIsKeyboardOpen(vv.height < window.innerHeight * 0.75);
+    };
+
+    vv.addEventListener('resize', handleViewportResize);
+    handleViewportResize();
+
+    return () => vv.removeEventListener('resize', handleViewportResize);
   }, []);
 
   const isMobile = useIsMobile();
@@ -1339,7 +1383,7 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
       </div>
 
       {/* --- STICKY BOTTOM BAR --- */}
-      <div className="proto-sticky-bar">
+      <div className={`proto-sticky-bar${isKeyboardOpen ? ' proto-sticky-bar--keyboard-open' : ''}`}>
         <div className="proto-sticky-content">
           <div className="proto-sticky-left">
             <span className="proto-status">Черновик сохранён</span>

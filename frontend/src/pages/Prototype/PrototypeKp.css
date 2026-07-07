@@ -497,7 +497,8 @@
 
 .proto-inline-qty {
   width: 50px;
-  font-size: 15px;
+  /* 16px не даёт мобильным браузерам (iOS Safari) авто-зумить страницу при фокусе на инпуте */
+  font-size: 16px;
   font-weight: 600;
   padding: 2px 4px;
   border: 1px solid #1a4d9e;
@@ -581,6 +582,11 @@
 
   .proto-row:hover .proto-row-actions {
     opacity: 1;
+  }
+
+  /* На десктопе авто-зум не грозит — возвращаем прежний компактный размер */
+  .proto-inline-qty {
+    font-size: 15px;
   }
 }
 
@@ -726,6 +732,13 @@
   padding: 16px 0;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 200;
+  transition: transform 0.15s ease-out;
+}
+
+/* Открыта экранная клавиатура — прячем футер, чтобы не перекрывал рабочую область */
+.proto-sticky-bar--keyboard-open {
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 /* --- Modal Overlay --- */
