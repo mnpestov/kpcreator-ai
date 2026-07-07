@@ -115,15 +115,60 @@ function Autocomplete({ query, onSelect, activeIndex, onCreateCustom, catalog = 
   );
 }
 
+// Синхронно с max-height у .proto-autocomplete в CSS
+const AUTOCOMPLETE_HEIGHT = 280;
+
 function QuickAddInput({ onAdd, autoFocusRef, catalog = [] }) {
   const [value, setValue] = useState('');
   const [showAc, setShowAc] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [flipUp, setFlipUp] = useState(false);
+  const wrapperRef = useRef(null);
 
   const filtered = (value
     ? catalog.filter(item => item.product.toLowerCase().includes(value.toLowerCase()))
     : catalog
   ).slice(0, 5);
+
+  // Клавиатура на мобильных съедает нижнюю часть экрана уже после фокуса
+  // (асинхронно), поэтому направление раскрытия списка пересчитываем
+  // и сразу (для мгновенной догадки), и повторно — когда клавиатура
+  // фактически откроется (visualViewport.resize), с фолбэком по таймеру
+  // на случай если событие не пришло (см. аналогичный фикс для qty-поля).
+  useEffect(() => {
+    if (!showAc) return;
+    const input = wrapperRef.current?.querySelector('#quick-add-input');
+    if (!input) return;
+
+    const computeFlip = () => {
+      const rect = input.getBoundingClientRect();
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      // Переворачиваем вверх, только если внизу тесно И наверху места больше,
+      // чем внизу — иначе в патологическом случае оставляем как есть.
+      return spaceBelow < AUTOCOMPLETE_HEIGHT && rect.top > spaceBelow;
+    };
+
+    setFlipUp(computeFlip());
+
+    let done = false;
+    const finalizePosition = () => {
+      if (done) return;
+      done = true;
+      const shouldFlip = computeFlip();
+      setFlipUp(shouldFlip);
+      input.scrollIntoView({ block: shouldFlip ? 'end' : 'start', behavior: 'smooth' });
+    };
+
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', finalizePosition);
+    const fallbackTimer = setTimeout(finalizePosition, 350);
+
+    return () => {
+      vv?.removeEventListener('resize', finalizePosition);
+      clearTimeout(fallbackTimer);
+    };
+  }, [showAc]);
 
   const handleSelect = (item) => {
     onAdd({
@@ -183,7 +228,7 @@ function QuickAddInput({ onAdd, autoFocusRef, catalog = [] }) {
   };
 
   return (
-    <div className="proto-quick-add">
+    <div className={`proto-quick-add${flipUp ? ' proto-quick-add--flip-up' : ''}`} ref={wrapperRef}>
       <input
         id="quick-add-input"
         ref={autoFocusRef}

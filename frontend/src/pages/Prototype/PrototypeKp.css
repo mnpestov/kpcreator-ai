@@ -17,7 +17,8 @@
   background: transparent;
   border-bottom: 1px dashed #ccc;
   font-family: inherit;
-  font-size: 15px;
+  /* <16px триггерит авто-зум iOS при фокусе на инпуте */
+  font-size: 16px;
   color: inherit;
   padding: 4px 2px;
   outline: none;
@@ -331,21 +332,21 @@
 }
 
 .proto-native-input.title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
   color: #1a1a1a;
 }
 
 .proto-native-input.desc {
-  font-size: 13px;
+  font-size: 16px;
   color: #666;
   margin-top: 2px;
 }
 
 .proto-native-input.price {
   width: 70px;
-  font-size: 15px;
+  font-size: 16px;
   color: #444;
   text-align: right;
 }
@@ -360,7 +361,7 @@
 
 .proto-native-input.weight {
   width: 50px;
-  font-size: 13px;
+  font-size: 16px;
   color: #666;
   text-align: right;
   margin: 0;
@@ -588,6 +589,12 @@
   .proto-inline-qty {
     font-size: 15px;
   }
+
+  .proto-input-clean { font-size: 15px; }
+  .proto-native-input.title { font-size: 15px; }
+  .proto-native-input.desc { font-size: 13px; }
+  .proto-native-input.price { font-size: 15px; }
+  .proto-native-input.weight { font-size: 13px; }
 }
 
 /* --- Quick Add --- */
@@ -679,6 +686,18 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   /* Softer shadow for inline */
   margin-top: 8px;
+}
+
+/* Когда снизу не хватает места (открыта клавиатура) — раскрываем список
+   вверх поверх инпута, а не вниз под клавиатуру. См. QuickAddInput. */
+.proto-quick-add--flip-up .proto-autocomplete {
+  position: absolute;
+  bottom: 100%;
+  top: auto;
+  left: 0;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 8px;
 }
 
 /* --- Presets --- */
