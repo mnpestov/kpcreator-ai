@@ -7,6 +7,24 @@ import { MainApi } from '../../utils/MainApi';
 import { toast } from 'react-toastify';
 import ProtoSwitch from '../../components/common/ProtoSwitch/ProtoSwitch';
 import './PrototypeKp.css';
+import { polyfill as polyfillDragDrop } from 'mobile-drag-drop';
+import { scrollBehaviourDragImageTranslateOverride } from 'mobile-drag-drop/scroll-behaviour';
+import 'mobile-drag-drop/default.css';
+
+// Полифилл нативного HTML5 Drag-and-Drop для тач-устройств
+// (мобильные браузеры не поддерживают draggable/onDragStart из коробки).
+// Вызывается только на этой странице (единственной с drag-and-drop),
+// а не глобально в index.js, чтобы не вешать touch-листенеры на весь app.
+// Библиотека не защищена от повторных вызовов (задублирует листенеры),
+// поэтому применяем полифилл не более одного раза за жизнь вкладки.
+let dragDropPolyfillApplied = false;
+function applyDragDropPolyfillOnce() {
+  if (dragDropPolyfillApplied) return;
+  dragDropPolyfillApplied = true;
+  polyfillDragDrop({
+    dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride
+  });
+}
 
 // ------------------------------------------------------------------
 // MOCK DATA
@@ -447,6 +465,10 @@ function MetaCard({ id, isExpanded, onToggle, title, summary, children }) {
 // MAIN PROTOTYPE APP
 // ------------------------------------------------------------------
 export default function PrototypeKp({ addToDb, isNewKp }) {
+  useEffect(() => {
+    applyDragDropPolyfillOnce();
+  }, []);
+
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
