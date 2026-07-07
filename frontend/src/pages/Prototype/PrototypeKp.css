@@ -688,18 +688,6 @@
   margin-top: 8px;
 }
 
-/* Когда снизу не хватает места (открыта клавиатура) — раскрываем список
-   вверх поверх инпута, а не вниз под клавиатуру. См. QuickAddInput. */
-.proto-quick-add--flip-up .proto-autocomplete {
-  position: absolute;
-  bottom: 100%;
-  top: auto;
-  left: 0;
-  width: 100%;
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
 /* --- Presets --- */
 .proto-quick-presets {
   display: flex;
