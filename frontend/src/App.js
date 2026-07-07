@@ -528,13 +528,25 @@ function App() {
     }
   };
 
+  // Telegram caption отправляется с parseMode: 'HTML' (см. pdfDeliveryService.js),
+  // поэтому значения экранируем, а заголовки/номер КП оборачиваем в <b>.
+  const escapeTelegramHtml = (value) => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
   const buildKpTelegramCaption = useCallback(() => {
-    const contractorName = formData.contractor?.companyName || formData.companyName || '—';
-    const eventTitle = formData.listTitle || '—';
+    const contractorName = escapeTelegramHtml(formData.contractor?.companyName || formData.companyName || '—');
+    const eventTitle = escapeTelegramHtml(formData.listTitle || '—');
     const eventDate = formData.startEvent
       ? new Date(formData.startEvent).toLocaleDateString('ru-RU')
       : '—';
-    return `КП № ${formData.kpNumber} для ${contractorName}\nМероприятие: ${eventTitle}\nДата: ${eventDate}`;
+    return [
+      `<b>КП № ${escapeTelegramHtml(formData.kpNumber)}</b>`,
+      `<b>Заказчик:</b> ${contractorName}`,
+      `<b>Мероприятие:</b> ${eventTitle}`,
+      `<b>Дата:</b> ${eventDate}`
+    ].join('\n');
   }, [formData]);
 
   const exportHiddenPDF = useCallback(async () => {

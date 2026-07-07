@@ -25,6 +25,8 @@ async function sendPdf({ kpNumber, buffer, fileName, mimeType, caption, userId }
     const form = new FormData();
     form.append('chatId', user.telegramId);
     form.append('caption', caption || `КП № ${kpNumber}`);
+    // Caption собирается на фронтенде с HTML-разметкой (жирные заголовки).
+    form.append('parseMode', 'HTML');
     // Gateway используется несколькими проектами с разными ботами;
     // 'kpcreator' указывает, каким токеном отправлять сообщение.
     form.append('bot', 'kpcreator');
