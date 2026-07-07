@@ -528,6 +528,15 @@ function App() {
     }
   };
 
+  const buildKpTelegramCaption = useCallback(() => {
+    const contractorName = formData.contractor?.companyName || formData.companyName || '—';
+    const eventTitle = formData.listTitle || '—';
+    const eventDate = formData.startEvent
+      ? new Date(formData.startEvent).toLocaleDateString('ru-RU')
+      : '—';
+    return `КП № ${formData.kpNumber} для ${contractorName}\nМероприятие: ${eventTitle}\nДата: ${eventDate}`;
+  }, [formData]);
+
   const exportHiddenPDF = useCallback(async () => {
     // сохраняем режим редактирования как существующий КП (как было)
     console.log('exportHiddenPDF started');
@@ -596,7 +605,7 @@ function App() {
 
     if (await isTMA()) {
       try {
-        await MainApi.sendFileToBot(formData.kpNumber, hidenPdf.output('blob'), fileName, `КП № ${formData.kpNumber} от ${formData.kpDate}`);
+        await MainApi.sendFileToBot(formData.kpNumber, hidenPdf.output('blob'), fileName, buildKpTelegramCaption());
         toast.success('PDF отправлен ботом вам в чат в Telegram');
       } catch (err) {
         console.error('Ошибка при отправке PDF в Telegram:', err);
@@ -606,7 +615,7 @@ function App() {
     }
 
     saveAs(hidenPdf.output('blob'), fileName);
-  }, [formData, listsKp]);
+  }, [formData, listsKp, buildKpTelegramCaption]);
 
   const downloadSpec = useCallback(async () => {
     const A4_WIDTH_MM = 297;
@@ -660,7 +669,7 @@ function App() {
 
     if (await isTMA()) {
       try {
-        await MainApi.sendFileToBot(formData.kpNumber, compactPdf.output('blob'), specFileName, `Спецификация к КП № ${formData.kpNumber} от ${formData.kpDate}`);
+        await MainApi.sendFileToBot(formData.kpNumber, compactPdf.output('blob'), specFileName, buildKpTelegramCaption());
         toast.success('Спецификация отправлена ботом вам в чат в Telegram');
       } catch (err) {
         console.error('Ошибка при отправке спецификации в Telegram:', err);
@@ -670,7 +679,7 @@ function App() {
     }
 
     saveAs(compactPdf.output('blob'), specFileName);
-  }, [formData, listsKp]);
+  }, [formData, listsKp, buildKpTelegramCaption]);
 
   const downloadKpXlsx = useCallback(async () => {
     try {
@@ -678,7 +687,7 @@ function App() {
 
       if (await isTMA()) {
         try {
-          await MainApi.sendFileToBot(formData.kpNumber, blob, fileName, `Смета к КП № ${formData.kpNumber}`);
+          await MainApi.sendFileToBot(formData.kpNumber, blob, fileName, buildKpTelegramCaption());
           toast.success('Смета отправлена ботом вам в чат в Telegram');
         } catch (err) {
           console.error('Ошибка при отправке XLSX в Telegram:', err);
@@ -692,7 +701,7 @@ function App() {
       console.error('Ошибка при скачивании XLSX:', err);
       toast.error(`Ошибка при скачивании XLSX: ${err}`);
     }
-  }, [formData.kpNumber]);
+  }, [formData.kpNumber, buildKpTelegramCaption]);
 
 
 
