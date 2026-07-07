@@ -232,19 +232,26 @@ function RowDisplay({
 
     // Скроллим так, чтобы верхний край инпута оказался у верхней границы
     // видимой области — дефолтный scroll-into-view браузера центрирует
-    // элемент и конфликтует с анимацией открытия клавиатуры (особенно в TG Mini App).
+    // элемент и конфликтует с анимацией открытия клавиатуры.
+    let done = false;
     const scrollInputToTop = () => {
+      if (done) return;
+      done = true;
       input.scrollIntoView({ block: 'start', behavior: 'smooth' });
     };
 
-    if (window.visualViewport) {
-      // Ждём, пока клавиатура фактически откроется и уменьшит видимую
-      // область — иначе scrollIntoView сработает по старым размерам вьюпорта.
-      window.visualViewport.addEventListener('resize', scrollInputToTop, { once: true });
-      return () => window.visualViewport.removeEventListener('resize', scrollInputToTop);
-    }
+    // В части WebView (в т.ч. некоторые сборки Telegram) visualViewport
+    // либо не шлёт resize при открытии клавиатуры, либо шлёт до того, как
+    // анимация клавиатуры реально завершилась — поэтому не полагаемся
+    // только на событие и подстраховываемся таймером.
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', scrollInputToTop);
+    const fallbackTimer = setTimeout(scrollInputToTop, 350);
 
-    scrollInputToTop();
+    return () => {
+      vv?.removeEventListener('resize', scrollInputToTop);
+      clearTimeout(fallbackTimer);
+    };
   }, [isActiveQtyEdit]);
 
   const handleQtyKeyDown = (e) => {
@@ -493,27 +500,45 @@ export default function PrototypeKp({ addToDb, isNewKp }) {
     applyDragDropPolyfillOnce();
   }, []);
 
+  const isMobile = useIsMobile();
+
   // На мобильных (в т.ч. Telegram Mini App) открытая экранная клавиатура
   // не сжимает layout-viewport, из-за чего прото-sticky-bar с fixed
   // позиционированием "всплывает" поверх рабочей области над клавиатурой.
-  // Прячем его, пока видимая область (visualViewport) заметно меньше окна.
+  // Прячем его по самому факту фокуса на инпуте/textarea — не по изменению
+  // высоты visualViewport, т.к. во время анимации открытия клавиатуры это
+  // приводит к мельканию футера (видно, что он на миг появляется и пропадает).
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
+    if (!isMobile) return;
 
-    const handleViewportResize = () => {
-      setIsKeyboardOpen(vv.height < window.innerHeight * 0.75);
+    let hideTimer = null;
+    const isTextField = (el) => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+
+    const handleFocusIn = (e) => {
+      if (!isTextField(e.target)) return;
+      clearTimeout(hideTimer);
+      setIsKeyboardOpen(true);
     };
 
-    vv.addEventListener('resize', handleViewportResize);
-    handleViewportResize();
+    const handleFocusOut = (e) => {
+      if (!isTextField(e.target)) return;
+      // Небольшая задержка: если фокус тут же перескочил на другой инпут
+      // (переход между полями), клавиатура не закрывалась — футер не мигает.
+      hideTimer = setTimeout(() => setIsKeyboardOpen(false), 100);
+    };
 
-    return () => vv.removeEventListener('resize', handleViewportResize);
-  }, []);
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
 
-  const isMobile = useIsMobile();
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+      clearTimeout(hideTimer);
+    };
+  }, [isMobile]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const setListsKp = useKpStore((state) => state.setListsKp);
