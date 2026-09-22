@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Ok, Edit, Trash } from '@skbkontur/react-icons';
 import './Row.css';
 import useKpStore from '../../hooks/useKpStore';
@@ -27,6 +27,15 @@ function Row({
     const [startX, setStartX] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
     const [editedData, setEditedData] = useState({ ...data });
+
+    // Синхронизируем локальный state с обновлёнными данными из Zustand
+    // (не трогаем во время редактирования, чтобы не затирать ввод пользователя)
+    useEffect(() => {
+        if (!isEditing) {
+            setEditedData({ ...data });
+        }
+    }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const totalCostOfProduct = editedData.countOfProduct * editedData.priceOfProduct;
 
     const {
